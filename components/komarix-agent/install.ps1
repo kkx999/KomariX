@@ -1,4 +1,4 @@
-# Windows PowerShell installation script for Komari Agent
+# Windows PowerShell installation script for KomariX Agent
 
 # Logging functions with colors
 function Log-Info { param([string]$Message) Write-Host "$Message"    -ForegroundColor Cyan }
@@ -9,10 +9,10 @@ function Log-Step { param([string]$Message) Write-Host "$Message"    -Foreground
 function Log-Config { param([string]$Message) Write-Host "- $Message"    -ForegroundColor White }
 
 # Default parameters
-$InstallDir = Join-Path $Env:ProgramFiles "Komari"
-$ServiceName = "komari-agent"
+$InstallDir = Join-Path $Env:ProgramFiles "KomariX Agent"
+$ServiceName = "komarix-agent"
 $GitHubProxy = ""
-$KomariArgs = @()
+$KomariXArgs = @()
 $InstallVersion = ""
 
 # Parse script arguments
@@ -22,7 +22,7 @@ for ($i = 0; $i -lt $args.Count; $i++) {
         "--install-service-name" { $ServiceName = $args[$i + 1]; $i++; continue }
         "--install-ghproxy" { $GitHubProxy = $args[$i + 1]; $i++; continue }
         "--install-version" { $InstallVersion = $args[$i + 1]; $i++; continue }
-        Default { $KomariArgs += $args[$i] }
+        Default { $KomariXArgs += $args[$i] }
     }
 }
 
@@ -160,7 +160,7 @@ Log-Step "Installation configuration:"
 Log-Config "Service name: $ServiceName"
 Log-Config "Install directory: $InstallDir"
 Log-Config "GitHub proxy: $ProxyDisplay"
-Log-Config "Agent arguments: $($KomariArgs -join ' ')"
+Log-Config "Agent arguments: $($KomariXArgs -join ' ')"
 if ($InstallVersion -ne "") {
     Log-Config "Specified agent version: $InstallVersion"
 } else {
@@ -168,8 +168,8 @@ if ($InstallVersion -ne "") {
 }
 
 # Paths
-$BinaryName = "komari-agent-windows-$arch.exe"
-$AgentPath = Join-Path $InstallDir "komari-agent.exe"
+$BinaryName = "komarix-agent-windows-$arch.exe"
+$AgentPath = Join-Path $InstallDir "komarix-agent.exe"
 
 # Uninstall previous service and binary
 function Uninstall-Previous {
@@ -204,12 +204,27 @@ function Uninstall-Previous {
         Remove-Item $AgentPath -Force
     }
 }
+# Clean up legacy Komari Agent service/binary before installing KomariX Agent.
+$LegacyServiceName = "komari-agent"
+$LegacyInstallDir = Join-Path $Env:ProgramFiles "Komari"
+$LegacyAgentPath = Join-Path $LegacyInstallDir "komari-agent.exe"
+if ($LegacyServiceName -ne $ServiceName) {
+    $legacySvc = Get-Service -Name $LegacyServiceName -ErrorAction SilentlyContinue
+    if ($legacySvc) {
+        try { nssm stop $LegacyServiceName 2>&1 | Out-Null } catch {}
+        try { nssm remove $LegacyServiceName confirm 2>&1 | Out-Null } catch {}
+        Stop-Service $LegacyServiceName -Force -ErrorAction SilentlyContinue
+        sc.exe delete $LegacyServiceName | Out-Null
+    }
+    Remove-Item -Path $LegacyAgentPath -Force -ErrorAction SilentlyContinue
+}
+
 Uninstall-Previous
 
 function Get-LatestSnapshotVersion {
     param([Parameter(Mandatory = $true)][string]$AssetName)
 
-    $ApiUrl = "https://api.github.com/repos/komari-monitor/komari-agent/releases?per_page=100"
+    $ApiUrl = "https://api.github.com/repos/kkx999/KomariX/releases?per_page=100"
     $ApiUrls = @($ApiUrl)
     if ($GitHubProxy -ne "") {
         $ApiUrls = @("$GitHubProxy/$ApiUrl", $ApiUrl)
@@ -267,7 +282,7 @@ if ($InstallVersion -ne "") {
     }
 }
 else {
-    $ApiUrl = "https://api.github.com/repos/komari-monitor/komari-agent/releases/latest"
+    $ApiUrl = "https://api.github.com/repos/kkx999/KomariX/releases/latest"
     try {
         Log-Step "Fetching latest release version from GitHub API..."
         $release = Invoke-RestMethod -Uri $ApiUrl -UseBasicParsing
@@ -279,11 +294,11 @@ else {
         exit 1
     }
 }
-Log-Success "Installing Komari Agent version: $versionToInstall"
+Log-Success "Installing KomariX Agent version: $versionToInstall"
 
 # Construct download URL
-$BinaryName = "komari-agent-windows-$arch.exe"
-$DownloadUrl = if ($GitHubProxy) { "$GitHubProxy/https://github.com/komari-monitor/komari-agent/releases/download/$versionToInstall/$BinaryName" } else { "https://github.com/komari-monitor/komari-agent/releases/download/$versionToInstall/$BinaryName" }
+$BinaryName = "komarix-agent-windows-$arch.exe"
+$DownloadUrl = if ($GitHubProxy) { "$GitHubProxy/https://github.com/kkx999/KomariX/releases/download/$versionToInstall/$BinaryName" } else { "https://github.com/kkx999/KomariX/releases/download/$versionToInstall/$BinaryName" }
 
 # Download and install
 New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
@@ -299,12 +314,12 @@ Log-Success "Downloaded and saved to $AgentPath"
 
 # Register and start service
 Log-Step "Configuring Windows service with nssm..."
-$argString = $KomariArgs -join ' '
+$argString = $KomariXArgs -join ' '
 # Ensure InstallDir and AgentPath are quoted if they contain spaces
 $quotedAgentPath = "`"$AgentPath`""
 nssm install $ServiceName $quotedAgentPath $argString
 # Set display name and startup type using nssm
-nssm set $ServiceName DisplayName "Komari Agent Service"
+nssm set $ServiceName DisplayName "KomariX Agent Service"
 nssm set $ServiceName Start SERVICE_AUTO_START
 nssm set $ServiceName AppExit Default Restart
 nssm set $ServiceName AppRestartDelay 5000
@@ -312,6 +327,6 @@ nssm set $ServiceName AppRestartDelay 5000
 nssm start $ServiceName
 Log-Success "Service $ServiceName installed and started using nssm."
 
-Log-Success "Komari Agent installation completed!"
+Log-Success "KomariX Agent installation completed!"
 Log-Config "Service name: $ServiceName"
 Log-Config "Arguments: $argString"
