@@ -1,18 +1,12 @@
-name: Build frontend theme
-description: Build the KomariX default theme from the upstream Komari 1.4.3 frontend.
+name: Build KomariX frontends
+description: Build the vendored KomariX admin frontend and built-in PurCarte theme.
 
 inputs:
   node-version:
-    description: Node.js version used to build komari-web.
+    description: Node.js version used to build frontends.
     default: "23"
-  repository:
-    description: komari-web repository URL.
-    default: https://github.com/komari-monitor/komari-web
-  ref:
-    description: Upstream komari-web ref to build.
-    default: "1.4.3"
   artifact-name:
-    description: Optional artifact name for the packed frontend theme.
+    description: Optional artifact name for the packed frontend bundle.
     default: ""
 
 runs:
@@ -23,58 +17,85 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
 
-    - name: Clone and build frontend
+    - name: Build KomariX admin frontend
       shell: bash
       run: |
         set -euxo pipefail
-        rm -rf komari-web
-        FRONTEND_REF="${{ inputs.ref }}"
-        if [ -z "$FRONTEND_REF" ]; then
-          FRONTEND_REF="1.4.3"
-        fi
-        git clone --depth=1 --branch "$FRONTEND_REF" "${{ inputs.repository }}" komari-web
+        rm -rf .build/komari-web
+        mkdir -p .build
+        cp -a vendor/komari-web .build/komari-web
 
-        # Keep Komari 1.4.3 frontend behavior, but route Agent installation
-        # through the KomariX branded installer wrapper.
-        find komari-web/src -type f \( -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' \) -print0 | \
+        # Route Agent install commands to KomariX-owned installers.
+        find .build/komari-web/src -type f \( -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' \) -print0 | \
           xargs -0 -r sed -i \
             's#https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/#https://raw.githubusercontent.com/kkx999/KomariX/main/agent/#g'
 
-        cd komari-web
+        cd .build/komari-web
         npm install
         npm run build
-        cd ..
+        cd ../..
 
-        # KomariX branding only. Keep upstream 1.4.3 application logic unchanged.
-        find komari-web/dist -type f \( -name '*.js' -o -name '*.html' -o -name '*.json' -o -name '*.css' -o -name '*.webmanifest' \) -print0 | \
+        # Visible KomariX branding only; keep application behavior intact.
+        find .build/komari-web/dist -type f \( -name '*.js' -o -name '*.html' -o -name '*.json' -o -name '*.css' -o -name '*.webmanifest' \) -print0 | \
           xargs -0 -r sed -i 's/Komari/KomariX/g'
 
-        mkdir -p komari-web/dist/assets
-        cp -f docs/komarix.svg komari-web/dist/assets/komarix.svg
+        mkdir -p .build/komari-web/dist/assets
+        cp -f docs/komarix.svg .build/komari-web/dist/assets/komarix.svg
 
-        # Replace brand artwork references only.
-        find komari-web/dist -type f \( -name '*.js' -o -name '*.html' -o -name '*.json' -o -name '*.webmanifest' \) -print0 | \
+        find .build/komari-web/dist -type f \( -name '*.js' -o -name '*.html' -o -name '*.json' -o -name '*.webmanifest' \) -print0 | \
           xargs -0 -r sed -i \
             -e 's#assets/logo\.png#assets/komarix.svg#g' \
             -e 's#/assets/pwa-icon\.png#/assets/komarix.svg#g' \
             -e 's#favicon\.ico#assets/komarix.svg#g'
 
+        rm -rf web/public/defaultTheme
         mkdir -p web/public/defaultTheme/dist
-        rm -rf web/public/defaultTheme/dist/*
-        cp -r komari-web/dist/* web/public/defaultTheme/dist/
-        cp -f komari-web/komari-theme.json web/public/defaultTheme/
+        cp -r .build/komari-web/dist/* web/public/defaultTheme/dist/
+        cp -f .build/komari-web/komari-theme.json web/public/defaultTheme/
         sed -i 's/Komari/KomariX/g' web/public/defaultTheme/komari-theme.json
-        if [ -f komari-web/preview.png ]; then cp -f komari-web/preview.png web/public/defaultTheme/; fi
-        if [ -f komari-web/perview.png ]; then cp -f komari-web/perview.png web/public/defaultTheme/; fi
+        if [ -f .build/komari-web/preview.png ]; then cp -f .build/komari-web/preview.png web/public/defaultTheme/; fi
+        if [ -f .build/komari-web/perview.png ]; then cp -f .build/komari-web/perview.png web/public/defaultTheme/; fi
         if [ -f web/public/defaultTheme/preview.png ] && [ ! -f web/public/defaultTheme/perview.png ]; then cp -f web/public/defaultTheme/preview.png web/public/defaultTheme/perview.png; fi
         if [ -f web/public/defaultTheme/perview.png ] && [ ! -f web/public/defaultTheme/preview.png ]; then cp -f web/public/defaultTheme/perview.png web/public/defaultTheme/preview.png; fi
+
+    - name: Build built-in KomariX PurCarte theme
+      shell: bash
+      run: |
+        set -euxo pipefail
+        rm -rf .build/purcarte
+        mkdir -p .build
+        cp -a vendor/purcarte .build/purcarte
+
+        mkdir -p .build/purcarte/public/assets
+        cp -f docs/komarix.svg .build/purcarte/public/assets/komarix.svg
+
+        # Use KomariX logo/title in the built-in copy.
+        find .build/purcarte/src -type f \( -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' \) -print0 | \
+          xargs -0 -r sed -i \
+            -e 's#/assets/logo\.png#/assets/komarix.svg#g' \
+            -e 's/Komari/KomariX/g'
+
+        cd .build/purcarte
+        npm install
+        npm run build
+        cd ../..
+
+        find .build/purcarte/dist -type f \( -name '*.js' -o -name '*.html' -o -name '*.json' -o -name '*.css' -o -name '*.webmanifest' \) -print0 | \
+          xargs -0 -r sed -i 's/Komari/KomariX/g'
+
+        rm -rf web/public/purcarteTheme
+        mkdir -p web/public/purcarteTheme/dist
+        cp -r .build/purcarte/dist/* web/public/purcarteTheme/dist/
+        cp -f .build/purcarte/komari-theme.json web/public/purcarteTheme/
+        if [ -f .build/purcarte/preview.png ]; then cp -f .build/purcarte/preview.png web/public/purcarteTheme/; fi
 
     - name: Pack frontend artifact
       if: ${{ inputs.artifact-name != '' }}
       shell: bash
       run: |
         set -euxo pipefail
-        tar -czf "$RUNNER_TEMP/${{ inputs.artifact-name }}.tar.gz" -C web/public/defaultTheme .
+        tar -czf "$RUNNER_TEMP/${{ inputs.artifact-name }}.tar.gz" \
+          -C web/public defaultTheme purcarteTheme
 
     - name: Upload frontend artifact
       if: ${{ inputs.artifact-name != '' }}
