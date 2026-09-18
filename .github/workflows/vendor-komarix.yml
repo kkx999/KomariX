@@ -1,0 +1,92 @@
+name: Vendor KomariX dependencies
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/vendor-komarix.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout KomariX
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Vendor fixed upstream sources
+        shell: bash
+        run: |
+          set -euxo pipefail
+          rm -rf vendor/komari-web vendor/komari-agent vendor/purcarte
+          mkdir -p vendor
+
+          git clone --depth=1 --branch 1.4.3 https://github.com/komari-monitor/komari-web.git vendor/komari-web
+
+          git clone https://github.com/komari-monitor/komari-agent.git vendor/komari-agent
+          git -C vendor/komari-agent checkout c7bafb79b1a73ed9e14e2c248ae4d4163e506036
+
+          git clone https://github.com/Montia37/komari-theme-purcarte.git vendor/purcarte
+          git -C vendor/purcarte checkout d158fbfffb20684d587688e0c8ca0a195eeb601d
+
+          rm -rf vendor/komari-web/.git vendor/komari-agent/.git vendor/purcarte/.git
+
+          cat > vendor/UPSTREAM_VERSIONS.md <<'EOF'
+          # 固定上游版本
+
+          KomariX 为保证可独立构建，在仓库内固定保存以下开源源码副本：
+
+          - Komari Web：Komari 1.4.3
+          - Komari Agent：c7bafb79b1a73ed9e14e2c248ae4d4163e506036
+          - PurCarte：v1.2.5（d158fbfffb20684d587688e0c8ca0a195eeb601d）
+
+          各子目录原始 LICENSE 保持不变。
+          EOF
+
+      - name: Apply KomariX PurCarte branding
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          # Preserve original author/license while changing visible product branding.
+          find vendor/purcarte -type f \( -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' -o -name '*.json' -o -name '*.html' -o -name '*.md' \) -print0 |
+            xargs -0 -r sed -i 's/Komari/KomariX/g'
+
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = Path("vendor/purcarte/komari-theme.json")
+          data = json.loads(manifest.read_text())
+          data["name"] = "KomariX Theme PurCarte"
+          data["short"] = "PurCarte"
+          data["description"] = "A frosted glass theme for KomariX"
+          data["version"] = "1.2.5"
+          data["author"] = "Montia & Gemini"
+          data["url"] = "https://github.com/kkx999/KomariX"
+          manifest.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
+
+          package = Path("vendor/purcarte/package.json")
+          pdata = json.loads(package.read_text())
+          pdata["name"] = "komarix-theme-purcarte"
+          package.write_text(json.dumps(pdata, ensure_ascii=False, indent=2) + "\n")
+          PY
+
+      - name: Commit vendored sources
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add vendor
+          if git diff --cached --quiet; then
+            echo "No vendor changes."
+            exit 0
+          fi
+          git commit -m "vendor: archive KomariX frontend agent and PurCarte sources [skip ci]"
+          git push origin HEAD:main
