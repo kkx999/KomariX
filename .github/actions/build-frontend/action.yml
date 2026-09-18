@@ -1,5 +1,5 @@
 name: Build frontend theme
-description: Clone komari-web, build the default theme, and optionally upload it as an artifact.
+description: Build the KomariX default theme from the upstream Komari 1.4.3 frontend.
 
 inputs:
   node-version:
@@ -9,8 +9,8 @@ inputs:
     description: komari-web repository URL.
     default: https://github.com/komari-monitor/komari-web
   ref:
-    description: Optional komari-web ref to build. Uses the repository default branch when empty.
-    default: ""
+    description: Upstream komari-web ref to build.
+    default: "1.4.3"
   artifact-name:
     description: Optional artifact name for the packed frontend theme.
     default: ""
@@ -37,6 +37,26 @@ runs:
         npm install
         npm run build
         cd ..
+
+        # KomariX branding only. Keep upstream 1.4.3 application logic unchanged.
+        find komari-web/dist -type f \( -name '*.js' -o -name '*.html' -o -name '*.json' -o -name '*.css' -o -name '*.webmanifest' \) -print0 | \
+          xargs -0 -r sed -i 's/Komari/KomariX/g'
+
+        mkdir -p komari-web/dist/assets
+        cat > komari-web/dist/assets/komarix.svg <<'SVG'
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="KomariX">
+          <rect width="512" height="512" rx="112" fill="#111827"/>
+          <path d="M116 150h72v82l93-82h94L263 246l125 116h-99l-101-95v95h-72z" fill="#fff"/>
+          <path d="M330 138h72l-77 112 86 124h-79l-48-73-50 73h-75l86-121-80-115h79l43 67z" fill="#60a5fa"/>
+        </svg>
+SVG
+
+        # Replace brand artwork references only.
+        find komari-web/dist -type f \( -name '*.js' -o -name '*.html' -o -name '*.json' -o -name '*.webmanifest' \) -print0 | \
+          xargs -0 -r sed -i \
+            -e 's#assets/logo\.png#assets/komarix.svg#g' \
+            -e 's#/assets/pwa-icon\.png#/assets/komarix.svg#g' \
+            -e 's#favicon\.ico#assets/komarix.svg#g'
 
         mkdir -p web/public/defaultTheme/dist
         rm -rf web/public/defaultTheme/dist/*
