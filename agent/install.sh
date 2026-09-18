@@ -39,8 +39,8 @@ log_config() {
 EUID=${EUID:-$(id -u)}
 
 # Default values
-service_name="komari-agent"
-target_dir="/opt/komari"
+service_name="komarix-agent"
+target_dir="/opt/komarix-agent"
 github_proxy=""
 install_version="" # New parameter for specifying version
 install_dir_specified=false
@@ -53,10 +53,10 @@ os_type=$(uname -s)
 case $os_type in
     Darwin)
         os_name="darwin"
-        target_dir="/usr/local/komari"  # Use /usr/local on macOS
+        target_dir="/usr/local/komarix-agent"  # Use /usr/local on macOS
         # Check if we can write to /usr/local, fallback to user directory
         if [ ! -w "/usr/local" ] && [ "$EUID" -ne 0 ]; then
-            target_dir="$HOME/.komari"
+            target_dir="$HOME/.komarix-agent"
             log_info "No write permission to /usr/local, using user directory: $target_dir"
         fi
         ;;
@@ -68,7 +68,7 @@ case $os_type in
         ;;
     MINGW*|MSYS*|CYGWIN*)
         os_name="windows"
-        target_dir="/c/komari"  # Use C:\komari on Windows
+        target_dir="/c/komarix-agent"  # Use C:\komari on Windows
         ;;
     *)
         log_error "Unsupported operating system: $os_type"
@@ -77,7 +77,7 @@ case $os_type in
 esac
 
 # Parse install-specific arguments
-komari_args=""
+komarix_args=""
 # [[ ]] -> [ ] (POSIX)
 while [ $# -gt 0 ]; do
     case $1 in
@@ -107,26 +107,26 @@ while [ $# -gt 0 ]; do
             shift
             ;;
         *)
-            # Non-install arguments go to komari_args
-            komari_args="$komari_args $1"
+            # Non-install arguments go to komarix_args
+            komarix_args="$komarix_args $1"
             shift
             ;;
     esac
 done
 
-# Remove leading space from komari_args if present
-komari_args="${komari_args# }"
+# Remove leading space from komarix_args if present
+komarix_args="${komarix_args# }"
 
 # A direct, unprivileged installation belongs entirely to the invoking user.
 if [ "$EUID" -ne 0 ] && [ "$install_dir_specified" = false ]; then
     case "$os_name" in
         linux|freebsd)
-            target_dir="${XDG_DATA_HOME:-$HOME/.local/share}/komari"
+            target_dir="${XDG_DATA_HOME:-$HOME/.local/share}/komarix-agent"
             ;;
     esac
 fi
 
-komari_agent_path="${target_dir}/agent"
+komarix_agent_path="${target_dir}/agent"
 
 # User services are the only service type a non-root Linux installation can manage.
 if [ "$EUID" -ne 0 ] && [ "$os_name" = "linux" ]; then
@@ -148,7 +148,7 @@ log_config "  Service name: ${GREEN}$service_name${NC}"
 log_config "  Service user: ${GREEN}$service_user${NC}"
 log_config "  Install directory: ${GREEN}$target_dir${NC}"
 log_config "  GitHub proxy: ${GREEN}${github_proxy:-(direct)}${NC}"
-log_config "  Binary arguments: ${GREEN}$komari_args${NC}"
+log_config "  Binary arguments: ${GREEN}$komarix_args${NC}"
 if [ -n "$install_version" ]; then
     log_config "  Specified agent version: ${GREEN}$install_version${NC}"
 else
@@ -191,8 +191,8 @@ uninstall_previous() {
         rm -f "/etc/init/${service_name}.conf"
     elif [ "$os_name" = "darwin" ] && command -v launchctl >/dev/null 2>&1; then
         # macOS launchd service - check both system and user locations
-        system_plist="/Library/LaunchDaemons/com.komari.${service_name}.plist"
-        user_plist="$HOME/Library/LaunchAgents/com.komari.${service_name}.plist"
+        system_plist="/Library/LaunchDaemons/com.komarix.${service_name}.plist"
+        user_plist="$HOME/Library/LaunchAgents/com.komarix.${service_name}.plist"
         
         if [ -f "$system_plist" ]; then
             log_info "Stopping and removing existing system launchd service..."
@@ -208,13 +208,38 @@ uninstall_previous() {
     fi
     
     # Remove old binary if it exists
-    if [ -f "$komari_agent_path" ]; then
+    if [ -f "$komarix_agent_path" ]; then
         log_info "Removing old binary..."
-        rm -f "$komari_agent_path"
+        rm -f "$komarix_agent_path"
     fi
 }
 
+# Remove a legacy Komari Agent installation when switching to KomariX names.
+cleanup_legacy_previous() {
+    legacy_service_name="komari-agent"
+    if [ "$legacy_service_name" = "$service_name" ]; then
+        return
+    fi
+
+    if [ "$user_service" = true ]; then
+        if systemctl --user list-unit-files 2>/dev/null | grep -q "${legacy_service_name}.service"; then
+            systemctl --user stop "${legacy_service_name}.service" 2>/dev/null || true
+            systemctl --user disable "${legacy_service_name}.service" 2>/dev/null || true
+            rm -f "${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/${legacy_service_name}.service"
+            systemctl --user daemon-reload 2>/dev/null || true
+        fi
+    elif command -v systemctl >/dev/null 2>&1 && systemctl list-unit-files 2>/dev/null | grep -q "${legacy_service_name}.service"; then
+        systemctl stop "${legacy_service_name}.service" 2>/dev/null || true
+        systemctl disable "${legacy_service_name}.service" 2>/dev/null || true
+        rm -f "/etc/systemd/system/${legacy_service_name}.service"
+        systemctl daemon-reload 2>/dev/null || true
+    fi
+
+    rm -f "/opt/komari/agent" 2>/dev/null || true
+}
+
 # Uninstall previous installation
+cleanup_legacy_previous
 uninstall_previous
 
 install_dependencies() {
@@ -319,7 +344,7 @@ case $arch in
 esac
 log_info "Detected OS: ${GREEN}$os_name${NC}, Architecture: ${GREEN}$arch${NC}"
 
-file_name="komari-agent-${os_name}-${arch}"
+file_name="komarix-agent-${os_name}-${arch}"
 
 resolve_snapshot_version() {
     snapshot_api_url="https://api.github.com/repos/kkx999/KomariX/releases?per_page=100"
@@ -332,7 +357,7 @@ resolve_snapshot_version() {
     for api_url in $snapshot_api_urls; do
         if ! releases_json=$(curl -fsSL --connect-timeout 15 \
             -H "Accept: application/vnd.github+json" \
-            -H "User-Agent: komari-agent-installer" \
+            -H "User-Agent: komarix-agent-installer" \
             "$api_url"); then
             releases_json=""
         fi
@@ -412,11 +437,11 @@ dl_ok=""
 for u in $download_urls; do
     log_step "Downloading $file_name ..."
     log_info "URL: ${CYAN}$u${NC}"
-    if curl -fL --connect-timeout 15 -o "$komari_agent_path" "$u" && [ -s "$komari_agent_path" ]; then
+    if curl -fL --connect-timeout 15 -o "$komarix_agent_path" "$u" && [ -s "$komarix_agent_path" ]; then
         dl_ok=1
         break
     fi
-    rm -f "$komari_agent_path"
+    rm -f "$komarix_agent_path"
 done
 
 if [ -z "$dl_ok" ]; then
@@ -426,11 +451,11 @@ if [ -z "$dl_ok" ]; then
 fi
 
 # Set executable permissions
-chmod +x "$komari_agent_path"
+chmod +x "$komarix_agent_path"
 if [ "$EUID" -eq 0 ] && [ "$service_user" != "root" ]; then
-    chown "$service_user" "$komari_agent_path"
+    chown "$service_user" "$komarix_agent_path"
 fi
-log_success "KomariX Agent installed to ${GREEN}$komari_agent_path${NC}"
+log_success "KomariX Agent installed to ${GREEN}$komarix_agent_path${NC}"
 
 # Detect init system and configure service
 log_step "Configuring system service..."
@@ -541,7 +566,7 @@ if [ "$init_system" = "nixos" ]; then
     echo -e "${CYAN}  wantedBy = [ \"multi-user.target\" ];${NC}"
     echo -e "${CYAN}  serviceConfig = {${NC}"
     echo -e "${CYAN}    Type = \"simple\";${NC}"
-    echo -e "${CYAN}    ExecStart = \"${komari_agent_path} ${komari_args}\";${NC}"
+    echo -e "${CYAN}    ExecStart = \"${komarix_agent_path} ${komarix_args}\";${NC}"
     echo -e "${CYAN}    WorkingDirectory = \"${target_dir}\";${NC}"
     echo -e "${CYAN}    Restart = \"always\";${NC}"
     echo -e "${CYAN}    User = \"${service_user}\";${NC}"
@@ -559,8 +584,8 @@ elif [ "$init_system" = "openrc" ]; then
 
 name="KomariX Agent Service"
 description="Komari monitoring agent"
-command="${komari_agent_path}"
-command_args="${komari_args}"
+command="${komarix_agent_path}"
+command_args="${komarix_args}"
 command_user="${service_user}"
 directory="${target_dir}"
 pidfile="/run/${service_name}.pid"
@@ -590,7 +615,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=${komari_agent_path} ${komari_args}
+ExecStart=${komarix_agent_path} ${komarix_args}
 WorkingDirectory=${target_dir}
 Restart=always
 
@@ -611,7 +636,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=${komari_agent_path} ${komari_args}
+ExecStart=${komarix_agent_path} ${komarix_args}
 WorkingDirectory=${target_dir}
 Restart=always
 User=${service_user}
@@ -637,8 +662,8 @@ STOP=10
 
 USE_PROCD=1
 
-PROG="${komari_agent_path}"
-ARGS="${komari_args}"
+PROG="${komarix_agent_path}"
+ARGS="${komarix_args}"
 
 start_service() {
     procd_open_instance
@@ -682,7 +707,7 @@ elif [ "$init_system" = "launchd" ]; then
     if [ "$is_user_install" = true ]; then
         # User-level service (LaunchAgent)
         plist_dir="$HOME/Library/LaunchAgents"
-        plist_file="$plist_dir/com.komari.${service_name}.plist"
+        plist_file="$plist_dir/com.komarix.${service_name}.plist"
         log_info "Installing as user-level service (LaunchAgent)"
         mkdir -p "$plist_dir"
         service_user="$(whoami)"
@@ -690,7 +715,7 @@ elif [ "$init_system" = "launchd" ]; then
     else
         # System-level service (LaunchDaemon)
         plist_dir="/Library/LaunchDaemons"
-        plist_file="$plist_dir/com.komari.${service_name}.plist"
+        plist_file="$plist_dir/com.komarix.${service_name}.plist"
         log_info "Installing as system-level service (LaunchDaemon)"
         log_dir="/var/log"
     fi
@@ -702,15 +727,15 @@ elif [ "$init_system" = "launchd" ]; then
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.komari.${service_name}</string>
+    <string>com.komarix.${service_name}</string>
     <key>ProgramArguments</key>
     <array>
-        <string>${komari_agent_path}</string>
+        <string>${komarix_agent_path}</string>
 EOF
     
     # Add program arguments if provided
-    if [ -n "$komari_args" ]; then
-        echo "$komari_args" | xargs -n1 printf "        <string>%s</string>\n" >> "$plist_file"
+    if [ -n "$komarix_args" ]; then
+        echo "$komarix_args" | xargs -n1 printf "        <string>%s</string>\n" >> "$plist_file"
     fi
     
     cat >> "$plist_file" << EOF
@@ -770,12 +795,12 @@ console none
 setuid ${service_user}
 
 pre-start script
-    test -x ${komari_agent_path} || { stop; exit 0; }
+    test -x ${komarix_agent_path} || { stop; exit 0; }
 end script
 
 # Start
 script
-    exec ${komari_agent_path} ${komari_args}
+    exec ${komarix_agent_path} ${komarix_args}
 end script
 EOF
     # enable Upstart unit
@@ -798,7 +823,7 @@ else
     log_success "KomariX Agent installation completed!"
 fi
 log_config "Service: ${GREEN}$service_name${NC}"
-log_config "Arguments: ${GREEN}$komari_args${NC}"
+log_config "Arguments: ${GREEN}$komarix_args${NC}"
 echo -e "${WHITE}===========================================${NC}"
 
 
