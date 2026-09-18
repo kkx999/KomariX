@@ -17,7 +17,7 @@ jobs:
       #- name: Create dummy index.html
       #  run: |
       #    mkdir -p web/public/defaultTheme/dist
-      #    echo "<html><body><h1>This is komari development server.</h1></body></html>" > web/public/defaultTheme/dist/index.html
+      #    echo "<html><body><h1>This is KomariX development server.</h1></body></html>" > web/public/defaultTheme/dist/index.html
 
       - name: Clone and build frontend
         uses: ./.github/actions/build-frontend
@@ -33,13 +33,13 @@ jobs:
           GOARCH: amd64
         run: |
           VERSION_SHA="${{ github.sha }}"
-          go build -ldflags "-X github.com/kkx999/KomariX/utils.CurrentVersion=dev -X github.com/kkx999/KomariX/utils.VersionHash=${VERSION_SHA}" -o komari .
+          go build -ldflags "-X github.com/kkx999/KomariX/utils.CurrentVersion=dev -X github.com/kkx999/KomariX/utils.VersionHash=${VERSION_SHA}" -o komarix .
 
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: komari
-          path: komari
+          name: komarix
+          path: komarix
 
   deploy-to-production:
     needs: build-binaries
@@ -52,7 +52,7 @@ jobs:
       - name: Download binary
         uses: actions/download-artifact@v4
         with:
-          name: komari
+          name: komarix
 
       - name: Setup SSH Key
         uses: webfactory/ssh-agent@v0.8.0
@@ -66,10 +66,10 @@ jobs:
 
       - name: Deploy to production
         run: |
-          chmod +x komari
-          ssh root@${{ env.PRODUCTION_SERVER }} 'mkdir -p /opt/komari/'
-          ssh root@${{ env.PRODUCTION_SERVER }} 'systemctl stop komari.service || true'
-          ssh root@${{ env.PRODUCTION_SERVER }} 'rm -f /opt/komari/komari.old'
-          ssh root@${{ env.PRODUCTION_SERVER }} 'mv /opt/komari/komari /opt/komari/komari.old || true'
-          scp komari root@${{ env.PRODUCTION_SERVER }}:/opt/komari/komari
-          ssh root@${{ env.PRODUCTION_SERVER }} 'systemctl start komari.service'
+          chmod +x komarix
+          ssh root@${{ env.PRODUCTION_SERVER }} 'mkdir -p /opt/komarix/'
+          ssh root@${{ env.PRODUCTION_SERVER }} 'systemctl stop komarix.service || true'
+          ssh root@${{ env.PRODUCTION_SERVER }} 'rm -f /opt/komarix/komarix.old'
+          ssh root@${{ env.PRODUCTION_SERVER }} 'mv /opt/komarix/komarix /opt/komarix/komarix.old || true'
+          scp komarix root@${{ env.PRODUCTION_SERVER }}:/opt/komarix/komari
+          ssh root@${{ env.PRODUCTION_SERVER }} 'systemctl start komarix.service'
