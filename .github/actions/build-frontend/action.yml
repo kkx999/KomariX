@@ -25,10 +25,15 @@ runs:
         mkdir -p .build
         cp -a vendor/komari-web .build/komari-web
 
-        # Route Agent install commands to KomariX-owned installers.
+        # Route Agent install commands and project links to KomariX-owned resources.
         find .build/komari-web/src -type f \( -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' \) -print0 | \
           xargs -0 -r sed -i \
-            's#https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/#https://raw.githubusercontent.com/kkx999/KomariX/main/agent/#g'
+            -e 's#https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/#https://raw.githubusercontent.com/kkx999/KomariX/main/agent/#g' \
+            -e 's#https://raw.githubusercontent.com/komari-monitor/komari/refs/heads/main/README.md#https://raw.githubusercontent.com/kkx999/KomariX/main/README.md#g' \
+            -e 's#https://github.com/komari-monitor/komari/blob/main/README.md#https://github.com/kkx999/KomariX/blob/main/README.md#g' \
+            -e 's#https://api.github.com/repos/komari-monitor/komari/releases#https://api.github.com/repos/kkx999/KomariX/releases#g' \
+            -e 's#https://github.com/komari-monitor"#https://github.com/kkx999/KomariX"#g' \
+            -e 's#ghcr.io/komari-monitor/komari-agent:latest#ghcr.io/kkx999/komarix-agent:latest#g'
 
         cd .build/komari-web
         npm install
@@ -52,7 +57,10 @@ runs:
         mkdir -p web/public/defaultTheme/dist
         cp -r .build/komari-web/dist/* web/public/defaultTheme/dist/
         cp -f .build/komari-web/komari-theme.json web/public/defaultTheme/
-        sed -i 's/Komari/KomariX/g' web/public/defaultTheme/komari-theme.json
+        sed -i \
+          -e 's/Komari/KomariX/g' \
+          -e 's#https://github.com/komari-monitor/komari-web#https://github.com/kkx999/KomariX#g' \
+          web/public/defaultTheme/komari-theme.json
         if [ -f .build/komari-web/preview.png ]; then cp -f .build/komari-web/preview.png web/public/defaultTheme/; fi
         if [ -f .build/komari-web/perview.png ]; then cp -f .build/komari-web/perview.png web/public/defaultTheme/; fi
         if [ -f web/public/defaultTheme/preview.png ] && [ ! -f web/public/defaultTheme/perview.png ]; then cp -f web/public/defaultTheme/preview.png web/public/defaultTheme/perview.png; fi
