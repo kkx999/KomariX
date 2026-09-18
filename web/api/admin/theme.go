@@ -162,7 +162,7 @@ func DeleteTheme(c *gin.Context) {
 	}
 
 	// 校验主题短名称，防止路径穿越（如 ../）导致删除工作目录外的任意文件
-	if !isValidMarketShort(req.Short) {
+	if !isValidThemeShort(req.Short) {
 		api.RespondError(c, http.StatusBadRequest, "无效的主题名称")
 		return
 	}
@@ -195,7 +195,7 @@ func SetTheme(c *gin.Context) {
 	// 非内置主题需要检查本地主题目录。
 	if themeName != public.DefaultTheme && themeName != public.DefaultPublicTheme {
 		// 校验主题名称，防止路径穿越（如 ../）访问工作目录外的文件
-		if !isValidMarketShort(themeName) {
+		if !isValidThemeShort(themeName) {
 			api.RespondError(c, http.StatusBadRequest, "无效的主题名称")
 			return
 		}
@@ -380,26 +380,38 @@ func validateThemeManifest(themeInfo models.Theme) error {
 	if !models.IsLocalizedText(themeInfo.Name) || themeInfo.Short == "" {
 		return fmt.Errorf("主题配置缺少必填字段（name、short）")
 	}
-	if !isValidMarketShort(themeInfo.Short) {
-		return fmt.Errorf("主题short字段格式无效，只允许字母、数字、下划线和连字符")
+	if !isValidThemeShort(themeInfo.Short) {
+		return fmt.Errorf("主题short字段格式无效，只允许字母、数字、点、下划线和连字符")
 	}
 	return themeInfo.ValidateConfiguration()
 }
 
-// isValidMarketShort validates a market entry short name (shared by the
-// theme and plugin markets).
-func isValidMarketShort(short string) bool {
-	if short == "" || short == "default" {
+func isValidThemeShort(short string) bool {
+	if short == "" || short == "." || short == ".." || strings.EqualFold(short, "default") {
 		return false
 	}
+	for _, r := range short {
+		if !((r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') ||
+			(r >= '0' && r <= '9') || r == '_' || r == '-' || r == '.') {
+			return false
+		}
+	}
+	return true
+}
 
+// isValidMarketShort keeps plugin Short IDs on the stricter legacy-safe
+// character set. Theme Short IDs use isValidThemeShort so old themes with
+// dots remain compatible without allowing path separators or traversal.
+func isValidMarketShort(short string) bool {
+	if short == "" || strings.EqualFold(short, "default") {
+		return false
+	}
 	for _, r := range short {
 		if !((r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') ||
 			(r >= '0' && r <= '9') || r == '_' || r == '-') {
 			return false
 		}
 	}
-
 	return true
 }
 
@@ -588,7 +600,7 @@ func UpdateTheme(c *gin.Context) {
 	}
 
 	// 校验主题短名称，防止路径穿越（如 ../）访问工作目录外的文件
-	if !isValidMarketShort(req.Short) {
+	if !isValidThemeShort(req.Short) {
 		api.RespondError(c, http.StatusBadRequest, "无效的主题名称")
 		return
 	}
