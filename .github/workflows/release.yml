@@ -14,6 +14,7 @@ env:
 
 jobs:
   resolve-release:
+    if: ${{ (startsWith(github.event.release.tag_name, 'v') && !github.event.release.prerelease) || startsWith(github.event.release.tag_name, 'Snapshot-') }}
     runs-on: ubuntu-latest
     outputs:
       frontend_ref: ${{ steps.release.outputs.frontend_ref }}
@@ -101,7 +102,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.23"
+          go-version-file: go.mod
 
       - name: Install Zig cross-compiler toolchain
         uses: ./.github/actions/setup-zig
@@ -263,7 +264,7 @@ jobs:
           provenance: false
 
       - name: Promote Docker latest tag
-        if: steps.release.outputs.is_latest == 'true'
+        if: ${{ startsWith(github.event.release.tag_name, 'v') && !github.event.release.prerelease && steps.release.outputs.is_latest == 'true' }}
         env:
           TAG: ${{ github.event.release.tag_name }}
         run: docker buildx imagetools create --tag "${REGISTRY}/${IMAGE_NAME}:latest" "${REGISTRY}/${IMAGE_NAME}:${TAG}"
