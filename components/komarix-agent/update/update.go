@@ -23,12 +23,13 @@ var ErrRestartRequired = errors.New("update installed; restart required")
 
 var (
 	CurrentVersion string = "0.0.1"
-	Repo           string = "komari-monitor/komari-agent"
+	Repo           string = "kkx999/KomariX"
 )
 
 const (
 	snapshotVersionPrefix = "Snapshot-"
-	containerMarkerPath   = "/.komari-agent-container"
+	containerMarkerPath   = "/.komarix-agent-container"
+	legacyContainerMarkerPath = "/.komari-agent-container"
 	githubAPIBaseURL      = "https://api.github.com"
 )
 
@@ -95,7 +96,7 @@ func detectBuildTrack(version string) buildTrack {
 }
 
 func expectedAssetName(goos, goarch string) string {
-	name := fmt.Sprintf("komari-agent-%s-%s", goos, goarch)
+	name := fmt.Sprintf("komarix-agent-%s-%s", goos, goarch)
 	if goos == "windows" {
 		name += ".exe"
 	}
@@ -150,7 +151,10 @@ func snapshotNeedsUpdate(currentVersion string, latest snapshotReleaseCandidate)
 }
 
 func isContainerAgent() bool {
-	_, err := os.Stat(containerMarkerPath)
+	if _, err := os.Stat(containerMarkerPath); err == nil {
+		return true
+	}
+	_, err := os.Stat(legacyContainerMarkerPath)
 	return err == nil
 }
 
@@ -179,7 +183,7 @@ func listGitHubReleases(owner, repo string) ([]githubRelease, error) {
 		}
 
 		req.Header.Set("Accept", "application/vnd.github+json")
-		req.Header.Set("User-Agent", "komari-agent")
+		req.Header.Set("User-Agent", "komarix-agent")
 		if token := os.Getenv("GITHUB_TOKEN"); token != "" {
 			req.Header.Set("Authorization", "Bearer "+token)
 		}
