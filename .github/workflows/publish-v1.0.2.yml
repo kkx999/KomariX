@@ -1,4 +1,5 @@
 name: Verify and publish KomariX v1.0.2
+# final-build-1
 # retry: pinned dependency and TypeScript literal compatibility
 
 on:
