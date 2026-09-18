@@ -94,7 +94,7 @@ jobs:
         run: |
           go build -trimpath \
             -ldflags="-s -w -X github.com/kkx999/KomariX/utils.CurrentVersion=${VERSION} -X github.com/kkx999/KomariX/utils.VersionHash=${GITHUB_SHA}" \
-            -o /tmp/komari-linux-amd64 .
+            -o /tmp/komarix-linux-amd64 .
 
   build-panel:
     needs: [build-frontends, test-panel]
@@ -167,7 +167,7 @@ jobs:
           GIN_MODE: release
         shell: bash
         run: |
-          BINARY_NAME="komari-${GOOS}-${GOARCH}${{ matrix.binary_extension }}"
+          BINARY_NAME="komarix-${GOOS}-${GOARCH}${{ matrix.binary_extension }}"
           go build -trimpath \
             -ldflags="-s -w -X github.com/kkx999/KomariX/utils.CurrentVersion=${VERSION} -X github.com/kkx999/KomariX/utils.VersionHash=${GITHUB_SHA}" \
             -o "$BINARY_NAME" .
@@ -176,7 +176,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: panel-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: komari-${{ matrix.goos }}-${{ matrix.goarch }}*
+          path: komarix-${{ matrix.goos }}-${{ matrix.goarch }}*
 
   build-agent:
     needs: test-panel
@@ -215,19 +215,21 @@ jobs:
         shell: bash
         run: |
           cd components/komarix-agent
-          BINARY_NAME="komari-agent-${GOOS}-${GOARCH}"
+          BINARY_NAME="komarix-agent-${GOOS}-${GOARCH}"
           if [ "${GOOS}" = "windows" ]; then
             BINARY_NAME="${BINARY_NAME}.exe"
           fi
           go build -trimpath \
             -ldflags="-s -w -X github.com/komari-monitor/komari-agent/update.CurrentVersion=${VERSION} -X github.com/komari-monitor/komari-agent/update.Repo=kkx999/KomariX" \
             -o "../../${BINARY_NAME}" .
+          LEGACY_NAME="${BINARY_NAME/komarix-agent-/komari-agent-}"
+          cp "../../${BINARY_NAME}" "../../${LEGACY_NAME}"
 
       - name: Upload Agent artifact
         uses: actions/upload-artifact@v4
         with:
           name: agent-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: komari-agent-${{ matrix.goos }}-${{ matrix.goarch }}*
+          path: komarix-agent-${{ matrix.goos }}-${{ matrix.goarch }}*
 
   publish:
     needs: [build-panel, build-agent]
@@ -258,7 +260,7 @@ jobs:
             --target "$GITHUB_SHA" \
             --title "KomariX v1.0.2" \
             --notes "KomariX v1.0.2：完成独立化。内置并默认使用 PurCarte v1.2.5 的 KomariX 品牌版本；前端、Agent 与 PurCarte 源码已固定归档；Agent 安装与自更新改由 KomariX Release 提供；主题和插件市场默认使用 KomariX 镜像索引。保留 Komari 1.4.3 兼容逻辑与原始开源许可证。" \
-            artifacts/komari-*
+            artifacts/komari*
 
   publish-agent-docker:
     needs: publish
