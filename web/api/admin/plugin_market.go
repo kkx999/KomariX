@@ -363,7 +363,7 @@ func fetchPluginMarketCatalog(source PluginMarketSource, force bool) ([]PluginMa
 		}
 		plugins[i].SHA256 = strings.TrimPrefix(strings.ToLower(plugins[i].SHA256), "sha256:")
 		plugins[i].Installable = plugins[i].Download != "" && plugins[i].SHA256 != "" &&
-			plugin.CheckKomariVersion(plugins[i].KomariX) == nil
+			plugin.CheckKomariXVersion(plugins[i].KomariX) == nil
 		plugins[i].SourceID = source.ID
 		plugins[i].SourceName = source.Name
 	}
