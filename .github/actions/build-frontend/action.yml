@@ -25,24 +25,11 @@ runs:
         mkdir -p .build
         cp -a components/komarix-web .build/komarix-web
 
-        # Route Agent install commands and project links to KomariX-owned resources.
-        find .build/komarix-web/src -type f \( -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' \) -print0 | \
-          xargs -0 -r sed -i \
-            -e 's#https://raw.githubusercontent.com/kkx999/KomariX/main/agent/#https://raw.githubusercontent.com/kkx999/KomariX/main/agent/#g' \
-            -e 's#https://raw.githubusercontent.com/kkx999/KomariX/main/README.md#https://raw.githubusercontent.com/kkx999/KomariX/main/README.md#g' \
-            -e 's#https://github.com/kkx999/KomariX/blob/main/README.md#https://github.com/kkx999/KomariX/blob/main/README.md#g' \
-            -e 's#https://api.github.com/repos/kkx999/KomariX/releases#https://api.github.com/repos/kkx999/KomariX/releases#g' \
-            -e 's#https://github.com/komari-monitor"#https://github.com/kkx999/KomariX"#g' \
-            -e 's#ghcr.io/kkx999/komarix-agent:latest#ghcr.io/kkx999/komarix-agent:latest#g'
-
         cd .build/komarix-web
         npm install
         npm run build
         cd ../..
 
-        # Visible KomariX branding only; keep application behavior intact.
-        find .build/komarix-web/dist -type f \( -name '*.js' -o -name '*.html' -o -name '*.json' -o -name '*.css' -o -name '*.webmanifest' \) -print0 | \
-          xargs -0 -r sed -i 's/Komari/KomariX/g'
 
         mkdir -p .build/komarix-web/dist/assets
         cp -f docs/komarix.svg .build/komarix-web/dist/assets/komarix.svg
@@ -80,16 +67,13 @@ runs:
         # Use KomariX logo/title in the built-in copy.
         find .build/komarix-theme-purcarte/src -type f \( -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' \) -print0 | \
           xargs -0 -r sed -i \
-            -e 's#/assets/logo\.png#/assets/komarix.svg#g' \
-            -e 's/Komari/KomariX/g'
+            -e 's#/assets/logo\.png#/assets/komarix.svg#g'
 
         cd .build/komarix-theme-purcarte
         npm install
         npm run build
         cd ../..
 
-        find .build/komarix-theme-purcarte/dist -type f \( -name '*.js' -o -name '*.html' -o -name '*.json' -o -name '*.css' -o -name '*.webmanifest' \) -print0 | \
-          xargs -0 -r sed -i 's/Komari/KomariX/g'
 
         rm -rf web/public/purcarteTheme
         mkdir -p web/public/purcarteTheme/dist
