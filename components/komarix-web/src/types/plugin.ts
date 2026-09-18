@@ -51,7 +51,7 @@ export interface PluginInfo {
   version: string;
   url?: string;
   icon?: string;
-  komari?: string;
+  komarix?: string;
   entry?: string;
   permissions?: PluginPermissions;
   configuration?: PluginConfiguration;
