@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updated_at": "2026-09-18T16:30:13.111Z",
+  "updated_at": "2026-09-18T16:30:29.838Z",
   "themes": [
     {
       "name": {
@@ -138,21 +138,6 @@
       "upstream_download": "https://github.com/jacob-bytes/komari-theme-ink/releases/download/v0.6.11/ink-build-f554e7f.zip",
       "upstream_preview": "https://raw.githubusercontent.com/jacob-bytes/komari-theme-ink/main/docs/preview.png",
       "preview_sha256": "266d667a74414a6f349923e2ed441188d864298c396321267d1f25300b0e760a",
-      "komarix_branding": true
-    },
-    {
-      "name": "junimo",
-      "short": "Junimo",
-      "description": "junimo",
-      "version": "2.0.2",
-      "author": "Planck",
-      "url": "https://github.com/vaspike/junimo",
-      "preview": "https://github.com/kkx999/KomariX/releases/download/v1.0.0/preview-16-Junimo-2.0.2-92fa50d690b7.png",
-      "download": "https://github.com/kkx999/KomariX/releases/download/v1.0.0/theme-16-Junimo-2.0.2-8e062066a54d.zip",
-      "sha256": "8e062066a54dc5953a87a542c4843a34fbd33a91f0ee1ac27bcec4501d5848e6",
-      "upstream_download": "https://github.com/vaspike/junimo/releases/download/v2.0.2/junimo-v2.0.2.zip",
-      "upstream_preview": "https://nyx.rivermao.com/img/nomal/a4f393.png",
-      "preview_sha256": "92fa50d690b7590b9f64cfaaf022167ac2b2bbdcd82a4ea0af0ef6adb0f7118b",
       "komarix_branding": true
     },
     {
