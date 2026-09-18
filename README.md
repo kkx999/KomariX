@@ -84,9 +84,9 @@ http://服务器IP:25774
 
 ## 版本说明
 
-KomariX 当前正式版本为 **v1.0.1**。
+KomariX 当前正式版本为 **v1.0.0**。
 
-v1.0.1 进一步统一 KomariX 自有代码、主题清单、插件清单、市场字段、Web 运行时标识与用户可见品牌。KomariX 原生主题使用 `komarix-theme.json`，原生插件使用 `komarix-plugin.json` 和 `komarix` 版本字段；第三方旧格式仍可兼容读取并在安装后归一为 KomariX 格式。默认主题为基于 **PurCarte v1.2.5** 修改的 KomariX 内置版本，原作者署名与 MIT License 保留不变。
+v1.0.0 进一步统一 KomariX 自有代码、主题清单、插件清单、市场字段、Web 运行时标识与用户可见品牌。KomariX 原生主题使用 `komarix-theme.json`，原生插件使用 `komarix-plugin.json` 和 `komarix` 版本字段；第三方旧格式仍可兼容读取并在安装后归一为 KomariX 格式。默认主题为基于 **PurCarte v1.2.5** 修改的 KomariX 内置版本，原作者署名与 MIT License 保留不变。
 
 ## 数据与目录
 
