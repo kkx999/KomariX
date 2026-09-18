@@ -40,7 +40,7 @@ func GetPublicInfo() (map[string]interface{}, error) {
 		cst.Description = "KomariX Monitor, a simple server monitoring tool."
 	}
 	if !hasKey("theme") {
-		cst.Theme = "default"
+		cst.Theme = public.DefaultPublicTheme
 	}
 	if !hasKey("o_auth_provider") {
 		cst.OAuthProvider = "github"
@@ -106,8 +106,13 @@ func GetPublicInfo() (map[string]interface{}, error) {
 
 func themeConfigurationItems(short string) []models.ManagedThemeConfigurationItem {
 	var manifest models.Theme
-	if short == "default" {
+	if short == public.DefaultTheme {
 		data, err := public.PublicFS.ReadFile("defaultTheme/komari-theme.json")
+		if err != nil || json.Unmarshal(data, &manifest) != nil {
+			return nil
+		}
+	} else if short == public.DefaultPublicTheme {
+		data, err := public.PublicFS.ReadFile("purcarteTheme/komari-theme.json")
 		if err != nil || json.Unmarshal(data, &manifest) != nil {
 			return nil
 		}
