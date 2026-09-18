@@ -1,6 +1,6 @@
 (function () {
 	"use strict";
-	const bridge = globalThis.__komariXHRBridge;
+	const bridge = globalThis.__komarixXHRBridge;
 	const nativeFetchSync = bridge.nativeFetchSync;
 	const bodyText = bridge.bodyText;
 	const nativeRequest = bridge.nativeRequest;
@@ -246,5 +246,5 @@
 	globalThis.XMLHttpRequest = XMLHttpRequest;
 	globalThis.XMLHttpRequestEventTarget = EventTarget;
 	globalThis.XMLHttpRequestUpload = XMLHttpRequestUpload;
-	delete globalThis.__komariXHRBridge;
+	delete globalThis.__komarixXHRBridge;
 })();
