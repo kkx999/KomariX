@@ -32,7 +32,6 @@ jobs:
         with:
           script: |
             const { owner, repo } = context.repo;
-            const webRepo = { owner: "komari-monitor", repo: "komari-web" };
 
             const AI_CONTEXT_CHAR_LIMIT = 120000;
             const AI_MAX_COMMITS = 160;
@@ -516,36 +515,8 @@ jobs:
               }
             }
 
-            async function buildWebReleaseSection(tag) {
-              const demoteMarkdownHeadings = (markdown) => markdown.replace(/^(#{1,5})(\s+)/gm, "#$1$2");
-
-              try {
-                const webRelease = (await github.rest.repos.getReleaseByTag({
-                  owner: webRepo.owner,
-                  repo: webRepo.repo,
-                  tag,
-                })).data;
-
-                const webBody = clean(webRelease.body);
-                if (!webBody) {
-                  return `## KomariX Web Release Notes\n\nKomari Web release [${tag}](${webRelease.html_url}) exists, but its release notes are empty.`;
-                }
-
-                return [
-                  "## KomariX Web Release Notes",
-                  "",
-                  `Source: [komari-web ${tag}](${webRelease.html_url})`,
-                  "",
-                  demoteMarkdownHeadings(webBody),
-                ].join("\n");
-              } catch (error) {
-                if (error.status === 404) {
-                  core.info(`KomariX Web release ${tag} does not exist yet. Skipping web release notes for now.`);
-                  return "";
-                }
-
-                throw error;
-              }
+            async function buildWebReleaseSection() {
+              return "";
             }
 
             const { tag, release } = await resolveRelease();
@@ -576,7 +547,7 @@ jobs:
               return;
             }
 
-            const webReleaseSection = await buildWebReleaseSection(tag);
+            const webReleaseSection = await buildWebReleaseSection();
             const releaseSummarySection = await buildReleaseSummarySection({
               tag,
               release,
