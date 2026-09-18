@@ -15,7 +15,7 @@ import (
 	"github.com/kkx999/KomariX/internal/config"
 )
 
-//go:embed defaultTheme
+//go:embed defaultTheme purcarteTheme
 var PublicFS embed.FS
 
 // 常量定义
@@ -24,6 +24,7 @@ const (
 	ThemesDir          = "theme"
 	FaviconFile        = "favicon.ico"
 	DefaultTheme       = "default"
+	DefaultPublicTheme = "PurCarte"
 	LanguageCookieName = "language"
 
 	// 主题内部结构定义
@@ -129,6 +130,10 @@ func static(r *gin.RouterGroup, noRoute func(handlers ...gin.HandlerFunc), force
 	if err != nil {
 		panic("you may forget to put dist of frontend to web/public/defaultTheme/dist")
 	}
+	purcarteThemeFS, err := fs.Sub(PublicFS, "purcarteTheme")
+	if err != nil {
+		panic("you may forget to put PurCarte dist to web/public/purcarteTheme/dist")
+	}
 
 	getConfig := func() map[string]any {
 		cfg, _ := config.GetMany(map[string]any{
@@ -136,7 +141,7 @@ func static(r *gin.RouterGroup, noRoute func(handlers ...gin.HandlerFunc), force
 			config.CustomHeadKey:  "",
 			config.CustomBodyKey:  "",
 			config.SitenameKey:    "KomariX Monitor",
-			config.ThemeKey:       DefaultTheme,
+			config.ThemeKey:       DefaultPublicTheme,
 		})
 		return cfg
 	}
@@ -171,9 +176,19 @@ func static(r *gin.RouterGroup, noRoute func(handlers ...gin.HandlerFunc), force
 			// 本地文件不存在，或读取失败 -> 继续向下回退
 		}
 
-		// 2. 尝试从嵌入式 defaultTheme/{cleanPath} 读取
-		// fs.ReadFile 处理 embed 路径时使用 "/"
+		// 2. 内置 PurCarte 主题
 		embedPath := filepath.ToSlash(cleanPath)
+		if strings.Contains(embedPath, "..") {
+			return nil, "", false
+		}
+		if themeID == DefaultPublicTheme {
+			if content, err := fs.ReadFile(purcarteThemeFS, embedPath); err == nil {
+				return content, mime.TypeByExtension(filepath.Ext(embedPath)), true
+			}
+		}
+
+		// 3. 尝试从嵌入式 defaultTheme/{cleanPath} 读取
+		// fs.ReadFile 处理 embed 路径时使用 "/"
 
 		if strings.Contains(embedPath, "..") {
 			return nil, "", false
