@@ -173,6 +173,23 @@ func static(r *gin.RouterGroup, noRoute func(handlers ...gin.HandlerFunc), force
 					return content, mime.TypeByExtension(filepath.Ext(localPath)), true
 				}
 			}
+			// KomariX 原生使用 komarix-theme.json；第三方旧主题仍可请求旧清单名。
+			var manifestAlias string
+			switch cleanPath {
+			case "komarix-theme.json":
+				manifestAlias = "komari-theme.json"
+			case "komari-theme.json":
+				manifestAlias = "komarix-theme.json"
+			}
+			if manifestAlias != "" {
+				aliasPath := filepath.Join(themeBasePath, manifestAlias)
+				if info, err := os.Stat(aliasPath); err == nil && !info.IsDir() {
+					content, err := os.ReadFile(aliasPath)
+					if err == nil {
+						return content, "application/json", true
+					}
+				}
+			}
 			// 本地文件不存在，或读取失败 -> 继续向下回退
 		}
 
