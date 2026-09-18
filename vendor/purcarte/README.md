@@ -1,10 +1,10 @@
-<div align="center">
+> 原始主题：Montia37/komari-theme-purcarte（MIT License）。本目录为 KomariX 内置修改版，保留原作者署名与许可证。\n\n<div align="center">
 
 <img width="300" src="./preview.png" alt="PurCarte Theme Preview">
 
 ## ✨ PurCarte ✨
 
-一款为 [KomariX](https://github.com/komari-monitor/komari) 设计的磨砂玻璃风格主题。
+一款为 [KomariX](https://github.com/kkx999/KomariX) 设计的磨砂玻璃风格主题。
 
 </div>
 
