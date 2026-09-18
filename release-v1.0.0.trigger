@@ -1,7 +1,7 @@
 Publish final KomariX v1.0.0.
 
-Rebuild after branding typo fix:
-- correct KomariXX to KomariX in all bundled locales
+Rebuild after duplicated branding fix:
+- correct all KomariXX locale strings to KomariX
 - keep installer on built-in KomariX frontend
-- keep public homepage default as PurCarte
-- keep release version at v1.0.0
+- keep PurCarte as the default public theme after installation
+- add branding audit protection against KomariXX regressions
