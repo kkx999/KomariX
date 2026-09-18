@@ -40,7 +40,7 @@ jobs:
       - name: Build frontend artifact
         uses: ./.github/actions/build-frontend
         with:
-          artifact-name: komari-frontend
+          artifact-name: komarix-frontend
 
   build-and-attach-binaries:
     needs: build-frontend
@@ -114,31 +114,34 @@ jobs:
           CC: zig cc -target ${{ matrix.zig_target_triple }}
           GIN_MODE: release
         run: |
-          BINARY_NAME=komari-${{ matrix.goos }}-${{ matrix.goarch }}
+          BINARY_NAME=komarix-${{ matrix.goos }}-${{ matrix.goarch }}
           if [ "${{ matrix.binary_extension }}" != "" ]; then
             BINARY_NAME=${BINARY_NAME}${{ matrix.binary_extension }}
           fi
           VERSION="${{ github.event.release.tag_name }}"
           VERSION_HASH="${{ github.sha }}" # Use commit SHA for hash
           go build -trimpath -ldflags="-s -w -X github.com/kkx999/KomariX/utils.CurrentVersion=${VERSION} -X github.com/kkx999/KomariX/utils.VersionHash=${VERSION_HASH}" -o $BINARY_NAME
+          LEGACY_NAME="${BINARY_NAME/komarix-/komari-}"
+          cp "$BINARY_NAME" "$LEGACY_NAME"
 
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: komari-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: komari-${{ matrix.goos }}-${{ matrix.goarch }}*
+          name: komarix-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: komarix-${{ matrix.goos }}-${{ matrix.goarch }}*
 
       - name: Upload binary to release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Define the binary name for upload
-          BINARY_NAME=komari-${{ matrix.goos }}-${{ matrix.goarch }}
+          BINARY_NAME=komarix-${{ matrix.goos }}-${{ matrix.goarch }}
           if [ "${{ matrix.goos }}" = "windows" ]; then
             BINARY_NAME=${BINARY_NAME}.exe
           fi
           # Upload the binary as a release asset using GitHub CLI
-          gh release upload ${{ github.event.release.tag_name }} $BINARY_NAME --repo ${{ github.repository }}
+          LEGACY_NAME="${BINARY_NAME/komarix-/komari-}"
+          gh release upload ${{ github.event.release.tag_name }} "$BINARY_NAME" "$LEGACY_NAME" --repo ${{ github.repository }} --clobber
         shell: bash
 
   build-and-attach-agent:
@@ -179,24 +182,27 @@ jobs:
         run: |
           set -euxo pipefail
           cd components/komarix-agent
-          BINARY_NAME="komari-agent-${GOOS}-${GOARCH}"
+          BINARY_NAME="komarix-agent-${GOOS}-${GOARCH}"
           if [ "${GOOS}" = "windows" ]; then
             BINARY_NAME="${BINARY_NAME}.exe"
           fi
           go build -trimpath \
             -ldflags="-s -w -X github.com/komari-monitor/komari-agent/update.CurrentVersion=${VERSION} -X github.com/komari-monitor/komari-agent/update.Repo=kkx999/KomariX" \
             -o "../../${BINARY_NAME}" .
+          LEGACY_NAME="${BINARY_NAME/komarix-agent-/komari-agent-}"
+          cp "../../${BINARY_NAME}" "../../${LEGACY_NAME}"
 
       - name: Upload Agent to release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
-          BINARY_NAME="komari-agent-${{ matrix.goos }}-${{ matrix.goarch }}"
+          BINARY_NAME="komarix-agent-${{ matrix.goos }}-${{ matrix.goarch }}"
           if [ "${{ matrix.goos }}" = "windows" ]; then
             BINARY_NAME="${BINARY_NAME}.exe"
           fi
-          gh release upload "${{ github.event.release.tag_name }}" "$BINARY_NAME" --repo "${{ github.repository }}" --clobber
+          LEGACY_NAME="${BINARY_NAME/komarix-agent-/komari-agent-}"
+          gh release upload "${{ github.event.release.tag_name }}" "$BINARY_NAME" "$LEGACY_NAME" --repo "${{ github.repository }}" --clobber
 
   build-and-push-docker:
     needs: build-and-attach-binaries
@@ -212,7 +218,7 @@ jobs:
       - name: Download Docker binaries
         uses: actions/download-artifact@v4
         with:
-          pattern: komari-linux-*
+          pattern: komarix-linux-*
           path: .
           merge-multiple: true
 
