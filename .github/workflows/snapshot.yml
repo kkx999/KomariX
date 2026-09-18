@@ -151,16 +151,12 @@ jobs:
           VERSION="${{ needs.prepare.outputs.version }}"
           VERSION_HASH="${{ github.sha }}" # Use commit SHA for hash
           go build -trimpath -ldflags="-s -w -X github.com/kkx999/KomariX/utils.CurrentVersion=${VERSION} -X github.com/kkx999/KomariX/utils.VersionHash=${VERSION_HASH}" -o $BINARY_NAME
-          LEGACY_NAME="${BINARY_NAME/komarix-/komari-}"
-          cp "$BINARY_NAME" "$LEGACY_NAME"
 
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v4
         with:
           name: komarix-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: |
-            komarix-${{ matrix.goos }}-${{ matrix.goarch }}*
-            komari-${{ matrix.goos }}-${{ matrix.goarch }}*
+          path: komarix-${{ matrix.goos }}-${{ matrix.goarch }}*
 
   build-agent-binaries:
     needs: prepare
@@ -209,16 +205,12 @@ jobs:
           go build -trimpath \
             -ldflags="-s -w -X github.com/kkx999/KomariX/components/komarix-agent/update.CurrentVersion=${VERSION} -X github.com/kkx999/KomariX/components/komarix-agent/update.Repo=kkx999/KomariX" \
             -o "../../${BINARY_NAME}" .
-          LEGACY_NAME="${BINARY_NAME/komarix-agent-/komari-agent-}"
-          cp "../../${BINARY_NAME}" "../../${LEGACY_NAME}"
 
       - name: Upload Agent artifact
         uses: actions/upload-artifact@v4
         with:
           name: agent-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: |
-            komarix-agent-${{ matrix.goos }}-${{ matrix.goarch }}*
-            komari-agent-${{ matrix.goos }}-${{ matrix.goarch }}*
+          path: komarix-agent-${{ matrix.goos }}-${{ matrix.goarch }}*
 
   publish-snapshot-release:
     needs: [prepare, build-and-attach-binaries, build-agent-binaries]
@@ -270,7 +262,7 @@ jobs:
             --title "${VERSION}" \
             --notes "Automated snapshot build (${VERSION}) from commit ${{ github.sha }}." \
             --prerelease \
-            artifacts/komari*
+            artifacts/komarix*
 
           gh workflow run generate-release-notes.yml \
             --repo "${{ github.repository }}" \
