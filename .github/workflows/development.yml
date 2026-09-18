@@ -71,5 +71,5 @@ jobs:
           ssh root@${{ env.PRODUCTION_SERVER }} 'systemctl stop komarix.service || true'
           ssh root@${{ env.PRODUCTION_SERVER }} 'rm -f /opt/komarix/komarix.old'
           ssh root@${{ env.PRODUCTION_SERVER }} 'mv /opt/komarix/komarix /opt/komarix/komarix.old || true'
-          scp komarix root@${{ env.PRODUCTION_SERVER }}:/opt/komarix/komari
+          scp komarix root@${{ env.PRODUCTION_SERVER }}:/opt/komarix/komarix
           ssh root@${{ env.PRODUCTION_SERVER }} 'systemctl start komarix.service'
