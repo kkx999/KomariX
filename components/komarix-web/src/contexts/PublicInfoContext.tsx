@@ -1,5 +1,5 @@
 import React from "react";
-import defaultTheme from "../../komari-theme.json";
+import defaultTheme from "../../komarix-theme.json";
 //import { useRPC2Call } from "./RPC2Context";
 
 type ThemeField = {
