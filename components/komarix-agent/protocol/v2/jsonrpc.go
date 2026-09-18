@@ -14,8 +14,6 @@ const (
 	MethodAgentMessage    = "agent.message"
 	MethodAgentEvent      = "agent.event"
 	MethodAgentPull       = "agent.pull"
-	MethodAgentFile       = "agent.file"
-	MethodAgentFileResult = "agent.file.result"
 )
 
 type Request struct {
@@ -50,23 +48,6 @@ type Event struct {
 type EventResult struct {
 	Status string  `json:"status,omitempty"`
 	Events []Event `json:"events,omitempty"`
-}
-
-// FileOperation is metadata-only. File contents travel through the dedicated
-// HTTP transfer endpoint rather than through JSON-RPC.
-type FileOperation struct {
-	UUID      string                 `json:"uuid"`
-	RequestID string                 `json:"request_id"`
-	Op        string                 `json:"op"`
-	Args      map[string]interface{} `json:"args,omitempty"`
-}
-
-type FileResult struct {
-	UUID      string          `json:"uuid"`
-	RequestID string          `json:"request_id"`
-	OK        bool            `json:"ok"`
-	Result    json.RawMessage `json:"result,omitempty"`
-	Error     string          `json:"error,omitempty"`
 }
 
 func NewNotification(method string, params interface{}) []byte {
