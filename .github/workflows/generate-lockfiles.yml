@@ -25,6 +25,9 @@ jobs:
           set -euxo pipefail
           npm install --package-lock-only --ignore-scripts --prefix components/komarix-web
           npm install --package-lock-only --ignore-scripts --prefix components/komarix-theme-purcarte
+          npm audit fix --package-lock-only --ignore-scripts --prefix components/komarix-theme-purcarte
+          npm audit --audit-level=high --prefix components/komarix-web
+          npm audit --audit-level=high --prefix components/komarix-theme-purcarte
       - name: Commit lockfiles
         run: |
           set -euxo pipefail
