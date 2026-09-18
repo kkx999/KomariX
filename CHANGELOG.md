@@ -2,6 +2,20 @@
 
 这里记录 KomariX 正式版本的主要变化。完整构建产物与发布信息请查看 [GitHub Releases](https://github.com/kkx999/KomariX/releases)。
 
+## v1.0.6
+
+- 收口正式 Release 与 Docker 发布链路：主题/插件市场 Release 不再触发 Panel/Agent 正式构建，也不会污染 `latest`；专用预构建发布避免与通用 Release 工作流重复执行。
+- 安装/升级脚本改为显式解析正式 `v*` Release，下载使用失败即报错、重试与 SHA256 校验；升级先下载校验再替换，新版本启动失败时自动恢复旧二进制。
+- Panel 与各构建工作流统一跟随 `go.mod` 的 Go 版本，并增加安装脚本语法、Panel/Agent 测试与 Go module 洁净度检查。
+- 前端移除自依赖，提交真实 `package-lock.json`，统一使用 Node.js 22 + `npm ci`，并在构建时拦截 high/critical npm 审计问题；PurCarte 固定到已修复的 picomatch 2.x。
+- Agent 清理已删除远程控制功能遗留的 `conpty`、`pty`、`toast` 依赖与校验记录，并将配置优先级明确为“默认值 < 配置文件 < 环境变量 < CLI 参数”。
+- 主题兼容继续保留 `komari-theme.json`，并新增对“ZIP 根目录或唯一一级外层目录”两种打包结构的审核与 Panel 安装支持；旧包安装时会自动拍平外层目录。
+- 主题 Short ID 规则与投稿后台统一，兼容包含点号的旧主题，同时拒绝路径穿越和 `default` 等保留值。
+- 主题/插件市场写入增加大小写不敏感 Short ID 判重、稳定排序、GitHub SHA 冲突重试以及下架/恢复失败补偿，避免并发更新丢数据或出现半完成状态。
+- 资源后台改用结构化投稿数据，增强 URL/DNS/重定向 SSRF 防护、ZIP 解压体积预检、公共投稿限流、POST 同源校验与管理员路由处理；密码修改会使旧会话失效。
+- 资源镜像 Release 固定不成为 GitHub Latest，同名资产上传幂等；后台依赖使用 lockfile + `npm ci` 并通过 high/critical 审计与 Wrangler dry-run。
+- 官方主题市场重新规范化排序；审核页不再直接加载投稿者的外链预览图，减少后台浏览器向第三方泄露访问信息。
+
 ## v1.0.5
 
 - 彻底移除 Agent 中残留的远程文件管理能力及相关上传、下载、搜索、删除、权限修改协议代码。
