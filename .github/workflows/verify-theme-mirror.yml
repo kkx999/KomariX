@@ -1,0 +1,33 @@
+name: Verify KomariX theme asset mirror
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/verify-theme-mirror.yml"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Mirror and verify all theme assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/komarix-theme-assets
+          python3 scripts/mirror_theme_market.py \
+            --catalog market/theme-v1.json \
+            --output-dir /tmp/komarix-theme-assets \
+            --release-tag v1.0.2
+
+          test "$(find /tmp/komarix-theme-assets -maxdepth 1 -type f -name 'theme-*.zip' | wc -l)" -eq 49
+          test "$(find /tmp/komarix-theme-assets -maxdepth 1 -type f -name 'preview-*' | wc -l)" -eq 49
+
+      - name: Upload verified mirror staging artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: komarix-theme-market-assets
+          path: /tmp/komarix-theme-assets
+          retention-days: 3
