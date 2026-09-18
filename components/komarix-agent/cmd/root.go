@@ -33,16 +33,31 @@ var RootCmd = &cobra.Command{
 	Short: "komarix agent",
 	Long:  `komarix agent`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		loadFromEnv() // 从环境变量加载配置，覆盖解析
+		// Precedence: defaults < config file < environment < explicit CLI flags.
+		// Cobra has already parsed CLI flags at this point, so remember whether the
+		// config path itself was supplied explicitly before environment loading.
+		cliArgs := append([]string(nil), os.Args[1:]...)
+		configFromCLI := cmd.Flags().Changed("config")
+		cliConfigFile := flags.ConfigFile
+
+		// First pass lets KOMARIX_CONFIG select a config file when --config was not
+		// supplied. Values are applied again after JSON so environment wins.
+		loadFromEnv()
+		if configFromCLI {
+			flags.ConfigFile = cliConfigFile
+		}
 		if flags.ConfigFile != "" {
 			bytes, err := os.ReadFile(flags.ConfigFile)
 			if err != nil {
 				return fmt.Errorf("failed to read config file: %w", err)
 			}
-			err = json.Unmarshal(bytes, flags)
-			if err != nil {
+			if err = json.Unmarshal(bytes, flags); err != nil {
 				return fmt.Errorf("failed to parse config file: %w", err)
 			}
+		}
+		loadFromEnv()
+		if err := cmd.ParseFlags(cliArgs); err != nil {
+			return fmt.Errorf("failed to re-apply CLI flags: %w", err)
 		}
 		if flags.PreferIPVersion != "" && flags.PreferIPVersion != "4" && flags.PreferIPVersion != "6" {
 			return fmt.Errorf("invalid --prefer-ip-version value %q: expected 4 or 6", flags.PreferIPVersion)
@@ -214,8 +229,8 @@ func loadFromEnv() {
 		case reflect.String:
 			field.SetString(envValue)
 		case reflect.Bool:
-			if strings.ToLower(envValue) == "true" || envValue == "1" {
-				field.SetBool(true)
+			if boolVal, err := strconv.ParseBool(strings.ToLower(envValue)); err == nil {
+				field.SetBool(boolVal)
 			}
 		case reflect.Int:
 			if intVal, err := strconv.Atoi(envValue); err == nil {
