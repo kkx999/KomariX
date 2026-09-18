@@ -64,33 +64,6 @@ jobs:
             exit 1
           fi
 
-  mirror-theme-assets:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Mirror and verify all theme assets
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm -rf /tmp/komarix-theme-assets
-          python3 scripts/mirror_theme_market.py \
-            --catalog market/theme-v1.json \
-            --output-dir /tmp/komarix-theme-assets \
-            --release-tag ${VERSION}
-
-          test "$(find /tmp/komarix-theme-assets -maxdepth 1 -type f -name 'theme-*.zip' | wc -l)" -eq 49
-          test "$(find /tmp/komarix-theme-assets -maxdepth 1 -type f -name 'preview-*' | wc -l)" -eq 49
-
-      - name: Upload theme market assets
-        uses: actions/upload-artifact@v4
-        with:
-          name: theme-market-assets
-          path: /tmp/komarix-theme-assets
-          retention-days: 3
-
-
   test-panel:
     needs: build-frontends
     runs-on: ubuntu-latest
@@ -258,7 +231,7 @@ jobs:
           path: komarix-agent-${{ matrix.goos }}-${{ matrix.goarch }}*
 
   publish:
-    needs: [build-panel, build-agent, mirror-theme-assets]
+    needs: [build-panel, build-agent]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -269,6 +242,15 @@ jobs:
         with:
           path: artifacts
           merge-multiple: true
+
+      - name: Download verified theme market mirror
+        uses: actions/download-artifact@v4
+        with:
+          name: komarix-theme-market-assets
+          repository: kkx999/KomariX
+          run-id: 35333099879
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: theme-assets
 
       - name: Publish v1.0.2
         env:
@@ -289,8 +271,8 @@ jobs:
             artifacts/komarix-linux-* \
             artifacts/komarix-windows-* \
             artifacts/komarix-agent-* \
-            artifacts/theme-*.zip \
-            artifacts/preview-*
+            theme-assets/theme-*.zip \
+            theme-assets/preview-*
 
   activate-theme-market:
     needs: publish
@@ -304,7 +286,10 @@ jobs:
       - name: Download verified theme market artifact
         uses: actions/download-artifact@v4
         with:
-          name: theme-market-assets
+          name: komarix-theme-market-assets
+          repository: kkx999/KomariX
+          run-id: 35333099879
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           path: /tmp/theme-market-assets
 
       - name: Switch market catalog to KomariX-hosted assets
