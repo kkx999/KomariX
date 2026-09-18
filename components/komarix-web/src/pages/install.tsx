@@ -47,6 +47,24 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return payload.data as T;
 }
 
+async function waitForApplicationReady(timeoutMs = 30000): Promise<boolean> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    try {
+      const response = await fetch("/api/version", {
+        cache: "no-store",
+        redirect: "manual",
+      });
+      if (response.ok) return true;
+    } catch {
+      // The temporary install listener may already be closed while the
+      // normal application is still starting on the same port.
+    }
+    await new Promise((resolve) => window.setTimeout(resolve, 500));
+  }
+  return false;
+}
+
 export default function Install() {
   const { t } = useTranslation();
   const [step, setStep] = useState(0);
@@ -111,7 +129,12 @@ export default function Install() {
           metric_dsn: metricDSN,
         }),
       });
-      window.setTimeout(() => window.location.assign("/"), 1200);
+      if (await waitForApplicationReady()) {
+        window.location.assign("/");
+        return;
+      }
+      setError(t("install.connection_error"));
+      setBusy(false);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : t("install.failed"));
       setBusy(false);
