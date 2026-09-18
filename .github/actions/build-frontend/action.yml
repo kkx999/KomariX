@@ -43,13 +43,7 @@ runs:
           xargs -0 -r sed -i 's/Komari/KomariX/g'
 
         mkdir -p komari-web/dist/assets
-        cat > komari-web/dist/assets/komarix.svg <<'SVG'
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="KomariX">
-          <rect width="512" height="512" rx="112" fill="#111827"/>
-          <path d="M116 150h72v82l93-82h94L263 246l125 116h-99l-101-95v95h-72z" fill="#fff"/>
-          <path d="M330 138h72l-77 112 86 124h-79l-48-73-50 73h-75l86-121-80-115h79l43 67z" fill="#60a5fa"/>
-        </svg>
-SVG
+        cp -f docs/komarix.svg komari-web/dist/assets/komarix.svg
 
         # Replace brand artwork references only.
         find komari-web/dist -type f \( -name '*.js' -o -name '*.html' -o -name '*.json' -o -name '*.webmanifest' \) -print0 | \
