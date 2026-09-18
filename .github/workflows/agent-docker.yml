@@ -40,8 +40,8 @@ jobs:
           fi
           cd components/komarix-agent
           LDFLAGS="-s -w -X github.com/komari-monitor/komari-agent/update.CurrentVersion=${VERSION} -X github.com/komari-monitor/komari-agent/update.Repo=kkx999/KomariX"
-          GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="$LDFLAGS" -o komari-agent-linux-amd64 .
-          GOOS=linux GOARCH=arm64 go build -trimpath -ldflags="$LDFLAGS" -o komari-agent-linux-arm64 .
+          GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="$LDFLAGS" -o komarix-agent-linux-amd64 .
+          GOOS=linux GOARCH=arm64 go build -trimpath -ldflags="$LDFLAGS" -o komarix-agent-linux-arm64 .
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
