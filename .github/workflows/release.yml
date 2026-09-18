@@ -121,8 +121,6 @@ jobs:
           VERSION="${{ github.event.release.tag_name }}"
           VERSION_HASH="${{ github.sha }}" # Use commit SHA for hash
           go build -trimpath -ldflags="-s -w -X github.com/kkx999/KomariX/utils.CurrentVersion=${VERSION} -X github.com/kkx999/KomariX/utils.VersionHash=${VERSION_HASH}" -o $BINARY_NAME
-          LEGACY_NAME="${BINARY_NAME/komarix-/komari-}"
-          cp "$BINARY_NAME" "$LEGACY_NAME"
 
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v4
@@ -140,8 +138,7 @@ jobs:
             BINARY_NAME=${BINARY_NAME}.exe
           fi
           # Upload the binary as a release asset using GitHub CLI
-          LEGACY_NAME="${BINARY_NAME/komarix-/komari-}"
-          gh release upload ${{ github.event.release.tag_name }} "$BINARY_NAME" "$LEGACY_NAME" --repo ${{ github.repository }} --clobber
+          gh release upload ${{ github.event.release.tag_name }} "$BINARY_NAME" --repo ${{ github.repository }} --clobber
         shell: bash
 
   build-and-attach-agent:
@@ -189,8 +186,6 @@ jobs:
           go build -trimpath \
             -ldflags="-s -w -X github.com/kkx999/KomariX/components/komarix-agent/update.CurrentVersion=${VERSION} -X github.com/kkx999/KomariX/components/komarix-agent/update.Repo=kkx999/KomariX" \
             -o "../../${BINARY_NAME}" .
-          LEGACY_NAME="${BINARY_NAME/komarix-agent-/komari-agent-}"
-          cp "../../${BINARY_NAME}" "../../${LEGACY_NAME}"
 
       - name: Upload Agent to release
         env:
@@ -201,8 +196,7 @@ jobs:
           if [ "${{ matrix.goos }}" = "windows" ]; then
             BINARY_NAME="${BINARY_NAME}.exe"
           fi
-          LEGACY_NAME="${BINARY_NAME/komarix-agent-/komari-agent-}"
-          gh release upload "${{ github.event.release.tag_name }}" "$BINARY_NAME" "$LEGACY_NAME" --repo "${{ github.repository }}" --clobber
+          gh release upload "${{ github.event.release.tag_name }}" "$BINARY_NAME" --repo "${{ github.repository }}" --clobber
 
   build-and-push-docker:
     needs: build-and-attach-binaries
