@@ -1,0 +1,26 @@
+name: KomariX residual-name audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/audit-komarix.yml"
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan residual Komari runtime names
+        shell: bash
+        run: |
+          set +e
+          echo "=== Runtime / install / repository residues ==="
+          grep -RniE \
+            --exclude-dir=.git \
+            --exclude='LICENSE' \
+            --exclude='NOTICE' \
+            --exclude='SOURCES.md' \
+            --exclude='audit-komarix.yml' \
+            'komari-monitor|/opt/komari([^x]|$)|komari-agent\.service|komari\.service|komari-agent-|komari-linux-|komari-windows-|Komari Monitor|Komari Agent|\bkomari\b' \
+            . || true
