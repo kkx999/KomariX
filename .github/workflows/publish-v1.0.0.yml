@@ -243,12 +243,12 @@ jobs:
           path: artifacts
           merge-multiple: true
 
-      - name: Download verified theme market mirror
+      - name: Download verified KomariX-rebranded theme market
         uses: actions/download-artifact@v4
         with:
-          name: komarix-theme-market-assets
+          name: komarix-theme-market-rebranded-v1.0.0
           repository: kkx999/KomariX
-          run-id: 35333099879
+          run-id: 35336891764
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: theme-assets
 
@@ -260,14 +260,15 @@ jobs:
           set -euxo pipefail
           ls -al artifacts
           if gh release view "$VERSION" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            echo "$VERSION already exists"
-            exit 1
+            echo "Replacing existing $VERSION release with final rebranded build."
+            gh release delete "$VERSION" --repo "$GITHUB_REPOSITORY" --cleanup-tag --yes
           fi
+
           gh release create "$VERSION" \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
             --title "KomariX v1.0.0" \
-            --notes "KomariX v1.0.0：完成独立化。内置并默认使用 PurCarte v1.2.5 的 KomariX 品牌版本；前端、Agent 与 PurCarte 源码已固定归档；Agent 安装与自更新改由 KomariX Release 提供；49 个主题的安装包与预览资源已镜像到 KomariX Release，主题市场不再依赖 Komari 市场资源；插件市场使用 KomariX 镜像索引。基于 Komari 修改并继续独立维护，同时保留原始开源许可证。" \
+            --notes "KomariX v1.0.0：首个正式独立版本。面板、Agent、默认 PurCarte 与市场资源均由 KomariX 自行维护；49 个主题安装包已逐个完成 KomariX 品牌处理并重新校验 SHA256，作者署名与 LICENSE/NOTICE 保持原样；49 张主题预览与主题安装包均托管于本 Release。插件市场使用 KomariX 镜像索引。项目基于 Komari 修改并继续独立维护。" \
             artifacts/komarix-linux-* \
             artifacts/komarix-windows-* \
             artifacts/komarix-agent-* \
@@ -323,8 +324,47 @@ jobs:
           provenance: false
 
 
+
+  verify-final-release:
+    needs: [publish, publish-agent-docker]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify final v1.0.0 assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          gh release view v1.0.0 --repo "$GITHUB_REPOSITORY" \
+            --json tagName,isDraft,isPrerelease,targetCommitish,assets \
+            > /tmp/release.json
+
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          r=json.loads(Path("/tmp/release.json").read_text())
+          assets={a["name"] for a in r["assets"]}
+
+          panels=[n for n in assets if n.startswith("komarix-linux-") or n.startswith("komarix-windows-")]
+          agents=[n for n in assets if n.startswith("komarix-agent-")]
+          themes=[n for n in assets if n.startswith("theme-") and n.endswith(".zip")]
+          previews=[n for n in assets if n.startswith("preview-")]
+
+          assert r["tagName"] == "v1.0.0"
+          assert not r["isDraft"]
+          assert not r["isPrerelease"]
+          assert len(panels) == 8, len(panels)
+          assert len(agents) == 14, len(agents)
+          assert len(themes) == 49, len(themes)
+          assert len(previews) == 49, len(previews)
+          assert len(assets) == 120, len(assets)
+          print("Final release verified:", len(assets), "assets")
+          PY
+
   cleanup-old-releases:
-    needs: publish-agent-docker
+    needs: verify-final-release
     runs-on: ubuntu-latest
     steps:
       - name: Keep only KomariX v1.0.0
