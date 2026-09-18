@@ -62,7 +62,7 @@ interface NodeListContextType {
   refresh: () => void;
 }
 
-const NODE_LIST_CONTEXT_KEY = "__komariNodeListContext" as const;
+const NODE_LIST_CONTEXT_KEY = "__komarixNodeListContext" as const;
 
 type NodeListContextGlobal = typeof globalThis & {
   [NODE_LIST_CONTEXT_KEY]?: React.Context<NodeListContextType | undefined>;
