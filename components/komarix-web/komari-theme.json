@@ -1,10 +1,10 @@
 {
-  "name": "Komari",
+  "name": "KomariX",
   "short": "default",
-  "description": "Komari default theme",
+  "description": "KomariX default system theme",
   "version": "1.0.0",
   "author": "Akizon77",
-  "url": "https://github.com/komari-monitor/komari-web",
+  "url": "https://github.com/kkx999/KomariX",
   "preview": "dist/assets/edit_117847723_p0.png",
   "configuration": {
     "type": "managed",
