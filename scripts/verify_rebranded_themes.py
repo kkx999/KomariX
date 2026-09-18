@@ -33,7 +33,7 @@ def is_text(name: str) -> bool:
     p = Path(name)
     if p.name in LEGAL_NAMES:
         return False
-    return p.suffix.lower() in TEXT_EXTS or p.name == "komari-theme.json"
+    return p.suffix.lower() in TEXT_EXTS or p.name in {"komarix-theme.json", "komari-theme.json"}
 
 def strip_ignored(text: str) -> str:
     # Author/source URLs may legitimately contain "komari" in the third-party
@@ -49,10 +49,14 @@ def strip_ignored(text: str) -> str:
     )
     return text
 
-def get_manifest(z: zipfile.ZipFile):
-    candidates = [n for n in z.namelist() if Path(n).name == "komari-theme.json"]
+def get_manifest(z: zipfile.ZipFile, require_komarix=False):
+    canonical = [n for n in z.namelist() if Path(n).name == "komarix-theme.json"]
+    legacy = [n for n in z.namelist() if Path(n).name == "komari-theme.json"]
+    candidates = canonical or legacy
+    if require_komarix and len(canonical) != 1:
+        raise RuntimeError(f"expected one komarix-theme.json, got canonical={canonical} legacy={legacy}")
     if len(candidates) != 1:
-        raise RuntimeError(f"expected one komari-theme.json, got {candidates}")
+        raise RuntimeError(f"expected one theme manifest, got canonical={canonical} legacy={legacy}")
     return json.loads(z.read(candidates[0]).decode("utf-8"))
 
 def legal_payloads(z: zipfile.ZipFile):
@@ -109,7 +113,7 @@ def main():
         with zipfile.ZipFile(src_zip) as zin, zipfile.ZipFile(out_zip) as zout:
             try:
                 src_manifest = get_manifest(zin)
-                out_manifest = get_manifest(zout)
+                out_manifest = get_manifest(zout, require_komarix=True)
             except Exception as exc:
                 failures.append(f"#{idx}: manifest error: {exc}")
                 continue
@@ -132,7 +136,7 @@ def main():
                 except Exception:
                     continue
 
-                if Path(info.filename).name == "komari-theme.json":
+                if Path(info.filename).name in {"komarix-theme.json", "komari-theme.json"}:
                     try:
                         parsed = json.loads(text)
                         ignored_keys = {"short", "author", "authors", "url", "homepage", "repository", "source", "preview"}
