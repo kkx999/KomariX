@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	defaultThemeMarketURL = "https://raw.githubusercontent.com/komari-monitor/theme-market/main/v1.json"
+	defaultThemeMarketURL = "https://raw.githubusercontent.com/kkx999/KomariX/main/market/theme-v1.json"
 	marketCatalogMaxSize  = 2 << 20
 	marketPackageMaxSize  = 100 << 20
 	marketCacheTTL        = 10 * time.Minute
@@ -76,7 +76,7 @@ var themeMarketCache = struct {
 func defaultThemeMarketSources() []ThemeMarketSource {
 	return []ThemeMarketSource{{
 		ID:      "official",
-		Name:    "KomariX Official",
+		Name:    "KomariX 市场镜像",
 		URL:     defaultThemeMarketURL,
 		Enabled: true,
 	}}
