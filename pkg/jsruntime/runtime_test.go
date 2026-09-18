@@ -296,7 +296,7 @@ func TestRequireConfigurationComposesWithBaseDir(t *testing.T) {
 	}
 	runtime, err := New(`
 		function sendMessage() {
-			return require("komari").version === "test" &&
+			return require("komarix").version === "test" &&
 				require("./module.js").value === "local";
 		}
 	`, Options{
@@ -304,7 +304,7 @@ func TestRequireConfigurationComposesWithBaseDir(t *testing.T) {
 		Console: io.Discard,
 		Timeout: time.Second,
 		ConfigureRequire: func(registry *require.Registry) {
-			registry.RegisterNativeModule("komari", func(vm *goja.Runtime, module *goja.Object) {
+			registry.RegisterNativeModule("komarix", func(vm *goja.Runtime, module *goja.Object) {
 				exports := module.Get("exports").ToObject(vm)
 				_ = exports.Set("version", "test")
 			})
