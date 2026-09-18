@@ -260,7 +260,6 @@ jobs:
 
           gh release create "${VERSION}" \
             --repo "${GITHUB_REPOSITORY}" \
-            --target "${GITHUB_SHA}" \
             --title "KomariX v1.0.1" \
             --notes "KomariX v1.0.1：移除 Web 终端与远程命令执行能力，并清理相关终端依赖；修复 Agent 更新测试中的旧仓库断言；网络探测测试改为可重复的本地测试，特权 ICMP 独立为显式集成测试。发布前已重新执行 Panel/Agent 测试和全部正式多架构构建。" \
             artifacts/komarix-* \
