@@ -1,4 +1,4 @@
-module github.com/komari-monitor/komari-agent
+module github.com/kkx999/KomariX/components/komarix-agent
 
 go 1.24.0
 

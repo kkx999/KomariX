@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	pkg_flags "github.com/komari-monitor/komari-agent/cmd/flags"
+	pkg_flags "github.com/kkx999/KomariX/components/komarix-agent/cmd/flags"
 )
 
 var flags = pkg_flags.GlobalConfig

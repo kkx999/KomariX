@@ -12,7 +12,7 @@ import (
 	"sync"
 	"testing"
 
-	pkg_flags "github.com/komari-monitor/komari-agent/cmd/flags"
+	pkg_flags "github.com/kkx999/KomariX/components/komarix-agent/cmd/flags"
 )
 
 func preserveAgentConfig(t *testing.T, endpoint string) {
