@@ -94,7 +94,13 @@ jobs:
           test ! -e components/komarix-agent/server/file_stream.go
           test ! -e components/komarix-agent/server/files_unix.go
           test ! -e components/komarix-agent/server/files_windows.go
-          if grep -Eq 'disable-web-ssh|DisableWebSsh|disable_web_ssh|AGENT_DISABLE_WEB_SSH' \
+          test ! -e components/komarix-agent/cmd/warn.go
+          test ! -e components/komarix-agent/cmd/warn_linux.go
+          test ! -e components/komarix-agent/cmd/warn_linux_test.go
+          test ! -e components/komarix-agent/cmd/warn_other.go
+          test ! -e components/komarix-agent/cmd/warn_windows.go
+          test ! -e components/komarix-agent/cmd/warning.go
+          if grep -Eq 'disable-web-ssh|DisableWebSsh|disable_web_ssh|AGENT_DISABLE_WEB_SSH|show-warning|ShowWarning|AGENT_SHOW_WARNING' \
               components/komarix-agent/cmd/root.go \
               components/komarix-agent/cmd/flags/flag.go \
               components/komarix-agent/readme.md \
