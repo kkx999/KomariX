@@ -94,9 +94,6 @@ func InstallZip(zipPath string) (models.Plugin, error) {
 		_ = os.RemoveAll(dir)
 		return info, fmt.Errorf("failed to write KomariX plugin manifest: %v", err)
 	}
-	if manifest.Name == legacyManifestFile {
-		_ = os.Remove(filepath.Join(dir, legacyManifestFile))
-	}
 	if _, err := os.Stat(filepath.Join(dir, info.Entry)); err != nil {
 		_ = os.RemoveAll(dir)
 		return info, fmt.Errorf("plugin entry %s does not exist", info.Entry)
