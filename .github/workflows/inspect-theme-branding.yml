@@ -1,0 +1,43 @@
+name: Inspect theme branding audit samples
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/inspect-theme-branding.yml"
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download branding audit report
+        uses: actions/download-artifact@v4
+        with:
+          name: theme-branding-audit
+          repository: kkx999/KomariX
+          run-id: 35336275926
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: /tmp/audit
+
+      - name: Print representative contexts
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          data=json.loads(Path("/tmp/audit/theme-branding-audit.json").read_text())
+          for item in data:
+              interesting=[]
+              seen=set()
+              for hit in item["hits"]:
+                  key=(hit["kind"],hit["file"])
+                  if key in seen:
+                      continue
+                  seen.add(key)
+                  interesting.append((hit["kind"],hit["file"],hit["samples"][0] if hit["samples"] else ""))
+              print("\n###",item["package"])
+              for kind,file,sample in interesting[:8]:
+                  print(f"[{kind}] {file}: {sample[:500]}")
+          PY
