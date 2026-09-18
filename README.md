@@ -101,16 +101,16 @@ KomariX
 默认安装目录：
 
 ```text
-/opt/komari
+/opt/komarix
 ```
 
 默认 systemd 服务名：
 
 ```text
-komari
+komarix
 ```
 
-现阶段继续保留这些内部名称，是为了维持与 Komari 1.4.3 的兼容性，并降低升级和迁移风险。
+全新安装统一使用 KomariX 名称。检测到旧版 `/opt/komari`、`komari.service` 时，安装器会继续按旧路径兼容管理，不强制迁移数据。
 
 ## 安全说明
 
