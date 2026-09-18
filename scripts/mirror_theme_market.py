@@ -78,8 +78,8 @@ def main():
         short = slug(src.get("short", f"theme-{idx}"))
         version = slug(src.get("version", "unknown"))
         expected = str(src.get("sha256") or "").lower().removeprefix("sha256:")
-        download_url = str(src.get("download") or "")
-        preview_url = str(src.get("preview") or "")
+        download_url = str(src.get("upstream_download") or src.get("download") or "")
+        preview_url = str(src.get("upstream_preview") or src.get("preview") or "")
 
         if not download_url or not expected:
             failures.append(f"{short}: missing download or sha256")
