@@ -254,13 +254,13 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
   // 获取 GitHub releases 列表，并筛选出“比当前版本新的所有 release”
   useEffect(() => {
     let ignore = false;
-    const currentVersion = (publicInfo as any)?.version || versionInfo?.version;
+    const currentVersion = versionInfo?.version || (publicInfo as any)?.version;
     if (!currentVersion) return;
 
     async function loadReleases() {
       try {
         const resp = await fetch(
-          "https://api.github.com/repos/komari-monitor/komari/releases?per_page=100",
+          "https://api.github.com/repos/kkx999/KomariX/releases?per_page=100",
           {
             headers: {
               Accept: "application/vnd.github+json",
@@ -442,7 +442,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                     </label>
                     <div className="text-sm text-muted-foreground">
                       <span style={{ marginRight: 8 }}>
-                        {(publicInfo as any)?.version || versionInfo?.version}
+                        {versionInfo?.version || (publicInfo as any)?.version}
                       </span>
                       <span>{"> "}</span>
                       <span>
@@ -494,9 +494,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
                 className="text-sm text-muted-foreground self-end overflow-hidden"
                 hidden={isMobile}
               >
-                {(publicInfo as any)?.version ||
-                  (versionInfo &&
-                    `${versionInfo.version} (${versionInfo.hash})`)}
+                {versionInfo?.version || (publicInfo as any)?.version}
               </label>
             </Flex>
             <Flex gap="3" align="center" overflowX="auto" className="km-admin-panel-controls">
