@@ -13,7 +13,7 @@ runs:
       id: zig-cache
       uses: actions/cache@v4
       with:
-        path: ~/.cache/komari-zig/zig-x86_64-linux-${{ inputs.zig-version }}
+        path: ~/.cache/komarix-zig/zig-x86_64-linux-${{ inputs.zig-version }}
         key: zig-${{ runner.os }}-x86_64-${{ inputs.zig-version }}
 
     - name: Download Zig
@@ -21,11 +21,11 @@ runs:
       shell: bash
       run: |
         set -euxo pipefail
-        mkdir -p "$HOME/.cache/komari-zig"
+        mkdir -p "$HOME/.cache/komarix-zig"
         curl -fsSL "https://ziglang.org/download/${{ inputs.zig-version }}/zig-x86_64-linux-${{ inputs.zig-version }}.tar.xz" -o "$RUNNER_TEMP/zig.tar.xz"
-        tar -C "$HOME/.cache/komari-zig" -Jxf "$RUNNER_TEMP/zig.tar.xz"
+        tar -C "$HOME/.cache/komarix-zig" -Jxf "$RUNNER_TEMP/zig.tar.xz"
 
     - name: Add Zig to PATH
       shell: bash
       run: |
-        echo "$HOME/.cache/komari-zig/zig-x86_64-linux-${{ inputs.zig-version }}" >> "$GITHUB_PATH"
+        echo "$HOME/.cache/komarix-zig/zig-x86_64-linux-${{ inputs.zig-version }}" >> "$GITHUB_PATH"
