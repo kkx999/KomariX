@@ -72,3 +72,5 @@ jobs:
           fi
           git commit -m "theme: activate 49 KomariX-rebranded market packages [skip ci]"
           git push origin HEAD:main
+
+# retry-1
