@@ -126,11 +126,3 @@ KomariX 包含服务器监控和远程管理能力，请只部署在你拥有或
 KomariX 基于开源项目 Komari 1.4.3 继续维护。
 
 原项目版权声明、MIT License 与 NOTICE 均在仓库中完整保留。KomariX 的后续品牌、维护和版本发布由本仓库独立进行。
-
-## 项目地址
-
-```text
-https://github.com/kkx999/KomariX
-```
-
-如果你正在使用 Komari 1.4.3，KomariX 当前优先保持原版使用习惯与兼容性，后续功能会在稳定的前提下逐步增加。
