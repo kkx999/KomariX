@@ -1,0 +1,104 @@
+name: Verify and publish KomariX v1.0.1
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "release-v1.0.1.trigger"
+
+permissions:
+  contents: write
+
+env:
+  VERSION: v1.0.1
+
+jobs:
+  verify-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build KomariX frontends
+        uses: ./.github/actions/build-frontend
+
+      - name: Set up Go for panel
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: Run panel tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          go list ./... | grep -v '^github.com/kkx999/KomariX/pkg/jsruntime$' | xargs go test
+
+      - name: Build panel smoke binary
+        shell: bash
+        env:
+          CGO_ENABLED: 1
+          GIN_MODE: release
+        run: |
+          set -euo pipefail
+          go build -trimpath \
+            -ldflags="-s -w -X github.com/kkx999/KomariX/utils.CurrentVersion=${VERSION} -X github.com/kkx999/KomariX/utils.VersionHash=${GITHUB_SHA}" \
+            -o /tmp/komarix-linux-amd64 .
+
+      - name: Set up Go for Agent
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: components/komarix-agent/go.mod
+          cache: false
+
+      - name: Run Agent tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd components/komarix-agent
+          go test ./...
+
+      - name: Build Agent smoke binary
+        shell: bash
+        env:
+          CGO_ENABLED: 0
+        run: |
+          set -euo pipefail
+          cd components/komarix-agent
+          go build -trimpath \
+            -ldflags="-s -w -X github.com/kkx999/KomariX/components/komarix-agent/update.CurrentVersion=${VERSION} -X github.com/kkx999/KomariX/components/komarix-agent/update.Repo=kkx999/KomariX" \
+            -o /tmp/komarix-agent-linux-amd64 .
+
+      - name: Verify remote shell removal
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e components/komarix-web/src/pages/admin/exec.tsx
+          test ! -d components/komarix-web/src/pages/terminal
+          test ! -d components/komarix-agent/terminal
+          test ! -d web/api/terminal
+          test ! -e web/rpc/jsonrpc/admin.task.go
+          test ! -e web/rpc/jsonrpc/admin.xtermjs.go
+          if grep -q '"@xterm/' components/komarix-web/package.json; then
+            echo "Obsolete xterm dependency remains in KomariX web package."
+            exit 1
+          fi
+
+      - name: Publish v1.0.1
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view "${VERSION}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            echo "${VERSION} already exists; refusing to overwrite an existing formal release."
+            exit 1
+          fi
+
+          gh release create "${VERSION}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --target "${GITHUB_SHA}" \
+            --title "KomariX v1.0.1" \
+            --notes "KomariX v1.0.1：移除 Web 终端与远程命令执行能力，清理终端前端依赖；修复 Agent 更新测试中的旧仓库断言，并将公网/特权网络探测测试调整为可重复的本地测试与显式集成测试。发布前已验证前端、面板、Agent 测试和构建。" \
+            --latest
