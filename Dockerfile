@@ -11,7 +11,7 @@ RUN apk add --no-cache ca-certificates curl tzdata
 COPY --chmod=755 komarix-${TARGETOS}-${TARGETARCH} /app/komarix
 
 ENV GIN_MODE=release
-ENV KOMARI_LISTEN=0.0.0.0:25774
+ENV KOMARIX_LISTEN=0.0.0.0:25774
 
 EXPOSE 25774
 
