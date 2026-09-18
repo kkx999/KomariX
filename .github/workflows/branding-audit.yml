@@ -23,6 +23,7 @@ jobs:
               ".toml", ".mod", ".txt"
           }
           legacy = re.compile(r"komari(?!x)", re.I)
+          duplicate_brand = re.compile(r"komarixx", re.I)
           url = re.compile(r"https?://[^\\s\\\"'<>)]+")
 
           for path in sorted(Path(".").rglob("*")):
@@ -36,6 +37,6 @@ jobs:
                   continue
               for lineno, line in enumerate(text.splitlines(), 1):
                   scrubbed = url.sub("", line)
-                  if legacy.search(scrubbed):
+                  if legacy.search(scrubbed) or duplicate_brand.search(scrubbed):
                       print(f"{path}:{lineno}:{line}")
           PY
