@@ -46,7 +46,7 @@ KomariX 当前基于 **Komari 1.4.3** 进行维护，在保持原版功能、接
 推荐使用 Debian / Ubuntu 等支持 systemd 的 Linux 系统，并使用 root 用户执行：
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/kkx999/KomariX/main/install-komari.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/kkx999/KomariX/main/install-komarix.sh)
 ```
 
 安装脚本会自动识别系统架构，并提供稳定版与快照版选择。
