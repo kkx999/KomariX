@@ -251,17 +251,17 @@ is_installed() {
 install_dependencies() {
     log_step "检查并安装依赖..."
 
-    if ! command -v curl >/dev/null 2>&1; then
+    if ! command -v curl >/dev/null 2>&1 || ! command -v sha256sum >/dev/null 2>&1; then
         if command -v apt >/dev/null 2>&1; then
             log_info "使用 apt 安装依赖..."
             apt update
-            apt install -y curl
+            apt install -y curl coreutils
         elif command -v yum >/dev/null 2>&1; then
             log_info "使用 yum 安装依赖..."
-            yum install -y curl
+            yum install -y curl coreutils
         elif command -v apk >/dev/null 2>&1; then
             log_info "使用 apk 安装依赖..."
-            apk add curl
+            apk add curl coreutils
         else
             log_error "未找到支持的包管理器 (apt/yum/apk)"
             exit 1
@@ -269,27 +269,86 @@ install_dependencies() {
     fi
 }
 
-# Get download URL based on channel
+# Get download URL based on channel.
+# Stable releases are resolved to an explicit v* tag so resource-market releases
+# can never be mistaken for a Panel release.
 get_download_url() {
     local arch=$1
     local file_name="komarix-linux-${arch}"
+    local api_url
+    local release_json
+    local release_tag
 
     if [ "$CHANNEL" = "snapshot" ]; then
-        # 获取最新的 snapshot 预发布版本
         log_info "获取最新 snapshot 版本..." >&2
-        local latest_snapshot=$(curl -s "https://api.github.com/repos/${REPO}/releases" | grep '"tag_name"' | grep 'Snapshot-' | head -1 | sed -e 's/.*"tag_name": *"//' -e 's/".*//')
-
-        if [ -z "$latest_snapshot" ]; then
+        api_url="https://api.github.com/repos/${REPO}/releases?per_page=50"
+        if ! release_json=$(curl --fail --silent --show-error --location --retry 3 --connect-timeout 10 --max-time 60 "$api_url"); then
+            log_error "获取 snapshot 列表失败" >&2
+            return 1
+        fi
+        release_tag=$(printf '%s\n' "$release_json" | grep '"tag_name"' | grep 'Snapshot-' | head -1 | sed -e 's/.*"tag_name": *"//' -e 's/".*//')
+        if [ -z "$release_tag" ]; then
             log_error "未找到 snapshot 版本" >&2
             return 1
         fi
-
-        log_info "最新 snapshot 版本: $latest_snapshot" >&2
-        echo "https://github.com/${REPO}/releases/download/${latest_snapshot}/${file_name}"
+        log_info "最新 snapshot 版本: $release_tag" >&2
     else
-        # 稳定版：使用 latest
-        echo "https://github.com/${REPO}/releases/latest/download/${file_name}"
+        log_info "获取最新稳定版本..." >&2
+        api_url="https://api.github.com/repos/${REPO}/releases/latest"
+        if ! release_json=$(curl --fail --silent --show-error --location --retry 3 --connect-timeout 10 --max-time 60 "$api_url"); then
+            log_error "获取稳定版本信息失败" >&2
+            return 1
+        fi
+        release_tag=$(printf '%s\n' "$release_json" | grep '"tag_name"' | head -1 | sed -e 's/.*"tag_name": *"//' -e 's/".*//')
+        if [[ ! "$release_tag" =~ ^v[0-9] ]]; then
+            log_error "GitHub latest 不是有效的 KomariX 稳定版本：${release_tag:-空}" >&2
+            return 1
+        fi
+        log_info "最新稳定版本: $release_tag" >&2
     fi
+
+    echo "https://github.com/${REPO}/releases/download/${release_tag}/${file_name}"
+}
+
+download_verified_binary() {
+    local download_url=$1
+    local target_path=$2
+    local file_name=$3
+    local temp_path
+    local checksum_path
+    local checksum_url="${download_url%/*}/SHA256SUMS"
+    local expected
+    local actual
+
+    temp_path=$(mktemp "${target_path}.download.XXXXXX") || return 1
+    checksum_path=$(mktemp "${target_path}.checksums.XXXXXX") || {
+        rm -f "$temp_path"
+        return 1
+    }
+
+    if ! curl --fail --show-error --location --retry 3 --retry-delay 1 --connect-timeout 10 --max-time 300 -o "$temp_path" "$download_url"; then
+        rm -f "$temp_path" "$checksum_path"
+        return 1
+    fi
+
+    if ! curl --fail --silent --show-error --location --retry 3 --retry-delay 1 --connect-timeout 10 --max-time 60 -o "$checksum_path" "$checksum_url"; then
+        log_error "无法下载 SHA256SUMS，拒绝安装未经校验的二进制文件"
+        rm -f "$temp_path" "$checksum_path"
+        return 1
+    fi
+
+    expected=$(awk -v file="$file_name" '$2 == file || $2 == "*" file { print $1; exit }' "$checksum_path")
+    actual=$(sha256sum "$temp_path" | awk '{print $1}')
+    rm -f "$checksum_path"
+
+    if [ -z "$expected" ] || [ "$actual" != "$expected" ]; then
+        log_error "SHA256 校验失败，拒绝替换现有二进制文件"
+        rm -f "$temp_path"
+        return 1
+    fi
+
+    chmod +x "$temp_path"
+    mv -f "$temp_path" "$target_path"
 }
 
 # ==========================================================
@@ -330,7 +389,11 @@ install_binary() {
 
     install_dependencies
 
-    local arch=$(detect_arch)
+    local arch
+    arch=$(detect_arch) || {
+        ui_msgbox "错误" "无法识别当前系统架构。"
+        return 1
+    }
     log_info "检测到架构: $arch"
 
     log_step "创建安装目录: $INSTALL_DIR"
@@ -339,21 +402,20 @@ install_binary() {
     log_step "创建数据目录: $DATA_DIR"
     mkdir -p "$DATA_DIR"
 
-    local download_url=$(get_download_url "$arch")
-    if [ $? -ne 0 ]; then
+    local download_url
+    if ! download_url=$(get_download_url "$arch"); then
         ui_msgbox "错误" "获取下载链接失败，请检查网络连接或稍后重试。"
         return 1
     fi
 
-    log_step "下载 KomariX 二进制文件..."
+    log_step "下载并校验 KomariX 二进制文件..."
     log_info "URL: $download_url"
 
-    if ! curl -L -o "$BINARY_PATH" "$download_url"; then
-        ui_msgbox "错误" "下载失败，请检查网络连接。"
+    if ! download_verified_binary "$download_url" "$BINARY_PATH" "komarix-linux-${arch}"; then
+        ui_msgbox "错误" "下载或 SHA256 校验失败，未安装不完整文件。"
         return 1
     fi
 
-    chmod +x "$BINARY_PATH"
     log_success "KomariX 二进制文件安装完成: $BINARY_PATH"
 
     if ! check_systemd; then
@@ -455,53 +517,75 @@ upgrade_komarix() {
         return 1
     fi
 
-    # 选择发布通道
     select_channel
+    install_dependencies
 
-    log_step "停止 KomariX 服务..."
-    systemctl stop ${SERVICE_NAME}.service
+    local arch
+    arch=$(detect_arch) || {
+        ui_msgbox "错误" "无法识别当前系统架构。"
+        return 1
+    }
+
+    local download_url
+    if ! download_url=$(get_download_url "$arch"); then
+        ui_msgbox "错误" "获取下载链接失败，现有服务未受影响。"
+        return 1
+    fi
+
+    local candidate_path="${BINARY_PATH}.new"
+    rm -f "$candidate_path"
+    log_step "下载并校验最新版本..."
+    if ! download_verified_binary "$download_url" "$candidate_path" "komarix-linux-${arch}"; then
+        rm -f "$candidate_path"
+        ui_msgbox "错误" "下载或 SHA256 校验失败，现有服务未受影响。"
+        return 1
+    fi
 
     log_step "清理旧的二进制备份..."
     rm -f -- "${BINARY_PATH}.backup."*
 
     local backup_path="${BINARY_PATH}.backup.$(date +%Y%m%d_%H%M%S)"
-    log_step "备份当前二进制文件..."
+    log_step "停止服务并备份当前二进制文件..."
+    if ! systemctl stop ${SERVICE_NAME}.service; then
+        rm -f "$candidate_path"
+        ui_msgbox "错误" "停止 KomariX 服务失败，升级已取消。"
+        return 1
+    fi
     if ! cp "$BINARY_PATH" "$backup_path"; then
-        log_error "备份当前二进制文件失败，正在启动服务"
+        rm -f "$candidate_path"
         systemctl start ${SERVICE_NAME}.service
         ui_msgbox "错误" "备份当前二进制文件失败，升级已取消。"
         return 1
     fi
 
-    local arch=$(detect_arch)
-    local download_url=$(get_download_url "$arch")
-    if [ $? -ne 0 ]; then
-        log_error "获取下载链接失败，正在从备份恢复"
-        mv "$backup_path" "$BINARY_PATH"
+    if ! mv -f "$candidate_path" "$BINARY_PATH"; then
+        cp -f "$backup_path" "$BINARY_PATH"
         systemctl start ${SERVICE_NAME}.service
-        ui_msgbox "错误" "获取下载链接失败，已从备份恢复。"
+        ui_msgbox "错误" "替换二进制文件失败，已恢复旧版本。"
         return 1
     fi
 
-    log_step "下载最新版本..."
-    if ! curl -L -o "$BINARY_PATH" "$download_url"; then
-        log_error "下载失败，正在从备份恢复"
-        mv "$backup_path" "$BINARY_PATH"
-        systemctl start ${SERVICE_NAME}.service
-        ui_msgbox "错误" "下载失败，已从备份恢复。"
-        return 1
-    fi
-
-    chmod +x "$BINARY_PATH"
-
-    log_step "重启 KomariX 服务..."
-    systemctl start ${SERVICE_NAME}.service
+    log_step "启动 KomariX 服务..."
+    systemctl start ${SERVICE_NAME}.service || true
+    sleep 1
 
     if systemctl is-active --quiet ${SERVICE_NAME}.service; then
         ui_msgbox "升级完成" "KomariX 升级成功 (通道: $CHANNEL)。"
-    else
-        ui_msgbox "错误" "服务在升级后未能启动，请检查日志。"
+        return 0
     fi
+
+    log_error "新版本启动失败，正在自动回滚..."
+    systemctl stop ${SERVICE_NAME}.service >/dev/null 2>&1 || true
+    cp -f "$backup_path" "$BINARY_PATH"
+    systemctl start ${SERVICE_NAME}.service || true
+    sleep 1
+
+    if systemctl is-active --quiet ${SERVICE_NAME}.service; then
+        ui_msgbox "升级已回滚" "新版本未能启动，已自动恢复升级前版本。"
+    else
+        ui_msgbox "严重错误" "新版本启动失败，旧版本也未能自动恢复运行。\n\n请检查日志：journalctl -u ${SERVICE_NAME} -n 100 --no-pager"
+    fi
+    return 1
 }
 
 # Uninstall function
