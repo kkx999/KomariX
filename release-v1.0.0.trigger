@@ -1,6 +1,7 @@
 Publish final KomariX v1.0.0.
 
-Rebuild after fresh-install fixes:
-- persist PurCarte as the default public theme
-- wait for the normal application server before leaving the installer
+Rebuild after installer routing fix:
+- first-run installer always uses the built-in KomariX frontend
+- public homepage remains PurCarte by default after installation
+- installer waits for the normal application server before redirecting
 - keep the release version at v1.0.0
