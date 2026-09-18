@@ -364,7 +364,7 @@ func fetchPluginMarketCatalog(source PluginMarketSource, force bool) ([]PluginMa
 			return append([]PluginMarketPlugin(nil), cached.Plugins...), nil
 		}
 	}
-	data, err := downloadMarketURL(source.URL, marketCatalogMaxSize)
+	data, err := downloadMarketURLWithOptions(source.URL, marketCatalogMaxSize, force)
 	if err != nil {
 		return nil, err
 	}
