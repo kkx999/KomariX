@@ -11,6 +11,8 @@
 [![版本](https://img.shields.io/github/v/release/kkx999/KomariX?label=版本)](https://github.com/kkx999/KomariX/releases)
 [![许可证](https://img.shields.io/github/license/kkx999/KomariX?label=许可证)](./LICENSE)
 
+[**提交主题**](https://komarix.666101.xyz/) · 为 KomariX 提交第三方主题，审核通过后发布至官方主题市场。
+
 </div>
 
 ## 项目介绍
