@@ -23,7 +23,7 @@ KomariX 是一个面向个人用户和小型服务器集群的自托管监控面
 
 它通过轻量级 Agent 采集服务器运行数据，并在 Web 面板中进行实时展示。你可以用一套面板集中查看多台服务器的在线状态、资源占用、网络流量和历史数据，也可以使用通知、主题和插件等扩展功能。
 
-Web、Agent、默认 PurCarte 主题以及市场索引均由 KomariX 仓库独立维护，日常构建、新节点安装和正式版本发布均由 KomariX 自有资源完成。
+Web、Agent、默认 PurCarte 主题以及主题/插件市场均由 KomariX 独立维护。KomariX 保持对旧 Komari 数据、主题与插件格式的兼容，并提供从 Komari 迁移到 KomariX 的持续适配。
 
 ## 主要功能
 
@@ -37,7 +37,8 @@ Web、Agent、默认 PurCarte 主题以及市场索引均由 KomariX 仓库独�
 - 默认内置并启用 PurCarte 磨砂玻璃主题
 - 兼容第三方旧主题与插件格式
 - 使用 KomariX 自有主题/插件市场索引镜像
-- 支持主题与插件扩展
+- 支持第三方主题与插件扩展、投稿与审核
+- 支持从 Komari 迁移数据并持续处理兼容项
 - 数据备份与恢复
 - 多架构 Linux / Windows 构建
 - 自托管部署，监控数据由自己掌控
@@ -83,11 +84,11 @@ http://服务器IP:25774
 
 最新正式版可在 [Releases](https://github.com/kkx999/KomariX/releases) 下载。
 
-## 版本说明
+## 文档与资源
 
-KomariX 当前正式版本为 **v1.0.1**。
-
-v1.0.0 进一步统一 KomariX 自有代码、主题清单、插件清单、市场字段、Web 运行时标识与用户可见品牌。KomariX 原生主题使用 `komarix-theme.json`，原生插件使用 `komarix-plugin.json` 和 `komarix` 版本字段；第三方旧格式仍可兼容读取并在安装后归一为 KomariX 格式。默认主题为基于 **PurCarte v1.2.5** 修改的 KomariX 内置版本，原作者署名与 MIT License 保留不变。
+- [版本更新记录](./CHANGELOG.md)
+- [正式版本下载](https://github.com/kkx999/KomariX/releases)
+- [主题与插件资源投稿](https://komarix.666101.xyz/)
 
 ## 数据与目录
 
