@@ -31,17 +31,55 @@ const (
 	legacyThemeManifestFile = "komari-theme.json"
 )
 
-func findThemeManifest(files []*zip.File) *zip.File {
-	var legacy *zip.File
+func findThemeManifest(files []*zip.File) (*zip.File, string, error) {
+	var rootLegacy *zip.File
 	for _, f := range files {
-		switch f.Name {
+		name := filepath.ToSlash(f.Name)
+		switch name {
 		case themeManifestFile:
-			return f
+			return f, "", nil
 		case legacyThemeManifestFile:
-			legacy = f
+			rootLegacy = f
 		}
 	}
-	return legacy
+	if rootLegacy != nil {
+		return rootLegacy, "", nil
+	}
+
+	type candidate struct {
+		manifest *zip.File
+		legacy   bool
+	}
+	candidates := map[string]candidate{}
+	for _, f := range files {
+		name := filepath.ToSlash(f.Name)
+		if strings.Count(name, "/") != 1 {
+			continue
+		}
+		parts := strings.SplitN(name, "/", 2)
+		if parts[0] == "" {
+			continue
+		}
+		base := parts[1]
+		if base != themeManifestFile && base != legacyThemeManifestFile {
+			continue
+		}
+		current, exists := candidates[parts[0]]
+		isLegacy := base == legacyThemeManifestFile
+		if !exists || (current.legacy && !isLegacy) {
+			candidates[parts[0]] = candidate{manifest: f, legacy: isLegacy}
+		}
+	}
+	if len(candidates) == 0 {
+		return nil, "", nil
+	}
+	if len(candidates) > 1 {
+		return nil, "", errors.New("主题 ZIP 包含多个一级主题目录，无法确定安装根目录")
+	}
+	for root, item := range candidates {
+		return item.manifest, root + "/", nil
+	}
+	return nil, "", nil
 }
 
 func themeManifestPath(dir string) (string, bool) {
@@ -194,9 +232,12 @@ func extractAndValidateTheme(zipPath string) (models.Theme, error) {
 	}
 
 	// KomariX 原生使用 komarix-theme.json；安装第三方旧主题时兼容旧清单名。
-	themeConfigFile := findThemeManifest(r.File)
+	themeConfigFile, archiveRoot, err := findThemeManifest(r.File)
+	if err != nil {
+		return themeInfo, err
+	}
 	if themeConfigFile == nil {
-		return themeInfo, fmt.Errorf("主题配置文件 %s 不存在", themeManifestFile)
+		return themeInfo, fmt.Errorf("主题配置文件 %s / %s 不存在", themeManifestFile, legacyThemeManifestFile)
 	}
 
 	// 读取主题配置
@@ -236,17 +277,29 @@ func extractAndValidateTheme(zipPath string) (models.Theme, error) {
 		return themeInfo, fmt.Errorf("创建主题目录失败: %v", err)
 	}
 
-	// 解压文件到主题目录
+	// 解压文件到主题目录。兼容唯一一级外层目录，并在安装时自动剥掉该层。
 	for _, f := range r.File {
-		path := filepath.Join(themeDir, f.Name)
+		entryName := filepath.ToSlash(f.Name)
+		if archiveRoot != "" {
+			if !strings.HasPrefix(entryName, archiveRoot) {
+				continue
+			}
+			entryName = strings.TrimPrefix(entryName, archiveRoot)
+			if entryName == "" {
+				continue
+			}
+		}
+		path := filepath.Join(themeDir, filepath.FromSlash(entryName))
 
 		// 安全检查，防止路径遍历攻击
-		if !strings.HasPrefix(path, filepath.Clean(themeDir)+string(os.PathSeparator)) {
-			continue
+		if path != filepath.Clean(themeDir) && !strings.HasPrefix(path, filepath.Clean(themeDir)+string(os.PathSeparator)) {
+			return themeInfo, fmt.Errorf("主题 ZIP 包含不安全路径: %s", f.Name)
 		}
 
 		if f.FileInfo().IsDir() {
-			os.MkdirAll(path, f.FileInfo().Mode())
+			if err := os.MkdirAll(path, f.FileInfo().Mode()); err != nil {
+				return themeInfo, fmt.Errorf("创建目录失败: %v", err)
+			}
 			continue
 		}
 
@@ -276,7 +329,7 @@ func extractAndValidateTheme(zipPath string) (models.Theme, error) {
 		}
 	}
 
-	if themeConfigFile.Name == legacyThemeManifestFile {
+	if filepath.Base(filepath.ToSlash(themeConfigFile.Name)) == legacyThemeManifestFile {
 		legacyPath := filepath.Join(themeDir, legacyThemeManifestFile)
 		primaryPath := filepath.Join(themeDir, themeManifestFile)
 		if err := os.Rename(legacyPath, primaryPath); err != nil {
@@ -708,9 +761,12 @@ func peekThemeFromZip(zipPath string) (models.Theme, error) {
 		return themeInfo, err
 	}
 
-	themeConfigFile := findThemeManifest(r.File)
+	themeConfigFile, _, err := findThemeManifest(r.File)
+	if err != nil {
+		return themeInfo, err
+	}
 	if themeConfigFile == nil {
-		return themeInfo, fmt.Errorf("主题配置文件 %s 不存在，不是合法的主题包", themeManifestFile)
+		return themeInfo, fmt.Errorf("主题配置文件 %s / %s 不存在，不是合法的主题包", themeManifestFile, legacyThemeManifestFile)
 	}
 
 	rc, err := themeConfigFile.Open()
