@@ -411,7 +411,7 @@ func validateThemeMarketTheme(theme ThemeMarketTheme) error {
 	if !isMarketText(theme.Name) || theme.Short == "" || theme.Version == "" || !isMarketText(theme.Author) {
 		return errors.New("name, short, version and author are required")
 	}
-	if !isValidMarketShort(theme.Short) {
+	if !isValidThemeShort(theme.Short) {
 		return errors.New("short contains invalid characters")
 	}
 	if (theme.Download == "") != (theme.SHA256 == "") {
