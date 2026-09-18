@@ -386,7 +386,7 @@ jobs:
           assert len(panels) == 8, panels
           assert len(agents) == 14, agents
           assert "SHA256SUMS" in assets
-          assert len(assets) == 23, len(assets)
+          assert len(assets) == 24, len(assets)\n          assert "komarix-frontends-v1.0.1.tar.gz" in assets
           assert "komarix-linux-amd64" in assets
           assert "komarix-agent-linux-amd64" in assets
 
