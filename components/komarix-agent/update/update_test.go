@@ -235,9 +235,13 @@ func TestSnapshotUpdateReturnsRestartRequired(t *testing.T) {
 			return nil
 		},
 	}
+	expectedOwner, expectedRepo, err := splitRepoSlug(Repo)
+	if err != nil {
+		t.Fatalf("splitRepoSlug(%q) error = %v", Repo, err)
+	}
 	lister := func(owner, repo string) ([]githubRelease, error) {
-		if owner != "komarix-monitor" || repo != "komarix-agent" {
-			t.Fatalf("list releases repo = %s/%s, want komarix-monitor/komarix-agent", owner, repo)
+		if owner != expectedOwner || repo != expectedRepo {
+			t.Fatalf("list releases repo = %s/%s, want %s/%s", owner, repo, expectedOwner, expectedRepo)
 		}
 		return []githubRelease{release}, nil
 	}
