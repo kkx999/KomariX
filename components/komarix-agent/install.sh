@@ -214,32 +214,7 @@ uninstall_previous() {
     fi
 }
 
-# Remove a legacy Komari Agent installation when switching to KomariX names.
-cleanup_legacy_previous() {
-    legacy_service_name="komari-agent"
-    if [ "$legacy_service_name" = "$service_name" ]; then
-        return
-    fi
-
-    if [ "$user_service" = true ]; then
-        if systemctl --user list-unit-files 2>/dev/null | grep -q "${legacy_service_name}.service"; then
-            systemctl --user stop "${legacy_service_name}.service" 2>/dev/null || true
-            systemctl --user disable "${legacy_service_name}.service" 2>/dev/null || true
-            rm -f "${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/${legacy_service_name}.service"
-            systemctl --user daemon-reload 2>/dev/null || true
-        fi
-    elif command -v systemctl >/dev/null 2>&1 && systemctl list-unit-files 2>/dev/null | grep -q "${legacy_service_name}.service"; then
-        systemctl stop "${legacy_service_name}.service" 2>/dev/null || true
-        systemctl disable "${legacy_service_name}.service" 2>/dev/null || true
-        rm -f "/etc/systemd/system/${legacy_service_name}.service"
-        systemctl daemon-reload 2>/dev/null || true
-    fi
-
-    rm -f "/opt/komari/agent" 2>/dev/null || true
-}
-
-# Uninstall previous installation
-cleanup_legacy_previous
+# Uninstall previous KomariX Agent installation
 uninstall_previous
 
 install_dependencies() {
