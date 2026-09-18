@@ -28,11 +28,11 @@ runs:
       run: |
         set -euxo pipefail
         rm -rf komari-web
-        if [ -n "${{ inputs.ref }}" ]; then
-          git clone --depth=1 --branch "${{ inputs.ref }}" "${{ inputs.repository }}" komari-web
-        else
-          git clone --depth=1 "${{ inputs.repository }}" komari-web
+        FRONTEND_REF="${{ inputs.ref }}"
+        if [ -z "$FRONTEND_REF" ]; then
+          FRONTEND_REF="1.4.3"
         fi
+        git clone --depth=1 --branch "$FRONTEND_REF" "${{ inputs.repository }}" komari-web
         cd komari-web
         npm install
         npm run build
@@ -56,6 +56,7 @@ runs:
         rm -rf web/public/defaultTheme/dist/*
         cp -r komari-web/dist/* web/public/defaultTheme/dist/
         cp -f komari-web/komari-theme.json web/public/defaultTheme/
+        sed -i 's/Komari/KomariX/g' web/public/defaultTheme/komari-theme.json
         if [ -f komari-web/preview.png ]; then cp -f komari-web/preview.png web/public/defaultTheme/; fi
         if [ -f komari-web/perview.png ]; then cp -f komari-web/perview.png web/public/defaultTheme/; fi
         if [ -f web/public/defaultTheme/preview.png ] && [ ! -f web/public/defaultTheme/perview.png ]; then cp -f web/public/defaultTheme/preview.png web/public/defaultTheme/perview.png; fi
