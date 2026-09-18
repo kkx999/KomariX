@@ -224,7 +224,7 @@ jobs:
             BINARY_NAME="${BINARY_NAME}.exe"
           fi
           go build -trimpath \
-            -ldflags="-s -w -X github.com/komari-monitor/komari-agent/update.CurrentVersion=${VERSION} -X github.com/komari-monitor/komari-agent/update.Repo=kkx999/KomariX" \
+            -ldflags="-s -w -X github.com/kkx999/KomariX/components/komarix-agent/update.CurrentVersion=${VERSION} -X github.com/kkx999/KomariX/components/komarix-agent/update.Repo=kkx999/KomariX" \
             -o "../../${BINARY_NAME}" .
           LEGACY_NAME="${BINARY_NAME/komarix-agent-/komari-agent-}"
           cp "../../${BINARY_NAME}" "../../${LEGACY_NAME}"
@@ -287,7 +287,7 @@ jobs:
         shell: bash
         run: |
           cd components/komarix-agent
-          LDFLAGS="-s -w -X github.com/komari-monitor/komari-agent/update.CurrentVersion=${VERSION} -X github.com/komari-monitor/komari-agent/update.Repo=kkx999/KomariX"
+          LDFLAGS="-s -w -X github.com/kkx999/KomariX/components/komarix-agent/update.CurrentVersion=${VERSION} -X github.com/kkx999/KomariX/components/komarix-agent/update.Repo=kkx999/KomariX"
           GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="$LDFLAGS" -o komari-agent-linux-amd64 .
           GOOS=linux GOARCH=arm64 go build -trimpath -ldflags="$LDFLAGS" -o komari-agent-linux-arm64 .
 
