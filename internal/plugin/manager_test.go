@@ -13,7 +13,7 @@ import (
 	"github.com/kkx999/KomariX/pkg/rpc"
 )
 
-const demoManifest = `{"name":"Demo","short":"demo","version":"1.0.0","komari":">=0.0.1","permissions":{"node":true,"timeout":5,"allowRoutes":true,"allowSystemRPC":true}}`
+const demoManifest = `{"name":"Demo","short":"demo","version":"1.0.0","komarix":">=0.0.1","permissions":{"node":true,"timeout":5,"allowRoutes":true,"allowSystemRPC":true}}`
 
 func TestManagerSwitchRouteCallAndLogs(t *testing.T) {
 	withTempDataDir(t)
