@@ -30,15 +30,24 @@ func CheckKomariXVersion(constraint string) error {
 	if err != nil {
 		return fmt.Errorf("invalid KomariX version constraint %q: %w", constraint, err)
 	}
-	have, err := parseSemver(utils.CurrentVersion)
-	if err != nil {
-		// A malformed server version must not block plugin loading.
+
+	// Native KomariX plugins may target the product version, while legacy Komari
+	// plugins carry the upstream Komari version they were built against. Accept
+	// the package when either the running product version or the explicitly
+	// maintained plugin-API compatibility baseline satisfies the constraint.
+	if have, err := parseSemver(utils.CurrentVersion); err == nil && satisfies(compareSemver(have, want), op) {
 		return nil
 	}
-	if !satisfies(compareSemver(have, want), op) {
-		return fmt.Errorf("plugin requires KomariX %s, running %s", constraint, utils.CurrentVersion)
+	if compat, err := parseSemver(utils.PluginCompatibilityVersion); err == nil && satisfies(compareSemver(compat, want), op) {
+		return nil
 	}
-	return nil
+
+	return fmt.Errorf(
+		"plugin requires KomariX/plugin API %s, running %s (plugin API compatibility %s)",
+		constraint,
+		utils.CurrentVersion,
+		utils.PluginCompatibilityVersion,
+	)
 }
 
 func satisfies(cmp int, op string) bool {

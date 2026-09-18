@@ -96,6 +96,8 @@ function isVersionNewer(candidate: string, installed: string) {
   return false;
 }
 
+const LEGACY_PLUGIN_API_COMPATIBILITY = "1.4.3";
+
 function isKomariXCompatible(constraint: string | undefined, current: string) {
   const parse = (value: string): [number, number, number] | null => {
     const parts = value.trim().replace(/^v/, "").split(".");
@@ -111,9 +113,9 @@ function isKomariXCompatible(constraint: string | undefined, current: string) {
       number,
     ];
   };
-  const currentVersion = parse(current);
+
   const requirement = (constraint || "").trim();
-  if (!requirement || !currentVersion) return true;
+  if (!requirement) return true;
 
   let operator = "";
   let version = requirement;
@@ -127,25 +129,34 @@ function isKomariXCompatible(constraint: string | undefined, current: string) {
   const requiredVersion = parse(version);
   if (!requiredVersion) return false;
 
-  let comparison = 0;
-  for (let index = 0; index < 3; index += 1) {
-    if (currentVersion[index] !== requiredVersion[index]) {
-      comparison = currentVersion[index] > requiredVersion[index] ? 1 : -1;
-      break;
+  const satisfiesVersion = (raw: string) => {
+    const have = parse(raw);
+    if (!have) return false;
+    let comparison = 0;
+    for (let index = 0; index < 3; index += 1) {
+      if (have[index] !== requiredVersion[index]) {
+        comparison = have[index] > requiredVersion[index] ? 1 : -1;
+        break;
+      }
     }
-  }
-  switch (operator) {
-    case ">=":
-      return comparison >= 0;
-    case ">":
-      return comparison > 0;
-    case "<=":
-      return comparison <= 0;
-    case "<":
-      return comparison < 0;
-    default:
-      return comparison === 0;
-  }
+    switch (operator) {
+      case ">=":
+        return comparison >= 0;
+      case ">":
+        return comparison > 0;
+      case "<=":
+        return comparison <= 0;
+      case "<":
+        return comparison < 0;
+      default:
+        return comparison === 0;
+    }
+  };
+
+  return (
+    satisfiesVersion(current) ||
+    satisfiesVersion(LEGACY_PLUGIN_API_COMPATIBILITY)
+  );
 }
 
 // 插件是否声明了可编辑配置项（忽略 title 分组项）。
