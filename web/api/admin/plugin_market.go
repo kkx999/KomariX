@@ -47,6 +47,21 @@ type PluginMarketPlugin struct {
 	SourceName  string `json:"source_name,omitempty"`
 }
 
+func (p *PluginMarketPlugin) UnmarshalJSON(data []byte) error {
+	type alias PluginMarketPlugin
+	aux := struct {
+		*alias
+		LegacyKomari string `json:"komari"`
+	}{alias: (*alias)(p)}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	if p.KomariX == "" {
+		p.KomariX = aux.LegacyKomari
+	}
+	return nil
+}
+
 type pluginMarketCatalog struct {
 	Schema  int                  `json:"schema"`
 	Plugins []PluginMarketPlugin `json:"plugins"`
