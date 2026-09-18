@@ -265,7 +265,7 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
             --title "KomariX v1.0.2" \
-            --notes "KomariX v1.0.2：完成独立化。内置并默认使用 PurCarte v1.2.5 的 KomariX 品牌版本；前端、Agent 与 PurCarte 源码已固定归档；Agent 安装与自更新改由 KomariX Release 提供；主题和插件市场默认使用 KomariX 镜像索引。保留 Komari 1.4.3 兼容逻辑与原始开源许可证。" \
+            --notes "KomariX v1.0.2：完成独立化。内置并默认使用 PurCarte v1.2.5 的 KomariX 品牌版本；前端、Agent 与 PurCarte 源码已固定归档；Agent 安装与自更新改由 KomariX Release 提供；主题和插件市场默认使用 KomariX 镜像索引。基于 Komari 修改并继续独立维护，同时保留原始开源许可证。" \
             artifacts/komari*
 
   publish-agent-docker:
