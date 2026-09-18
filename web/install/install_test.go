@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/kkx999/KomariX/internal/metricstore"
 	"github.com/kkx999/KomariX/database/models"
+	frontendpublic "github.com/kkx999/KomariX/web/public"
 	appconfig "github.com/kkx999/KomariX/internal/config"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -96,6 +97,7 @@ func TestInstallCompletesAndPersistsSettings(t *testing.T) {
 	want := map[string]any{
 		appconfig.SitenameKey:         "My KomariX",
 		appconfig.DescriptionKey:      "Private monitoring",
+		appconfig.ThemeKey:            frontendpublic.DefaultPublicTheme,
 		metricstore.MetricDBDriverKey: "sqlite",
 		metricstore.MetricDBDSNKey:    metricDSN,
 	}
