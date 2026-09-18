@@ -33,6 +33,13 @@ runs:
           FRONTEND_REF="1.4.3"
         fi
         git clone --depth=1 --branch "$FRONTEND_REF" "${{ inputs.repository }}" komari-web
+
+        # Keep Komari 1.4.3 frontend behavior, but route Agent installation
+        # through the KomariX branded installer wrapper.
+        find komari-web/src -type f \( -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' \) -print0 | \
+          xargs -0 -r sed -i \
+            's#https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/#https://raw.githubusercontent.com/kkx999/KomariX/main/agent/#g'
+
         cd komari-web
         npm install
         npm run build
