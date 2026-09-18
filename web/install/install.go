@@ -20,6 +20,7 @@ import (
 	"github.com/kkx999/KomariX/internal/metricstore"
 	logger "github.com/kkx999/KomariX/utils/log"
 	"github.com/kkx999/KomariX/web/api"
+	frontendpublic "github.com/kkx999/KomariX/web/public"
 	"github.com/kkx999/KomariX/web/backup"
 	"github.com/kkx999/KomariX/web/upload"
 	"gorm.io/gorm"
@@ -179,6 +180,7 @@ func (c *Controller) createAccountAndSettings(request *completeRequest, cfg *met
 	settings := map[string]any{
 		appconfig.SitenameKey:         request.Sitename,
 		appconfig.DescriptionKey:      request.Description,
+		appconfig.ThemeKey:            frontendpublic.DefaultPublicTheme,
 		metricstore.MetricDBDriverKey: cfg.Driver,
 		metricstore.MetricDBDSNKey:    cfg.DSN,
 	}
