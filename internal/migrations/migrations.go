@@ -2,6 +2,7 @@ package migrations
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	logger "github.com/kkx999/KomariX/utils/log"
 	"reflect"
@@ -123,6 +124,9 @@ func Run(ctx Context) error {
 			return err
 		}
 	}
+	if err := migrateLegacyPluginMarketSources(db); err != nil {
+		return err
+	}
 	if err := migrateDeprecatedMetricRetentionConfig(db); err != nil {
 		return err
 	}
@@ -134,6 +138,84 @@ func Run(ctx Context) error {
 	}
 
 	return nil
+}
+
+
+const (
+	legacyOfficialPluginMarketURL = "https://raw.githubusercontent.com/komari-monitor/plugin-market/main/v1.json"
+	komarixOfficialPluginMarketURL = "https://raw.githubusercontent.com/kkx999/KomariX/main/market/plugin-v1.json"
+)
+
+type pluginMarketSourceMigration struct {
+	ID      string
+	Name    string
+	URL     string
+	Enabled bool
+}
+
+func migrateLegacyPluginMarketSources(db *gorm.DB) error {
+	if !db.Migrator().HasTable(&appconfig.ConfigItem{}) {
+		return nil
+	}
+
+	var item appconfig.ConfigItem
+	if err := db.Where("key = ?", appconfig.PluginMarketSourcesKey).First(&item).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil
+		}
+		return fmt.Errorf("read plugin market sources: %w", err)
+	}
+
+	var sources []pluginMarketSourceMigration
+	if err := json.Unmarshal([]byte(item.Value), &sources); err != nil {
+		return fmt.Errorf("parse plugin market sources: %w", err)
+	}
+	next, changed := normalizeLegacyPluginMarketSources(sources)
+	if !changed {
+		return nil
+	}
+	encoded, err := json.Marshal(next)
+	if err != nil {
+		return fmt.Errorf("marshal migrated plugin market sources: %w", err)
+	}
+	if err := db.Model(&appconfig.ConfigItem{}).
+		Where("key = ?", appconfig.PluginMarketSourcesKey).
+		Update("value", string(encoded)).Error; err != nil {
+		return fmt.Errorf("save migrated plugin market sources: %w", err)
+	}
+
+	logger.InfoArgs("migration", "Replaced legacy Komari Official plugin market source with KomariX official source")
+	return nil
+}
+
+func normalizeLegacyPluginMarketSources(sources []pluginMarketSourceMigration) ([]pluginMarketSourceMigration, bool) {
+	hasKomariXOfficial := false
+	for _, source := range sources {
+		if strings.TrimSpace(source.URL) == komarixOfficialPluginMarketURL {
+			hasKomariXOfficial = true
+			break
+		}
+	}
+
+	changed := false
+	next := make([]pluginMarketSourceMigration, 0, len(sources))
+	for _, source := range sources {
+		if strings.TrimSpace(source.URL) != legacyOfficialPluginMarketURL {
+			next = append(next, source)
+			continue
+		}
+
+		changed = true
+		if hasKomariXOfficial {
+			continue
+		}
+		source.ID = "official"
+		source.Name = "KomariX 市场镜像"
+		source.URL = komarixOfficialPluginMarketURL
+		next = append(next, source)
+		hasKomariXOfficial = true
+	}
+	return next, changed
 }
 
 func migrateDeprecatedMetricRetentionConfig(db *gorm.DB) error {
