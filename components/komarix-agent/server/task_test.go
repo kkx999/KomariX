@@ -1,63 +1,92 @@
 package server
 
 import (
+	"net"
+	"net/http"
+	"net/http/httptest"
+	"os"
+	"strings"
 	"testing"
 	"time"
 )
 
-var testTargets = []struct {
-	target string
-}{
-	{"v6-sh-cm.oojj.de"},
-	{"2409:8c1e:8f80:2:6a::"},
-	{"[2409:8c1e:8f80:2:6a::]"},
-	{"[2409:8c1e:8f80:2:6a::]:80"},
-	{"v4-sh-cm.oojj.de"},
-	{"117.185.125.154"},
-	{"117.185.125.154:80"},
-}
-
-func TestICMPPing(t *testing.T) {
-	timeout := 3 * time.Second
-	for _, tt := range testTargets {
-		t.Run(tt.target, func(t *testing.T) {
-			latency, err := icmpPing(tt.target, timeout)
-			if latency < -1 {
-				t.Errorf("ICMP ping %s: invalid latency %d", tt.target, latency)
-			}
-			if err != nil {
-				t.Errorf("ICMP ping %s error: %v", tt.target, err)
-			}
-		})
+func TestResolveIPLiteral(t *testing.T) {
+	got, err := resolveIP("127.0.0.1")
+	if err != nil {
+		t.Fatalf("resolveIP() error = %v", err)
+	}
+	if got != "127.0.0.1" {
+		t.Fatalf("resolveIP() = %q, want 127.0.0.1", got)
 	}
 }
 
-func TestTCPPing(t *testing.T) {
-	timeout := 3 * time.Second
-	for _, tt := range testTargets {
-		t.Run(tt.target, func(t *testing.T) {
-			latency, err := tcpPing(tt.target, timeout)
-			if latency < -1 {
-				t.Errorf("TCP ping %s: invalid latency %d", tt.target, latency)
-			}
-			if err != nil {
-				t.Errorf("TCP ping %s error: %v", tt.target, err)
-			}
-		})
+func TestTCPPingLocalListener(t *testing.T) {
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("listen: %v", err)
+	}
+	defer listener.Close()
+
+	accepted := make(chan struct{})
+	go func() {
+		conn, acceptErr := listener.Accept()
+		if acceptErr == nil {
+			_ = conn.Close()
+		}
+		close(accepted)
+	}()
+
+	latency, err := tcpPing(listener.Addr().String(), time.Second)
+	if err != nil {
+		t.Fatalf("tcpPing() error = %v", err)
+	}
+	if latency < 0 {
+		t.Fatalf("tcpPing() latency = %d, want >= 0", latency)
+	}
+
+	select {
+	case <-accepted:
+	case <-time.After(time.Second):
+		t.Fatal("local TCP listener did not accept the probe")
 	}
 }
 
-func TestHTTPPing(t *testing.T) {
-	timeout := 3 * time.Second
-	for _, tt := range testTargets {
-		t.Run(tt.target, func(t *testing.T) {
-			latency, err := httpPing(tt.target, timeout)
-			if latency < -1 {
-				t.Errorf("HTTP ping %s: invalid latency %d", tt.target, latency)
-			}
-			if err != nil {
-				t.Errorf("HTTP ping %s error: %v", tt.target, err)
-			}
-		})
+func TestHTTPPingLocalServer(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}))
+	defer server.Close()
+
+	latency, err := httpPing(server.URL, time.Second)
+	if err != nil {
+		t.Fatalf("httpPing() error = %v", err)
+	}
+	if latency < 0 {
+		t.Fatalf("httpPing() latency = %d, want >= 0", latency)
+	}
+}
+
+func TestHTTPPingRejectsErrorStatus(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		http.Error(w, "failure", http.StatusInternalServerError)
+	}))
+	defer server.Close()
+
+	if _, err := httpPing(server.URL, time.Second); err == nil || !strings.Contains(err.Error(), "http status not ok") {
+		t.Fatalf("httpPing() error = %v, want HTTP status error", err)
+	}
+}
+
+func TestICMPPingIntegration(t *testing.T) {
+	if os.Getenv("KOMARIX_RUN_PRIVILEGED_NETWORK_TESTS") != "1" {
+		t.Skip("set KOMARIX_RUN_PRIVILEGED_NETWORK_TESTS=1 to run raw-socket ICMP integration test")
+	}
+
+	latency, err := icmpPing("127.0.0.1", time.Second)
+	if err != nil {
+		t.Fatalf("icmpPing() error = %v", err)
+	}
+	if latency < 0 {
+		t.Fatalf("icmpPing() latency = %d, want >= 0", latency)
 	}
 }
