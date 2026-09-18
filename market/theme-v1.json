@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updated_at": "2026-09-18T19:02:16.077Z",
+  "updated_at": "2026-09-18T19:02:25.319Z",
   "themes": [
     {
       "name": {
@@ -759,6 +759,21 @@
       "upstream_download": "https://github.com/TomorrowX6/Komari-Butterfly/releases/download/v1.5.0/komari-butterfly-v1.5.0.zip",
       "upstream_preview": "https://raw.githubusercontent.com/TomorrowX6/Komari-Butterfly/refs/heads/main/preview.png",
       "preview_sha256": "da7471ecd658bdb44e7bb6221fd23611059f38c62ad4589df6c72266c2de9afb",
+      "komarix_branding": true
+    },
+    {
+      "name": "爱弥斯 / Aemeath",
+      "short": "aemeath",
+      "description": "基于 Vue 3 的爱弥斯主题监控面板，包含响应式实时状态、平滑过渡与多端适配。",
+      "version": "1.9.1",
+      "author": "Ronana / 夜灭",
+      "url": "https://github.com/adminsama/Aemeath",
+      "preview": "https://github.com/kkx999/KomariX/releases/download/v1.0.0/preview-02-aemeath-1.9.1-d3eb94cdee8b.png",
+      "download": "https://github.com/kkx999/KomariX/releases/download/v1.0.0/theme-02-aemeath-1.9.1-8c34f14d0630.zip",
+      "sha256": "8c34f14d06301070d84c196597002d62800d77c84e8225a792e763ca694a68cb",
+      "upstream_download": "https://github.com/adminsama/Aemeath/releases/download/v1.9.1/aemeath-komari-theme-v1.9.1.zip",
+      "upstream_preview": "https://gov.yachts/themes/aemeath/preview.png",
+      "preview_sha256": "d3eb94cdee8b025f0eeb51add8bfded1f6aad9bf229a06f93c1297edcc12bf39",
       "komarix_branding": true
     }
   ]
