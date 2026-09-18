@@ -1,0 +1,113 @@
+name: KomariX residual source cleanup
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/cleanup-komarix-residuals.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Clean remaining safe Komari names
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          replacements_by_file = {
+            "database/accounts/2fa.go": [('"komari"', '"komarix"')],
+            "database/models/theme.go": [("komari theme information", "KomariX theme information")],
+            "cmd/chpasswd.go": [("`komari chpasswd", "`komarix chpasswd")],
+            "web/rpc/jsonrpc/README.md": [("komari 前端面 RPC", "KomariX 前端 RPC")],
+            "web/api/admin/download.go": [('"komari-backup-*"', '"komarix-backup-*"')],
+            "web/api/admin/plugin_market_test.go": [("https://raw.githubusercontent.com/komari-monitor/plugin-market/main/v1.json", "https://raw.githubusercontent.com/kkx999/KomariX/main/market/plugin-v1.json")],
+            "web/migration/migration_test.go": [("user=komari", "user=komarix"), ("dbname=komari", "dbname=komarix")],
+            "agent/install.sh": [("Use C:\\komari on Windows", "Use C:\\komarix on Windows"), ('description="Komari monitoring agent"', 'description="KomariX monitoring agent"')],
+            "components/komarix-agent/install.sh": [("Use C:\\komari on Windows", "Use C:\\komarix on Windows"), ('description="Komari monitoring agent"', 'description="KomariX monitoring agent"')],
+            "pkg/jsruntime/process/process.go": [('"title", "komari-jsruntime"', '"title", "komarix-jsruntime"')],
+            "pkg/metric/maintenance_test.go": [("komari.metric_points", "komarix.metric_points")],
+            ".gitignore": [("\nkomari\n", "\nkomarix\n")],
+            "components/komarix-web/vite.config.ts": [('name: "local-komari-theme"', 'name: "local-komarix-theme"')],
+            "components/komarix-web/index.html": [("komari-preview.png", "komarix-preview.png")],
+            "components/komarix-web/build-theme.sh": [('ZIP_NAME="komari-theme-v', 'ZIP_NAME="komarix-theme-v')],
+            "components/komarix-web/src/config/menuConfig.json": [("https://komari-document.pages.dev/", "https://github.com/kkx999/KomariX")],
+            "components/komarix-web/src/pages/instance/LoadChart.tsx": [("komari-instance-", "komarix-instance-")],
+            "components/komarix-web/src/pages/database_migration.tsx": [("/komari?parseTime=true", "/komarix?parseTime=true"), ("user=komari", "user=komarix"), ("dbname=komari", "dbname=komarix")],
+            "components/komarix-web/src/pages/admin/index.tsx": [(".komari-auto-discovery.json", ".komarix-auto-discovery.json")],
+            "components/komarix-web/src/pages/admin/settings/sign-on.tsx": [("'komari-'", "'komarix-'")],
+            "components/komarix-web/src/pages/admin/settings/general.tsx": [("https://komari-document.pages.dev/install/agent-ad.html", "https://github.com/kkx999/KomariX")],
+          }
+
+          for path, reps in replacements_by_file.items():
+              p=Path(path)
+              if not p.exists():
+                  continue
+              s=p.read_text(encoding="utf-8")
+              old=s
+              for a,b in reps:
+                  s=s.replace(a,b)
+              if s != old:
+                  p.write_text(s,encoding="utf-8")
+
+          loc=Path("components/komarix-web/src/i18n/locales")
+          if loc.exists():
+              for p in loc.glob("*.json"):
+                  s=p.read_text(encoding="utf-8")
+                  old=s
+                  s=s.replace("user=komari", "user=komarix")
+                  s=s.replace("dbname=komari", "dbname=komarix")
+                  s=s.replace("Komari", "KomariX")
+                  s=s.replace("/opt/komari-agent", "/opt/komarix-agent")
+                  s=s.replace("komari-agent", "komarix-agent")
+                  s=s.replace("https://komari-document.pages.dev/faq/notification-template.html", "https://github.com/kkx999/KomariX")
+                  if s != old:
+                      p.write_text(s,encoding="utf-8")
+
+          for p in list(Path("pkg/jsruntime").rglob("*_test.go")) + [Path("pkg/jsruntime/README.md")]:
+              if not p.exists():
+                  continue
+              s=p.read_text(encoding="utf-8")
+              old=s
+              s=re.sub(r"\\bkomari\\b", "komarix", s)
+              s=re.sub(r"\\bKomari\\b", "KomariX", s)
+              if s != old:
+                  p.write_text(s,encoding="utf-8")
+
+          p=Path("pkg/jsruntime/process/process.go")
+          s=p.read_text(encoding="utf-8")
+          s=s.replace('"node": "0.0.0-goja", "go": runtime.Version(), "komari": utils.CurrentVersion, "hash": utils.VersionHash', '"node": "0.0.0-goja", "go": runtime.Version(), "komarix": utils.CurrentVersion, "komari": utils.CurrentVersion, "hash": utils.VersionHash')
+          p.write_text(s,encoding="utf-8")
+
+          for p in Path("internal/plugin").rglob("*.go"):
+              s=p.read_text(encoding="utf-8")
+              old=s
+              s=s.replace("CheckKomariVersion", "CheckKomariXVersion")
+              s=s.replace("expected komari version mismatch error", "expected KomariX version mismatch error")
+              s=s.replace("manifest komari constraint", "manifest KomariX compatibility constraint")
+              if s != old:
+                  p.write_text(s,encoding="utf-8")
+
+          Path("web/public/readme.md").write_text("""# KomariX Web\n\nKomariX 的内置 Web 前端源码位于 components/komarix-web。\n\n构建产物由仓库内 .github/actions/build-frontend 自动生成并嵌入面板。\n\n为兼容 Komari 主题市场生态，主题清单文件仍使用 komari-theme.json 这一既有格式；这是生态协议文件名，不代表运行中的产品名称。\n\nKomariX 默认公开主题为内置 PurCarte，后台管理界面使用内置 KomariX Web。\n""", encoding="utf-8")
+          PY
+
+      - name: Commit cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "refactor: clean remaining KomariX runtime names [skip ci]"
+          git push origin HEAD:main
