@@ -3,9 +3,10 @@ set -eu
 
 UPSTREAM_URL="https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/install.sh"
 TMP_SCRIPT="${TMPDIR:-/tmp}/komarix-agent-install-$$.sh"
+TMP_BRANDED="${TMP_SCRIPT}.branded"
 
 cleanup() {
-    rm -f "$TMP_SCRIPT"
+    rm -f "$TMP_SCRIPT" "$TMP_BRANDED"
 }
 trap cleanup EXIT INT TERM
 
@@ -20,10 +21,17 @@ fi
 
 # Keep upstream installation logic and compatibility names unchanged.
 # Only replace user-visible Komari Agent branding.
-sed -i \
+sed \
     -e 's/Komari Agent/KomariX Agent/g' \
     -e 's/Komari-agent/KomariX Agent/g' \
     -e 's/KOMARI Agent/KomariX Agent/g' \
-    "$TMP_SCRIPT"
+    "$TMP_SCRIPT" > "$TMP_BRANDED"
+mv "$TMP_BRANDED" "$TMP_SCRIPT"
 
-exec sh "$TMP_SCRIPT" "$@"
+set +e
+sh "$TMP_SCRIPT" "$@"
+status=$?
+set -e
+cleanup
+trap - EXIT INT TERM
+exit "$status"
