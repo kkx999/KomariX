@@ -26,7 +26,35 @@ const (
 	maxThemeFileSize      = 128 << 20
 	maxThemeExtractedSize = 512 << 20
 	maxThemeManifestSize  = 1 << 20
+
+	themeManifestFile       = "komarix-theme.json"
+	legacyThemeManifestFile = "komari-theme.json"
 )
+
+func findThemeManifest(files []*zip.File) *zip.File {
+	var legacy *zip.File
+	for _, f := range files {
+		switch f.Name {
+		case themeManifestFile:
+			return f
+		case legacyThemeManifestFile:
+			legacy = f
+		}
+	}
+	return legacy
+}
+
+func themeManifestPath(dir string) (string, bool) {
+	primary := filepath.Join(dir, themeManifestFile)
+	if _, err := os.Stat(primary); err == nil {
+		return primary, true
+	}
+	legacy := filepath.Join(dir, legacyThemeManifestFile)
+	if _, err := os.Stat(legacy); err == nil {
+		return legacy, true
+	}
+	return primary, false
+}
 
 // ListThemes 列出所有主题
 func ListThemes(c *gin.Context) {
@@ -34,7 +62,7 @@ func ListThemes(c *gin.Context) {
 	var themes []models.Theme
 
 	// 系统内置后台/基础主题。
-	if raw, err := public.PublicFS.ReadFile("defaultTheme/komari-theme.json"); err == nil {
+	if raw, err := public.PublicFS.ReadFile("defaultTheme/komarix-theme.json"); err == nil {
 		var theme models.Theme
 		if json.Unmarshal(raw, &theme) == nil {
 			themes = append(themes, theme)
@@ -42,7 +70,7 @@ func ListThemes(c *gin.Context) {
 	}
 
 	// KomariX 内置 PurCarte 主题。
-	if raw, err := public.PublicFS.ReadFile("purcarteTheme/komari-theme.json"); err == nil {
+	if raw, err := public.PublicFS.ReadFile("purcarteTheme/komarix-theme.json"); err == nil {
 		var theme models.Theme
 		if json.Unmarshal(raw, &theme) == nil {
 			themes = append(themes, theme)
@@ -62,7 +90,10 @@ func ListThemes(c *gin.Context) {
 	}
 	for _, entry := range entries {
 		if entry.IsDir() {
-			themeConfigPath := filepath.Join(dataDir, entry.Name(), "komari-theme.json")
+			themeConfigPath, ok := themeManifestPath(filepath.Join(dataDir, entry.Name()))
+			if !ok {
+				continue
+			}
 			if themeInfo, err := loadThemeConfig(themeConfigPath); err == nil {
 				// 内置 PurCarte 不允许被同名外部主题覆盖展示。
 				if themeInfo.Short == public.DefaultPublicTheme {
@@ -131,9 +162,9 @@ func SetTheme(c *gin.Context) {
 			return
 		}
 		themeDir := filepath.Join("./data/theme", themeName)
-		themeConfigPath := filepath.Join(themeDir, "komari-theme.json")
+		_, exists := themeManifestPath(themeDir)
 
-		if _, err := os.Stat(themeConfigPath); os.IsNotExist(err) {
+		if !exists {
 			api.RespondError(c, http.StatusNotFound, "主题不存在")
 			return
 		}
@@ -162,17 +193,10 @@ func extractAndValidateTheme(zipPath string) (models.Theme, error) {
 		return themeInfo, err
 	}
 
-	// 查找komari-theme.json文件
-	var themeConfigFile *zip.File
-	for _, f := range r.File {
-		if f.Name == "komari-theme.json" {
-			themeConfigFile = f
-			break
-		}
-	}
-
+	// KomariX 原生使用 komarix-theme.json；安装第三方旧主题时兼容旧清单名。
+	themeConfigFile := findThemeManifest(r.File)
 	if themeConfigFile == nil {
-		return themeInfo, fmt.Errorf("主题配置文件 komari-theme.json 不存在")
+		return themeInfo, fmt.Errorf("主题配置文件 %s 不存在", themeManifestFile)
 	}
 
 	// 读取主题配置
@@ -249,6 +273,14 @@ func extractAndValidateTheme(zipPath string) (models.Theme, error) {
 
 		if err != nil {
 			return themeInfo, fmt.Errorf("解压文件失败: %v", err)
+		}
+	}
+
+	if themeConfigFile.Name == legacyThemeManifestFile {
+		legacyPath := filepath.Join(themeDir, legacyThemeManifestFile)
+		primaryPath := filepath.Join(themeDir, themeManifestFile)
+		if err := os.Rename(legacyPath, primaryPath); err != nil {
+			return themeInfo, fmt.Errorf("迁移主题配置文件失败: %v", err)
 		}
 	}
 
@@ -510,9 +542,8 @@ func UpdateTheme(c *gin.Context) {
 
 	// 检查主题是否存在
 	themeDir := filepath.Join("./data/theme", req.Short)
-	themeConfigPath := filepath.Join(themeDir, "komari-theme.json")
-
-	if _, err := os.Stat(themeConfigPath); os.IsNotExist(err) {
+	themeConfigPath, exists := themeManifestPath(themeDir)
+	if !exists {
 		api.RespondError(c, http.StatusNotFound, "主题不存在")
 		return
 	}
@@ -646,7 +677,7 @@ func UpdateTheme(c *gin.Context) {
 	// 	updatedThemeInfo.URL = downloadURL
 
 	// 	// 更新主题配置文件
-	// 	updatedConfigPath := filepath.Join("./data/theme", updatedThemeInfo.Short, "komari-theme.json")
+	// 	updatedConfigPath := filepath.Join("./data/theme", updatedThemeInfo.Short, themeManifestFile)
 	// 	updatedConfigData, err := json.MarshalIndent(updatedThemeInfo, "", "  ")
 	// 	if err != nil {
 	// 		api.RespondError(c, http.StatusInternalServerError, "生成主题配置失败: "+err.Error())
@@ -662,7 +693,7 @@ func UpdateTheme(c *gin.Context) {
 	api.RespondSuccessMessage(c, "主题更新成功", updatedThemeInfo)
 }
 
-// peekThemeFromZip 仅从ZIP文件中读取komari-theme.json并解析主题信息
+// peekThemeFromZip 从 ZIP 中读取 KomariX 清单；第三方旧包仍可使用兼容清单名。
 // 不执行解压安装，用于preview模式
 func peekThemeFromZip(zipPath string) (models.Theme, error) {
 	var themeInfo models.Theme
@@ -677,16 +708,9 @@ func peekThemeFromZip(zipPath string) (models.Theme, error) {
 		return themeInfo, err
 	}
 
-	var themeConfigFile *zip.File
-	for _, f := range r.File {
-		if f.Name == "komari-theme.json" {
-			themeConfigFile = f
-			break
-		}
-	}
-
+	themeConfigFile := findThemeManifest(r.File)
 	if themeConfigFile == nil {
-		return themeInfo, fmt.Errorf("主题配置文件 komari-theme.json 不存在，不是合法的主题包")
+		return themeInfo, fmt.Errorf("主题配置文件 %s 不存在，不是合法的主题包", themeManifestFile)
 	}
 
 	rc, err := themeConfigFile.Open()

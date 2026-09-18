@@ -65,7 +65,7 @@ const ThemeManaged: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const resp = await fetch(`/themes/${theme}/komari-theme.json`, {
+        const resp = await fetch(`/themes/${theme}/komarix-theme.json`, {
           cache: "no-cache",
         });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);

@@ -19,9 +19,14 @@ var urlSchemeRE = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9+\-.]*:`)
 // directory.
 func readManifest(dir string) (models.Plugin, error) {
 	var info models.Plugin
-	data, err := os.ReadFile(filepath.Join(dir, manifestFile))
+	manifestPath := filepath.Join(dir, manifestFile)
+	data, err := os.ReadFile(manifestPath)
 	if err != nil {
-		return info, fmt.Errorf("read plugin manifest: %w", err)
+		legacyPath := filepath.Join(dir, legacyManifestFile)
+		data, err = os.ReadFile(legacyPath)
+		if err != nil {
+			return info, fmt.Errorf("read plugin manifest: %w", err)
+		}
 	}
 	if err := json.Unmarshal(data, &info); err != nil {
 		return info, fmt.Errorf("parse plugin manifest: %w", err)

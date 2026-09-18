@@ -36,7 +36,7 @@ const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
       if (publicSettings?.theme) {
         try {
           const response = await fetch(
-            `/themes/${publicSettings.theme}/komari-theme.json`
+            `/themes/${publicSettings.theme}/komarix-theme.json`
           );
           const data = await response.json();
           setSettingsConfig(data.configuration.data);

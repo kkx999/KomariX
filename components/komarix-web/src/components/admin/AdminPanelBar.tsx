@@ -108,7 +108,7 @@ const AdminPanelBar = ({ content }: AdminPanelBarProps) => {
         return;
       }
       try {
-        const resp = await fetch(`/themes/${currentTheme}/komari-theme.json`, {
+        const resp = await fetch(`/themes/${currentTheme}/komarix-theme.json`, {
           cache: "no-cache",
         });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);

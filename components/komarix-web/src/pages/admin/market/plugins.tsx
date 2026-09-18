@@ -59,7 +59,7 @@ interface MarketPlugin {
   url?: string;
   download: string;
   sha256: string;
-  komari?: string;
+  komarix?: string;
   installable: boolean;
   source_id: string;
   source_name: string;
@@ -96,7 +96,7 @@ function isVersionNewer(candidate: string, installed: string) {
   return false;
 }
 
-function isKomariCompatible(constraint: string | undefined, current: string) {
+function isKomariXCompatible(constraint: string | undefined, current: string) {
   const parse = (value: string): [number, number, number] | null => {
     const parts = value.trim().replace(/^v/, "").split(".");
     if (
@@ -457,8 +457,8 @@ export default function PluginMarketPage() {
               installedVersion &&
               isVersionNewer(plugin.version, installedVersion),
             );
-            const komariCompatible = isKomariCompatible(
-              plugin.komari,
+            const komarixCompatible = isKomariXCompatible(
+              plugin.komarix,
               currentVersion,
             );
             const canConfigure =
@@ -482,9 +482,9 @@ export default function PluginMarketPage() {
                             : t("market.installed", "Installed")}
                         </Badge>
                       )}
-                      {!isInstalled && (!plugin.installable || !komariCompatible) && (
+                      {!isInstalled && (!plugin.installable || !komarixCompatible) && (
                         <Badge color="gray" variant="soft">
-                          {komariCompatible
+                          {komarixCompatible
                             ? t(
                                 "market.install_unavailable",
                                 "Package unavailable",
@@ -499,7 +499,7 @@ export default function PluginMarketPage() {
                   </Flex>
                   <Text size="2" color="gray">
                     {displayText(plugin.author)}
-                    {plugin.komari ? ` · ${plugin.komari}` : ""}
+                    {plugin.komarix ? ` · ${plugin.komarix}` : ""}
                   </Text>
                   {displayText(plugin.description) && (
                     <Text size="2">{displayText(plugin.description)}</Text>
@@ -509,7 +509,7 @@ export default function PluginMarketPage() {
                       {plugin.source_name}
                     </Text>
                     <Flex gap="1" wrap="wrap" justify="end">
-                      {!isInstalled && plugin.installable && komariCompatible && (
+                      {!isInstalled && plugin.installable && komarixCompatible && (
                         <Button
                           size="1"
                           disabled={installing === key}
@@ -521,7 +521,7 @@ export default function PluginMarketPage() {
                             : t("plugin.market_install", "Install")}
                         </Button>
                       )}
-                      {isInstalled && plugin.installable && komariCompatible && (
+                      {isInstalled && plugin.installable && komarixCompatible && (
                         <Button
                           size="1"
                           disabled={installing === key}

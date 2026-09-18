@@ -107,17 +107,20 @@ func GetPublicInfo() (map[string]interface{}, error) {
 func themeConfigurationItems(short string) []models.ManagedThemeConfigurationItem {
 	var manifest models.Theme
 	if short == public.DefaultTheme {
-		data, err := public.PublicFS.ReadFile("defaultTheme/komari-theme.json")
+		data, err := public.PublicFS.ReadFile("defaultTheme/komarix-theme.json")
 		if err != nil || json.Unmarshal(data, &manifest) != nil {
 			return nil
 		}
 	} else if short == public.DefaultPublicTheme {
-		data, err := public.PublicFS.ReadFile("purcarteTheme/komari-theme.json")
+		data, err := public.PublicFS.ReadFile("purcarteTheme/komarix-theme.json")
 		if err != nil || json.Unmarshal(data, &manifest) != nil {
 			return nil
 		}
 	} else {
-		data, err := os.ReadFile(filepath.Join("./data/theme", short, "komari-theme.json"))
+		data, err := os.ReadFile(filepath.Join("./data/theme", short, "komarix-theme.json"))
+		if err != nil {
+			data, err = os.ReadFile(filepath.Join("./data/theme", short, "komari-theme.json"))
+		}
 		if err != nil || json.Unmarshal(data, &manifest) != nil {
 			return nil
 		}

@@ -14,7 +14,7 @@ import (
 )
 
 // InstallZip validates a plugin ZIP and extracts it into DataDir/<short>.
-// The archive must contain komari-plugin.json at its root. Archive limits
+// The archive uses komarix-plugin.json; third-party legacy packages are also accepted. Archive limits
 // mirror the theme package format; path-traversal entries reject the whole
 // package instead of being skipped. Reinstalling over a running plugin
 // unloads it first and restores it to its persisted enabled state when the
@@ -32,11 +32,17 @@ func InstallZip(zipPath string) (models.Plugin, error) {
 	}
 
 	var manifest *zip.File
+	var legacyManifest *zip.File
 	for _, f := range r.File {
-		if f.Name == manifestFile {
+		switch f.Name {
+		case manifestFile:
 			manifest = f
-			break
+		case legacyManifestFile:
+			legacyManifest = f
 		}
+	}
+	if manifest == nil {
+		manifest = legacyManifest
 	}
 	if manifest == nil {
 		return info, fmt.Errorf("plugin manifest %s not found, not a valid plugin package", manifestFile)
@@ -79,6 +85,15 @@ func InstallZip(zipPath string) (models.Plugin, error) {
 		_ = os.RemoveAll(dir)
 		return info, err
 	}
+	normalizedManifest, err := normalizePluginManifestJSON(configData)
+	if err != nil {
+		_ = os.RemoveAll(dir)
+		return info, fmt.Errorf("failed to normalize plugin manifest: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, manifestFile), normalizedManifest, 0644); err != nil {
+		_ = os.RemoveAll(dir)
+		return info, fmt.Errorf("failed to write KomariX plugin manifest: %v", err)
+	}
 	if _, err := os.Stat(filepath.Join(dir, info.Entry)); err != nil {
 		_ = os.RemoveAll(dir)
 		return info, fmt.Errorf("plugin entry %s does not exist", info.Entry)
@@ -95,6 +110,20 @@ func InstallZip(zipPath string) (models.Plugin, error) {
 		}
 	}
 	return info, nil
+}
+
+func normalizePluginManifestJSON(data []byte) ([]byte, error) {
+	var raw map[string]json.RawMessage
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return nil, err
+	}
+	if _, ok := raw["komarix"]; !ok {
+		if legacy, ok := raw["komari"]; ok {
+			raw["komarix"] = legacy
+		}
+	}
+	delete(raw, "komari")
+	return json.MarshalIndent(raw, "", "  ")
 }
 
 func validatePluginArchive(files []*zip.File) error {

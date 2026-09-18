@@ -33,9 +33,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari Animal Island",
+      "name": "KomariX Animal Island",
       "short": "AnimalIsland",
-      "description": "使用 Animal Island UI 构建的温暖游戏风简单的 Komari 监控主题。",
+      "description": "使用 Animal Island UI 构建的温暖游戏风简单的 KomariX 监控主题。",
       "version": "1.0.6",
       "author": "JeraldMaster",
       "url": "https://github.com/imbigbomb/komari-animal-island",
@@ -48,9 +48,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari Theme ASCII",
+      "name": "KomariX Theme ASCII",
       "short": "ASCII",
-      "description": "A terminal-style ASCII dashboard theme for Komari",
+      "description": "A terminal-style ASCII dashboard theme for KomariX",
       "version": "1.0",
       "author": "faust",
       "url": "https://github.com/facl/komari-ascii",
@@ -65,7 +65,7 @@
     {
       "name": "blueprint",
       "short": "blueprint",
-      "description": "A Blueprint theme for Komari",
+      "description": "A Blueprint theme for KomariX",
       "version": "0.1.19",
       "author": "jacob-bytes",
       "url": "https://github.com/jacob-bytes/komari-theme-blueprint",
@@ -78,9 +78,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari Butterfly",
+      "name": "KomariX Butterfly",
       "short": "Butterfly",
-      "description": "A clean WinUI 3 and Mica-inspired Komari monitoring theme with a tonal dark interface, a touch-optimized mobile layout, an interactive node globe, latency distribution, live traffic, favorites, and node details.",
+      "description": "A clean WinUI 3 and Mica-inspired KomariX monitoring theme with a tonal dark interface, a touch-optimized mobile layout, an interactive node globe, latency distribution, live traffic, favorites, and node details.",
       "version": "1.5.0",
       "author": "TomorrowX6",
       "url": "https://github.com/TomorrowX6/Komari-Butterfly",
@@ -94,8 +94,8 @@
     },
     {
       "name": {
-        "zh-CN": "Komari Theme Commander",
-        "en": "Komari Theme Commander"
+        "zh-CN": "KomariX Theme Commander",
+        "en": "KomariX Theme Commander"
       },
       "short": "Commander",
       "description": {
@@ -118,13 +118,13 @@
     },
     {
       "name": {
-        "zh-CN": "Komari Emerald",
-        "en": "Komari Emerald"
+        "zh-CN": "KomariX Emerald",
+        "en": "KomariX Emerald"
       },
       "short": "Emerald",
       "description": {
-        "zh-CN": "翡翠配色的 Komari 主题。",
-        "en": "An emerald theme for Komari."
+        "zh-CN": "翡翠配色的 KomariX 主题。",
+        "en": "An emerald theme for KomariX."
       },
       "version": "1.0.12",
       "author": {
@@ -141,9 +141,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari Emerald Cazi",
+      "name": "KomariX Emerald Cazi",
       "short": "Emerald-Cazi",
-      "description": "A configurable multi-task Komari theme customized for cazi.cc",
+      "description": "A configurable multi-task KomariX theme customized for cazi.cc",
       "version": "1.0.0",
       "author": "cazi-cc",
       "url": "https://github.com/cazi-cc/komari-theme-emerald",
@@ -159,7 +159,7 @@
     {
       "name": "Emerald Globe Pro",
       "short": "emerald-globe-pro",
-      "description": "面向 Komari 的全球探针监控主题，集成资源分析、流量趋势与风险概览",
+      "description": "面向 KomariX 的全球探针监控主题，集成资源分析、流量趋势与风险概览",
       "version": "1.0.6",
       "author": "Davies_Allen",
       "url": "https://github.com/allen0039/komari-theme-emerald-globe-pro",
@@ -172,9 +172,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari Glass",
+      "name": "KomariX Glass",
       "short": "Glass",
-      "description": "一个轻量的Komari主题。",
+      "description": "一个轻量的KomariX主题。",
       "version": "1.1.0",
       "author": "mengying",
       "url": "https://github.com/imengying/Komari-Glass",
@@ -187,9 +187,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari Glassmorphism",
+      "name": "KomariX Glassmorphism",
       "short": "Glassmorphism",
-      "description": "A Glassmorphism theme for Komari",
+      "description": "A Glassmorphism theme for KomariX",
       "version": "3.3.7",
       "author": "sanrokamlan",
       "url": "https://github.com/sanrokamlan-prog/komari-theme-Glassmorphism",
@@ -219,7 +219,7 @@
     {
       "name": "ServerStatus-Hotaru",
       "short": "Hotaru",
-      "description": "ServerStatus-Hotaru theme for Komari Monitor. This theme is no longer maintained.",
+      "description": "ServerStatus-Hotaru theme for KomariX Monitor. This theme is no longer maintained.",
       "version": "1.0.0",
       "author": "cokemine & Claude Sonnet 4",
       "url": "https://github.com/cokemine/ServerStatus-Hotaru",
@@ -234,7 +234,7 @@
     {
       "name": "ink",
       "short": "ink",
-      "description": "A minimal ink theme for Komari (deep navy-black, shadcn-inspired)",
+      "description": "A minimal ink theme for KomariX (deep navy-black, shadcn-inspired)",
       "version": "0.6.11",
       "author": "jacob-bytes",
       "url": "https://github.com/jacob-bytes/komari-theme-ink",
@@ -262,9 +262,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari 1999",
+      "name": "KomariX 1999",
       "short": "komari-1999",
-      "description": "Neo-Brutalism themed dashboard for Komari Monitor",
+      "description": "Neo-Brutalism themed dashboard for KomariX Monitor",
       "version": "1.0.1",
       "author": "ricebucket",
       "url": "https://github.com/r1cebucket/komari-theme-1999",
@@ -278,13 +278,13 @@
     },
     {
       "name": {
-        "zh-CN": "Komari Deer",
-        "en": "Komari Deer"
+        "zh-CN": "KomariX Deer",
+        "en": "KomariX Deer"
       },
       "short": "komari-deer",
       "description": {
-        "zh-CN": "鹿主题的 Komari Monitor 仪表盘。",
-        "en": "A deer-themed Komari Monitor dashboard."
+        "zh-CN": "鹿主题的 KomariX Monitor 仪表盘。",
+        "en": "A deer-themed KomariX Monitor dashboard."
       },
       "version": "0.1.0",
       "author": {
@@ -301,9 +301,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari MDUI",
+      "name": "KomariX MDUI",
       "short": "komari-mdui",
-      "description": "A clean Material Design 3 theme for Komari, built with MDUI + Vue 3",
+      "description": "A clean Material Design 3 theme for KomariX, built with MDUI + Vue 3",
       "version": "1.0.0",
       "author": "mogumc",
       "url": "https://github.com/mogumc/komari-mdui",
@@ -317,13 +317,13 @@
     },
     {
       "name": {
-        "zh-CN": "Komari Next Pro",
-        "en": "Komari Next Pro"
+        "zh-CN": "KomariX Next Pro",
+        "en": "KomariX Next Pro"
       },
       "short": "komari-next-pro",
       "description": {
         "zh-CN": "DStatus 风格界面，包含资产面板、IP 信息与流媒体解锁集成。",
-        "en": "A DStatus-style Komari theme with an asset dashboard, IP information and stream unlock integration."
+        "en": "A DStatus-style KomariX theme with an asset dashboard, IP information and stream unlock integration."
       },
       "version": "2.0.0",
       "author": {
@@ -340,9 +340,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari Carbon",
+      "name": "KomariX Carbon",
       "short": "komari-theme-carbon",
-      "description": "IBM Carbon + IBM Plex style Komari monitoring theme",
+      "description": "IBM Carbon + IBM Plex style KomariX monitoring theme",
       "version": "0.1.9-enhance1",
       "author": "gengyue2468",
       "url": "https://github.com/gengyue2468/komari-theme-carbon",
@@ -355,9 +355,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari Home",
+      "name": "KomariX Home",
       "short": "komarihome",
-      "description": "A Komari Web Theme with HomePage",
+      "description": "A KomariX Web Theme with HomePage",
       "version": "1.0.2",
       "author": "mogumc",
       "url": "https://github.com/mogumc/Komari-Home",
@@ -370,9 +370,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Kumo for Komari",
+      "name": "Kumo for KomariX",
       "short": "Kumo",
-      "description": "一个基于 Cloudflare Kumo 设计系统构建的简洁响应式 Komari 监控主题。",
+      "description": "一个基于 Cloudflare Kumo 设计系统构建的简洁响应式 KomariX 监控主题。",
       "version": "1.3.2",
       "author": "Yuanhhs",
       "url": "https://github.com/yuanhhs/komari-theme-kumo",
@@ -385,9 +385,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari Observatory",
+      "name": "KomariX Observatory",
       "short": "LeoNetLab",
-      "description": "A soft, responsive observatory theme for Komari with live telemetry, globe and Ping analytics.",
+      "description": "A soft, responsive observatory theme for KomariX with live telemetry, globe and Ping analytics.",
       "version": "1.4.3-fix3",
       "author": "LeoNetLab",
       "url": "https://github.com/LeonR-92/komari-theme-leonetlab",
@@ -400,9 +400,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari Theme Light",
+      "name": "KomariX Theme Light",
       "short": "light",
-      "description": "A clean and simple light theme for Komari Monitor with multiple color variations.",
+      "description": "A clean and simple light theme for KomariX Monitor with multiple color variations.",
       "version": "1.1.1",
       "author": "uvexz",
       "url": "https://github.com/uvexz/komari-theme-light",
@@ -421,8 +421,8 @@
       },
       "short": "Lumina",
       "description": {
-        "zh-CN": "Komari Lumina 主题。",
-        "en": "A Komari Lumina theme."
+        "zh-CN": "KomariX Lumina 主题。",
+        "en": "A KomariX Lumina theme."
       },
       "version": "1.1.6",
       "author": {
@@ -439,9 +439,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari-Theme-LuminaLite",
+      "name": "KomariX-Theme-LuminaLite",
       "short": "LuminaLite",
-      "description": "Komari-Theme-LuminaLite",
+      "description": "KomariX-Theme-LuminaLite",
       "version": "3.0.1",
       "author": "JohnsonRan",
       "url": "https://github.com/JohnsonRan/Komari-Theme-LuminaLite",
@@ -454,9 +454,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari-Theme-LuminaPlus",
+      "name": "KomariX-Theme-LuminaPlus",
       "short": "LuminaPlus",
-      "description": "Komari-Theme-LuminaPlus",
+      "description": "KomariX-Theme-LuminaPlus",
       "version": "1.3.3",
       "author": "shark&shanyang",
       "url": "https://github.com/shanyang242/Komari-Theme-LuminaPlus",
@@ -469,9 +469,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari Material",
+      "name": "KomariX Material",
       "short": "Material",
-      "description": "A Material Design 3 theme for Komari Monitor",
+      "description": "A Material Design 3 theme for KomariX Monitor",
       "version": "1.4.0",
       "author": "Liebesfreud",
       "url": "https://github.com/Liebesfreud/Komari-Material",
@@ -484,9 +484,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari Mikus",
+      "name": "KomariX Mikus",
       "short": "Mikus",
-      "description": "A modern, elegant Komari monitoring theme with light/dark switching and responsive grid and table views.",
+      "description": "A modern, elegant KomariX monitoring theme with light/dark switching and responsive grid and table views.",
       "version": "2.0.6",
       "author": "Miku",
       "url": "https://github.com/mikus-loli/komari-mikus",
@@ -499,7 +499,7 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari Minecraft",
+      "name": "KomariX Minecraft",
       "short": "Minecraft",
       "description": "支持浅色、深色与 Minecraft 外观的监控面板",
       "version": "1.1.0",
@@ -529,7 +529,7 @@
       "komarix_branding": true
     },
     {
-      "name": "MiStatus Komari",
+      "name": "MiStatus KomariX",
       "short": "MiStatus",
       "description": "基于 Next.js 的现代化服务器监控主题",
       "version": "2.6.0",
@@ -544,9 +544,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari Web Mochi",
+      "name": "KomariX Web Mochi",
       "short": "Mochi",
-      "description": "Another Komari Web Theme",
+      "description": "Another KomariX Web Theme",
       "version": "1.1.8",
       "author": "Mochi DEV Team",
       "url": "https://github.com/svnmoe/komari-web-mochi",
@@ -559,9 +559,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari Naive",
+      "name": "KomariX Naive",
       "short": "Naive",
-      "description": "A Naive UI theme for Komari.",
+      "description": "A Naive UI theme for KomariX.",
       "version": "1.1.2",
       "author": "lyimoexiao",
       "url": "https://github.com/lyimoexiao/komari-theme-naive",
@@ -575,13 +575,13 @@
     },
     {
       "name": {
-        "zh-CN": "Komari NanoMuse 面板",
-        "en": "Komari NanoMuse Panel"
+        "zh-CN": "KomariX NanoMuse 面板",
+        "en": "KomariX NanoMuse Panel"
       },
       "short": "NanoMuse",
       "description": {
         "zh-CN": "电子二次元监控面板主题，融合动漫 HUD 与稳定性面板。",
-        "en": "An anime HUD and light sci-fi Komari dashboard with a built-in stability panel."
+        "en": "An anime HUD and light sci-fi KomariX dashboard with a built-in stability panel."
       },
       "version": "1.3.1",
       "author": {
@@ -598,9 +598,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari Next",
+      "name": "KomariX Next",
       "short": "next",
-      "description": "Next.js theme for Komari Monitor with multiple layouts, color schemes and status views.",
+      "description": "Next.js theme for KomariX Monitor with multiple layouts, color schemes and status views.",
       "version": "1.4.19",
       "author": "tonyliuzj",
       "url": "https://github.com/tonyliuzj/komari-next",
@@ -615,7 +615,7 @@
     {
       "name": "Nezha",
       "short": "nezha",
-      "description": "Nezha Theme for Komari Monitor",
+      "description": "Nezha Theme for KomariX Monitor",
       "version": "3.1.4",
       "author": "Nomi",
       "url": "https://github.com/nuomiiiii/nezha",
@@ -634,8 +634,8 @@
       },
       "short": "nezha-BITJEBE",
       "description": {
-        "zh-CN": "由 Nezha Dash V1 与 nezha-dash 衍生的 Komari 主题。",
-        "en": "A Komari theme derived from Nezha Dash V1 and nezha-dash."
+        "zh-CN": "由 Nezha Dash V1 与 nezha-dash 衍生的 KomariX 主题。",
+        "en": "A KomariX theme derived from Nezha Dash V1 and nezha-dash."
       },
       "version": "1.1.7",
       "author": {
@@ -658,8 +658,8 @@
       },
       "short": "nezha-minimal",
       "description": {
-        "zh-CN": "纯色极简风格 Komari 主题。",
-        "en": "A solid-color minimal theme for Komari."
+        "zh-CN": "纯色极简风格 KomariX 主题。",
+        "en": "A solid-color minimal theme for KomariX."
       },
       "version": "1.1.20",
       "author": {
@@ -677,13 +677,13 @@
     },
     {
       "name": {
-        "zh-CN": "Komari Paper",
-        "en": "Komari Paper"
+        "zh-CN": "KomariX Paper",
+        "en": "KomariX Paper"
       },
       "short": "paper",
       "description": {
-        "zh-CN": "暖色纸张与手写风格的编辑式 Komari 主题。",
-        "en": "An editorial Komari theme with warm paper, serif type and handwritten accents."
+        "zh-CN": "暖色纸张与手写风格的编辑式 KomariX 主题。",
+        "en": "An editorial KomariX theme with warm paper, serif type and handwritten accents."
       },
       "version": "26.09.14",
       "author": {
@@ -700,9 +700,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari Theme PurCarte",
+      "name": "KomariX Theme PurCarte",
       "short": "PurCarte",
-      "description": "A frosted glass theme for Komari.",
+      "description": "A frosted glass theme for KomariX.",
       "version": "1.2.5",
       "author": "Montia & Gemini",
       "url": "https://github.com/Montia37/komari-theme-purcarte",
@@ -716,13 +716,13 @@
     },
     {
       "name": {
-        "zh-CN": "Komari Theme PurCarte Plus",
-        "en": "Komari Theme PurCarte Plus"
+        "zh-CN": "KomariX Theme PurCarte Plus",
+        "en": "KomariX Theme PurCarte Plus"
       },
       "short": "PurCarte-Plus",
       "description": {
-        "zh-CN": "一款为 Komari 设计的磨砂玻璃风格个性化增强版主题",
-        "en": "An enhanced, personalized frosted glass theme for Komari."
+        "zh-CN": "一款为 KomariX 设计的磨砂玻璃风格个性化增强版主题",
+        "en": "An enhanced, personalized frosted glass theme for KomariX."
       },
       "version": "2026.08.20.1",
       "author": {
@@ -745,8 +745,8 @@
       },
       "short": "ran",
       "description": {
-        "zh-CN": "精密金工质感的 Komari 主题，提供深浅多配色。",
-        "en": "A precision-machined hi-fi inspired Komari theme with multiple light and dark colorways."
+        "zh-CN": "精密金工质感的 KomariX 主题，提供深浅多配色。",
+        "en": "A precision-machined hi-fi inspired KomariX theme with multiple light and dark colorways."
       },
       "version": "2.1.2",
       "author": {
@@ -763,7 +763,7 @@
       "komarix_branding": true
     },
     {
-      "name": "ServerSentry Komari",
+      "name": "ServerSentry KomariX",
       "short": "ServerSentry",
       "description": "基于 Next.js 的现代化服务器监控主题。",
       "version": "1.0.4",
@@ -778,9 +778,9 @@
       "komarix_branding": true
     },
     {
-      "name": "ServerStatus · Komari",
+      "name": "ServerStatus · KomariX",
       "short": "ServerStatus",
-      "description": "A native Komari port of the classic compact ServerStatus table theme.",
+      "description": "A native KomariX port of the classic compact ServerStatus table theme.",
       "version": "1.0.18",
       "author": "tfhmc&chatgpt",
       "url": "https://github.com/tfhmc/serverstatus",
@@ -795,7 +795,7 @@
     {
       "name": "Slate",
       "short": "Slate",
-      "description": "A restrained Komari theme with a table-first home",
+      "description": "A restrained KomariX theme with a table-first home",
       "version": "0.1.11",
       "author": "DouDou",
       "url": "https://github.com/xkrfer/komari-theme-slate",
@@ -810,7 +810,7 @@
     {
       "name": "Transit",
       "short": "Transit",
-      "description": "A topology-first network operations theme for Komari",
+      "description": "A topology-first network operations theme for KomariX",
       "version": "1.2.0",
       "author": "PandaKiko, based on sanrokamlan/vlongx",
       "url": "https://github.com/yyy622hhh/komari-theme-transit",
@@ -823,9 +823,9 @@
       "komarix_branding": true
     },
     {
-      "name": "Komari Zen",
+      "name": "KomariX Zen",
       "short": "Zen",
-      "description": "基于极简主义设计理念的 Komari 主题。",
+      "description": "基于极简主义设计理念的 KomariX 主题。",
       "version": "1.0.6",
       "author": "qwer-xyz",
       "url": "https://github.com/qwer-xyz/komari-theme-zen",

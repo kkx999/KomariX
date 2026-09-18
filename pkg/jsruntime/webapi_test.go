@@ -29,7 +29,7 @@ func TestFetchAPIClassesAndBodyMethods(t *testing.T) {
 			form.append("value", "first");
 			form.append("value", "second");
 			form.set("other", file);
-			const exposedInternals = Object.getOwnPropertyNames(globalThis).filter((name) => name.startsWith("__komari"));
+			const exposedInternals = Object.getOwnPropertyNames(globalThis).filter((name) => name.startsWith("__komarix"));
 			const instanceInternals = [headers, request, response, blob, form, new XMLHttpRequest()]
 				.flatMap((value) => Object.getOwnPropertyNames(value).filter((name) => name.startsWith("_")));
 			return typeof EventTarget === "function" &&
@@ -122,7 +122,7 @@ func TestFetchFormDataAndResponseFormData(t *testing.T) {
 		}
 		defer file.Close()
 		content, _ := io.ReadAll(file)
-		if request.FormValue("name") != "komari" || header.Filename != "note.txt" || string(content) != "file body" {
+		if request.FormValue("name") != "komarix" || header.Filename != "note.txt" || string(content) != "file body" {
 			http.Error(response, "invalid multipart data", http.StatusBadRequest)
 			return
 		}
@@ -134,7 +134,7 @@ func TestFetchFormDataAndResponseFormData(t *testing.T) {
 	runtime, err := New(`
 		async function verify(url) {
 			const data = new FormData();
-			data.append("name", "komari");
+			data.append("name", "komarix");
 			data.append("upload", new Blob(["file body"], { type: "text/plain" }), "note.txt");
 			const response = await fetch(url, { method: "POST", body: data });
 			const result = await response.formData();

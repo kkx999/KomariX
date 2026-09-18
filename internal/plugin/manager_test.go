@@ -13,7 +13,7 @@ import (
 	"github.com/kkx999/KomariX/pkg/rpc"
 )
 
-const demoManifest = `{"name":"Demo","short":"demo","version":"1.0.0","komari":">=0.0.1","permissions":{"node":true,"timeout":5,"allowRoutes":true,"allowSystemRPC":true}}`
+const demoManifest = `{"name":"Demo","short":"demo","version":"1.0.0","komarix":">=0.0.1","permissions":{"node":true,"timeout":5,"allowRoutes":true,"allowSystemRPC":true}}`
 
 func TestManagerSwitchRouteCallAndLogs(t *testing.T) {
 	withTempDataDir(t)
@@ -22,7 +22,7 @@ func TestManagerSwitchRouteCallAndLogs(t *testing.T) {
 	Init(engine)
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": demoManifest,
+		"komarix-plugin.json": demoManifest,
 		"script.js": `
 			const server = require("server");
 			function load() {
@@ -112,7 +112,7 @@ func TestSetEnabledFailureAutoDisablesAndRecordsError(t *testing.T) {
 	Init(gin.New())
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"Bad","short":"bad","version":"1.0.0"}`,
+		"komarix-plugin.json": `{"name":"Bad","short":"bad","version":"1.0.0"}`,
 		"script.js":          `throw new Error("boom");`,
 	})
 	if _, err := InstallZip(zipPath); err != nil {
@@ -141,7 +141,7 @@ func TestLoadHookFailureIsReported(t *testing.T) {
 	Init(gin.New())
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"Hook","short":"hook","version":"1.0.0"}`,
+		"komarix-plugin.json": `{"name":"Hook","short":"hook","version":"1.0.0"}`,
 		"script.js": `function load() {
 			throw new Error("loadhook");
 		}`,
@@ -161,7 +161,7 @@ func TestLoadAllSkipsDisabledAndApprovesEnabled(t *testing.T) {
 	Init(gin.New())
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": demoManifest,
+		"komarix-plugin.json": demoManifest,
 		"script.js":          `function load() { console.log("auto loaded"); }`,
 	})
 	if _, err := InstallZip(zipPath); err != nil {
@@ -196,7 +196,7 @@ func TestLoadAllAutoDisablesUnapprovedPlugin(t *testing.T) {
 	Init(gin.New())
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": demoManifest,
+		"komarix-plugin.json": demoManifest,
 		"script.js":          `function load() {}`,
 	})
 	if _, err := InstallZip(zipPath); err != nil {
@@ -223,7 +223,7 @@ func TestCloseAllUnloadsEverything(t *testing.T) {
 	Init(gin.New())
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": demoManifest,
+		"komarix-plugin.json": demoManifest,
 		"script.js":          `function unload() { console.log("bye"); }`,
 	})
 	if _, err := InstallZip(zipPath); err != nil {

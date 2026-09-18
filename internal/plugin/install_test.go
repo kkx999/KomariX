@@ -32,7 +32,7 @@ func TestInstallZipExtractsValidPlugin(t *testing.T) {
 func TestInstallZipDefaultsEntryToScriptJS(t *testing.T) {
 	withTempDataDir(t)
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"Demo","short":"demo","version":"1.0.0"}`,
+		"komarix-plugin.json": `{"name":"Demo","short":"demo","version":"1.0.0"}`,
 		"script.js":          `function load() {}`,
 	})
 	info, err := InstallZip(zipPath)
@@ -55,7 +55,7 @@ func TestInstallZipRejectsMissingManifest(t *testing.T) {
 func TestInstallZipRejectsTraversal(t *testing.T) {
 	withTempDataDir(t)
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"Demo","short":"demo","version":"1.0.0"}`,
+		"komarix-plugin.json": `{"name":"Demo","short":"demo","version":"1.0.0"}`,
 		"../evil.txt":        "boom",
 	})
 	if _, err := InstallZip(zipPath); err == nil {
@@ -66,10 +66,10 @@ func TestInstallZipRejectsTraversal(t *testing.T) {
 	}
 }
 
-func TestInstallZipRejectsKomariVersionMismatch(t *testing.T) {
+func TestInstallZipRejectsKomariXVersionMismatch(t *testing.T) {
 	withTempDataDir(t)
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"Demo","short":"demo","version":"1.0.0","komari":">=99.0.0"}`,
+		"komarix-plugin.json": `{"name":"Demo","short":"demo","version":"1.0.0","komarix":">=99.0.0"}`,
 		"script.js":          `function load() {}`,
 	})
 	if _, err := InstallZip(zipPath); err == nil {
@@ -80,7 +80,7 @@ func TestInstallZipRejectsKomariVersionMismatch(t *testing.T) {
 func TestInstallZipRejectsMissingEntry(t *testing.T) {
 	withTempDataDir(t)
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"Demo","short":"demo","version":"1.0.0"}`,
+		"komarix-plugin.json": `{"name":"Demo","short":"demo","version":"1.0.0"}`,
 	})
 	if _, err := InstallZip(zipPath); err == nil {
 		t.Fatal("expected missing entry error")
@@ -91,7 +91,7 @@ func TestInstallZipValidatesPageTypesAndVisibility(t *testing.T) {
 
 	// iframe page 默认 visibility=admin、type=iframe；合法安装。
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"Pages","short":"pages","version":"1.0.0","pages":[{"file":"admin.html","title":"Admin"}]}`,
+		"komarix-plugin.json": `{"name":"Pages","short":"pages","version":"1.0.0","pages":[{"file":"admin.html","title":"Admin"}]}`,
 		"script.js":          `function load() {}`,
 		"admin.html":         `<h1>admin</h1>`,
 	})
@@ -105,7 +105,7 @@ func TestInstallZipValidatesPageTypesAndVisibility(t *testing.T) {
 
 	// redirect 页面需要站内路径。
 	zipPath = writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"Pages","short":"pages2","version":"1.0.0","pages":[{"title":"Go","type":"redirect","url":"/admin/settings","visibility":"admin"}]}`,
+		"komarix-plugin.json": `{"name":"Pages","short":"pages2","version":"1.0.0","pages":[{"title":"Go","type":"redirect","url":"/admin/settings","visibility":"admin"}]}`,
 		"script.js":          `function load() {}`,
 	})
 	if _, err := InstallZip(zipPath); err != nil {
@@ -114,7 +114,7 @@ func TestInstallZipValidatesPageTypesAndVisibility(t *testing.T) {
 
 	// public iframe 页面合法。
 	zipPath = writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"Pages","short":"pages3","version":"1.0.0","pages":[{"file":"pub.html","title":"Pub","visibility":"public"}]}`,
+		"komarix-plugin.json": `{"name":"Pages","short":"pages3","version":"1.0.0","pages":[{"file":"pub.html","title":"Pub","visibility":"public"}]}`,
 		"script.js":          `function load() {}`,
 		"pub.html":           `<h1>pub</h1>`,
 	})
@@ -140,7 +140,7 @@ func TestInstallZipRejectsInvalidPages(t *testing.T) {
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			zipPath := writePluginZip(t, map[string]string{
-				"komari-plugin.json": tt.manifest,
+				"komarix-plugin.json": tt.manifest,
 				"script.js":          `function load() {}`,
 			})
 			if _, err := InstallZip(zipPath); err == nil {
@@ -162,7 +162,7 @@ func TestInstallZipRejectsInvalidIcon(t *testing.T) {
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {
 			zipPath := writePluginZip(t, map[string]string{
-				"komari-plugin.json": tt.manifest,
+				"komarix-plugin.json": tt.manifest,
 				"script.js":          `function load() {}`,
 			})
 			if _, err := InstallZip(zipPath); err == nil {
@@ -175,7 +175,7 @@ func TestInstallZipRejectsInvalidIcon(t *testing.T) {
 func TestInstallZipAcceptsRelativeIcon(t *testing.T) {
 	withTempDataDir(t)
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"I","short":"ic","version":"1.0.0","icon":"icon.svg","pages":[{"file":"a.html","title":"A","icon":"page.svg"}]}`,
+		"komarix-plugin.json": `{"name":"I","short":"ic","version":"1.0.0","icon":"icon.svg","pages":[{"file":"a.html","title":"A","icon":"page.svg"}]}`,
 		"script.js":          `function load() {}`,
 		"a.html":             `<h1>a</h1>`,
 		"icon.svg":           `<svg/>`,

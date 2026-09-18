@@ -82,7 +82,7 @@ func TestPeekThemeFromZipAcceptsLocalizedMetadata(t *testing.T) {
 		t.Fatalf("create zip: %v", err)
 	}
 	writer := zip.NewWriter(archive)
-	manifest, err := writer.Create("komari-theme.json")
+	manifest, err := writer.Create("komarix-theme.json")
 	if err != nil {
 		t.Fatalf("create manifest: %v", err)
 	}
@@ -129,5 +129,43 @@ func TestPeekThemeFromZipAcceptsLocalizedMetadata(t *testing.T) {
 	}
 	if installed.Short != "localized-theme" {
 		t.Fatalf("installed short = %q, want localized-theme", installed.Short)
+	}
+}
+
+
+func TestPeekThemeFromZipAcceptsLegacyManifest(t *testing.T) {
+	zipPath := filepath.Join(t.TempDir(), "legacy-theme.zip")
+	archive, err := os.Create(zipPath)
+	if err != nil {
+		t.Fatalf("create zip: %v", err)
+	}
+	writer := zip.NewWriter(archive)
+	manifest, err := writer.Create("komari-theme.json")
+	if err != nil {
+		t.Fatalf("create legacy manifest: %v", err)
+	}
+	_, err = manifest.Write([]byte(`{
+  "name": "Legacy Theme",
+  "short": "legacy-theme",
+  "description": "Compatibility test",
+  "author": "Third Party",
+  "version": "1.0.0"
+}`))
+	if err != nil {
+		t.Fatalf("write legacy manifest: %v", err)
+	}
+	if err := writer.Close(); err != nil {
+		t.Fatalf("close zip writer: %v", err)
+	}
+	if err := archive.Close(); err != nil {
+		t.Fatalf("close zip file: %v", err)
+	}
+
+	theme, err := peekThemeFromZip(zipPath)
+	if err != nil {
+		t.Fatalf("legacy third-party theme package was rejected: %v", err)
+	}
+	if theme.Short != "legacy-theme" {
+		t.Fatalf("short = %q, want legacy-theme", theme.Short)
 	}
 }

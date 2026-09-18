@@ -106,7 +106,7 @@ const ThemePage = () => {
       }
       try {
         // 强制不缓存
-        const resp = await fetch(`/themes/${themeShort}/komari-theme.json`, {
+        const resp = await fetch(`/themes/${themeShort}/komarix-theme.json`, {
           cache: "no-cache",
         });
         if (!resp.ok) {

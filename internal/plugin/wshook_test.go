@@ -26,7 +26,7 @@ func TestWSHookConnectDenyAndAllow(t *testing.T) {
 	Init(gin.New())
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": wsManifest,
+		"komarix-plugin.json": wsManifest,
 		"script.js": `
 			const server = require("server");
 			function load() {
@@ -60,7 +60,7 @@ func TestWSHookMessageChainReplaceAndDrop(t *testing.T) {
 	Init(gin.New())
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": wsManifest,
+		"komarix-plugin.json": wsManifest,
 		"script.js": `
 			const server = require("server");
 			function load() {
@@ -104,7 +104,7 @@ func TestWSHookSendReplacesType(t *testing.T) {
 	Init(gin.New())
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": wsManifest,
+		"komarix-plugin.json": wsManifest,
 		"script.js": `
 			const server = require("server");
 			function load() {
@@ -135,7 +135,7 @@ func TestWSHookClose(t *testing.T) {
 	Init(gin.New())
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"Ws","short":"ws","version":"1.0.0","permissions":{"node":true,"allowHooks":true,"timeout":5}}`,
+		"komarix-plugin.json": `{"name":"Ws","short":"ws","version":"1.0.0","permissions":{"node":true,"allowHooks":true,"timeout":5}}`,
 		"script.js": `
 			const fs = require("fs");
 			const server = require("server");
@@ -173,7 +173,7 @@ func TestWSHookPathFiltering(t *testing.T) {
 	Init(gin.New())
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": wsManifest,
+		"komarix-plugin.json": wsManifest,
 		"script.js": `
 			const server = require("server");
 			function load() {
@@ -208,7 +208,7 @@ func TestWSHookMethodPrefixRejected(t *testing.T) {
 	Init(gin.New())
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": wsManifest,
+		"komarix-plugin.json": wsManifest,
 		"script.js": `
 			const server = require("server");
 			function load() {
@@ -232,7 +232,7 @@ func TestWSHookRequiresPermission(t *testing.T) {
 	Init(gin.New())
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"Ws","short":"ws","version":"1.0.0","permissions":{"timeout":5}}`,
+		"komarix-plugin.json": `{"name":"Ws","short":"ws","version":"1.0.0","permissions":{"timeout":5}}`,
 		"script.js": `
 			const server = require("server");
 			function load() {
@@ -255,7 +255,7 @@ func TestWSHookUnloadRemovesHooks(t *testing.T) {
 	Init(gin.New())
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": wsManifest,
+		"komarix-plugin.json": wsManifest,
 		"script.js": `
 			const server = require("server");
 			function load() {
@@ -292,7 +292,7 @@ func TestWSHookOversizedFramePassesThrough(t *testing.T) {
 	Init(gin.New())
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": wsManifest,
+		"komarix-plugin.json": wsManifest,
 		"script.js": `
 			const server = require("server");
 			function load() {

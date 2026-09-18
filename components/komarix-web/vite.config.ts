@@ -11,9 +11,9 @@ import * as fs from "fs";
 import * as path from "path";
 import dotenv from "dotenv";
 
-function localKomariThemePlugin(): Plugin {
-  const themeRequestPath = "/themes/default/komari-theme.json";
-  const localThemeFile = path.resolve(__dirname, "komari-theme.json");
+function localKomariXThemePlugin(): Plugin {
+  const themeRequestPath = "/themes/default/komarix-theme.json";
+  const localThemeFile = path.resolve(__dirname, "komarix-theme.json");
 
   return {
     name: "local-komarix-theme",
@@ -57,7 +57,7 @@ export default defineConfig(({ mode }) => {
   const baseConfig: UserConfig = {
     base: base,
     plugins: [
-      localKomariThemePlugin(),
+      localKomariXThemePlugin(),
       react(),
       tailwindcss(),
       Pages({

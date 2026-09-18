@@ -35,10 +35,10 @@ jobs:
 
           test -f web/public/defaultTheme/dist/index.html
           test -f web/public/purcarteTheme/dist/index.html
-          test -f web/public/purcarteTheme/komari-theme.json
+          test -f web/public/purcarteTheme/komarix-theme.json
 
-          grep -q '"short": "PurCarte"' web/public/purcarteTheme/komari-theme.json
-          grep -q 'KomariX Theme PurCarte' web/public/purcarteTheme/komari-theme.json
+          grep -q '"short": "PurCarte"' web/public/purcarteTheme/komarix-theme.json
+          grep -q 'KomariX Theme PurCarte' web/public/purcarteTheme/komarix-theme.json
 
           if grep -R -F 'https://github.com/komari-monitor/komari' web/public/defaultTheme/dist web/public/purcarteTheme/dist; then
             echo "Found stale Komari project URL in built frontend."
@@ -252,6 +252,36 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: theme-assets
 
+      - name: Normalize theme packages to KomariX format
+        shell: bash
+        run: |
+          set -euxo pipefail
+          rm -rf theme-assets-komarix
+          python3 scripts/rebrand_theme_packages.py \
+            --assets theme-assets \
+            --catalog market/theme-v1.json \
+            --output-dir theme-assets-komarix \
+            --release-tag "$VERSION"
+
+          python3 scripts/verify_rebranded_themes.py \
+            --source-assets theme-assets \
+            --rebranded-assets theme-assets-komarix \
+            --source-catalog market/theme-v1.json \
+            --rebranded-catalog theme-assets-komarix/theme-v1.rebranded.json
+
+      - name: Update KomariX theme market catalog
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cp theme-assets-komarix/theme-v1.rebranded.json market/theme-v1.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add market/theme-v1.json
+          if ! git diff --cached --quiet; then
+            git commit -m "release: refresh KomariX v1.0.0 theme assets"
+            git push origin HEAD:main
+          fi
+
       - name: Publish v1.0.0
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -259,21 +289,22 @@ jobs:
         run: |
           set -euxo pipefail
           ls -al artifacts
+          FINAL_SHA="$(git rev-parse HEAD)"
           if gh release view "$VERSION" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            echo "Replacing existing $VERSION release with final rebranded build."
+            echo "Replacing existing $VERSION release with final KomariX build."
             gh release delete "$VERSION" --repo "$GITHUB_REPOSITORY" --cleanup-tag --yes
           fi
 
           gh release create "$VERSION" \
             --repo "$GITHUB_REPOSITORY" \
-            --target "$GITHUB_SHA" \
+            --target "$FINAL_SHA" \
             --title "KomariX v1.0.0" \
-            --notes "KomariX v1.0.0：首个正式独立版本。面板、Agent、默认 PurCarte 与市场资源均由 KomariX 自行维护；49 个主题安装包已逐个完成 KomariX 品牌处理并重新校验 SHA256，作者署名与 LICENSE/NOTICE 保持原样；49 张主题预览与主题安装包均托管于本 Release。插件市场使用 KomariX 镜像索引。项目基于 Komari 修改并继续独立维护。" \
+            --notes "KomariX v1.0.0：正式 KomariX 版本。面板、Agent、默认 PurCarte、主题/插件市场及自有协议标识统一使用 KomariX；49 个主题资源包转换为 KomariX 清单格式并重新校验 SHA256，作者署名、LICENSE/NOTICE 与真实第三方来源保持不变；第三方旧主题与插件格式仍可兼容读取。项目来源说明见 README。" \
             artifacts/komarix-linux-* \
             artifacts/komarix-windows-* \
             artifacts/komarix-agent-* \
-            theme-assets/theme-*.zip \
-            theme-assets/preview-*
+            theme-assets-komarix/theme-*.zip \
+            theme-assets-komarix/preview-*
 
 
   publish-agent-docker:

@@ -35,7 +35,7 @@ func TestHookRequestAndResponse(t *testing.T) {
 	Init(engine)
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": featureManifest,
+		"komarix-plugin.json": featureManifest,
 		"script.js": `
 			const server = require("server");
 			function load() {
@@ -93,7 +93,7 @@ func TestHookUpgradePassesThrough(t *testing.T) {
 	Init(engine)
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": featureManifest,
+		"komarix-plugin.json": featureManifest,
 		"script.js": `
 			const server = require("server");
 			function load() {
@@ -125,7 +125,7 @@ func TestRegisterRPCCallableThroughRegistry(t *testing.T) {
 	Init(gin.New())
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": featureManifest,
+		"komarix-plugin.json": featureManifest,
 		"script.js": `
 			const server = require("server");
 			function load() {
@@ -172,7 +172,7 @@ func TestRegisterRPCErrorCarriesCode(t *testing.T) {
 	Init(gin.New())
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": featureManifest,
+		"komarix-plugin.json": featureManifest,
 		"script.js": `
 			const server = require("server");
 			function load() {
@@ -213,7 +213,7 @@ func TestDeleteRemovesPlugin(t *testing.T) {
 	Init(engine)
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": featureManifest,
+		"komarix-plugin.json": featureManifest,
 		"script.js":          `function load() { console.log("hi"); }`,
 	})
 	if _, err := InstallZip(zipPath); err != nil {
@@ -244,7 +244,7 @@ func TestCronRunsOnScheduleAndStopsOnUnload(t *testing.T) {
 	Init(gin.New())
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"Cron","short":"cron","version":"1.0.0","permissions":{"node":true,"timeout":5}}`,
+		"komarix-plugin.json": `{"name":"Cron","short":"cron","version":"1.0.0","permissions":{"node":true,"timeout":5}}`,
 		"script.js": `
 			const fs = require("fs");
 			const server = require("server");
@@ -298,7 +298,7 @@ func TestCronInvalidSpecFailsLoad(t *testing.T) {
 	Init(gin.New())
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"Cron","short":"cron","version":"1.0.0","permissions":{"node":true,"timeout":5}}`,
+		"komarix-plugin.json": `{"name":"Cron","short":"cron","version":"1.0.0","permissions":{"node":true,"timeout":5}}`,
 		"script.js": `
 			const server = require("server");
 			function load() {
@@ -351,7 +351,7 @@ func TestConfigurationSaveAndGet(t *testing.T) {
 func TestGetConfigurationMergesManifestDefaults(t *testing.T) {
 	withTempDataDir(t)
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"Cfg","short":"cfg","version":"1.0.0","configuration":{"type":"managed","data":[
+		"komarix-plugin.json": `{"name":"Cfg","short":"cfg","version":"1.0.0","configuration":{"type":"managed","data":[
 			{"key":"greeting","name":"Greeting","type":"string","default":"Hello"},
 			{"key":"count","name":"Count","type":"number"},
 			{"key":"enabled","name":"Enabled","type":"switch","default":true},
@@ -410,7 +410,7 @@ func TestGetConfigurationResolvesSelectorValues(t *testing.T) {
 		t.Fatal(err)
 	}
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"Cfg","short":"cfg","version":"1.0.0","configuration":{"type":"managed","data":[
+		"komarix-plugin.json": `{"name":"Cfg","short":"cfg","version":"1.0.0","configuration":{"type":"managed","data":[
 			{"key":"nodes","name":"Nodes","type":"nodes"},
 			{"key":"tasks","name":"Tasks","type":"pingtasks"}
 		]}}`,
@@ -461,7 +461,7 @@ func TestGetConfigFromScript(t *testing.T) {
 		t.Fatal(err)
 	}
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": featureManifest,
+		"komarix-plugin.json": featureManifest,
 		"script.js": `
 			const server = require("server");
 			function load() {
@@ -495,7 +495,7 @@ func TestGetConfigFromScript(t *testing.T) {
 func TestResolvePublicFileScopedToEnabledPublicPages(t *testing.T) {
 	withTempDataDir(t)
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"Pub","short":"pub","version":"1.0.0","pages":[{"file":"pages/pub.html","title":"Pub","visibility":"public"},{"file":"admin.html","title":"Admin"}]}`,
+		"komarix-plugin.json": `{"name":"Pub","short":"pub","version":"1.0.0","pages":[{"file":"pages/pub.html","title":"Pub","visibility":"public"},{"file":"admin.html","title":"Admin"}]}`,
 		"script.js":          `function load() {}`,
 		"pages/pub.html":     `<h1>pub</h1>`,
 		"pages/pub.js":       `console.log("asset")`,
@@ -529,7 +529,7 @@ func TestResolvePublicFileScopedToEnabledPublicPages(t *testing.T) {
 func TestResolveFileRejectsTraversal(t *testing.T) {
 	withTempDataDir(t)
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": featureManifest,
+		"komarix-plugin.json": featureManifest,
 		"script.js":          `function load() {}`,
 		"pages/hello.html":   `<h1>hello</h1>`,
 	})
@@ -564,7 +564,7 @@ func TestRouteRequestContextCarriesIdentity(t *testing.T) {
 	Init(engine)
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": featureManifest,
+		"komarix-plugin.json": featureManifest,
 		"script.js": `
 			const server = require("server");
 			function load() {
@@ -613,7 +613,7 @@ func TestHookRequestContextHasNetworkOnly(t *testing.T) {
 	Init(engine)
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": featureManifest,
+		"komarix-plugin.json": featureManifest,
 		"script.js": `
 			const server = require("server");
 			function load() {
@@ -658,7 +658,7 @@ func TestServerModulePermissionEnforcement(t *testing.T) {
 
 	// 无危险权限：直接启用，不要求批准。
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"Plain","short":"plain","version":"1.0.0","permissions":{"node":true,"timeout":5}}`,
+		"komarix-plugin.json": `{"name":"Plain","short":"plain","version":"1.0.0","permissions":{"node":true,"timeout":5}}`,
 		"script.js":          `const server = require("server"); function load() { server.registerRPC("plugin:plain", () => ({ok:true})); }`,
 	})
 	if _, err := InstallZip(zipPath); err != nil {
@@ -675,7 +675,7 @@ func TestServerModulePermissionEnforcement(t *testing.T) {
 
 	// server.route 缺 allowRoutes：加载失败并提示权限名。
 	zipPath = writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"NoRoute","short":"noroute","version":"1.0.0"}`,
+		"komarix-plugin.json": `{"name":"NoRoute","short":"noroute","version":"1.0.0"}`,
 		"script.js": `const server = require("server");
 function load() { server.route("GET", "/x", (req, res) => res.end("x")); }`,
 	})
@@ -688,7 +688,7 @@ function load() { server.route("GET", "/x", (req, res) => res.end("x")); }`,
 
 	// server.hook 缺 allowHooks：加载失败并提示权限名。
 	zipPath = writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"NoHook","short":"nohook","version":"1.0.0"}`,
+		"komarix-plugin.json": `{"name":"NoHook","short":"nohook","version":"1.0.0"}`,
 		"script.js": `const server = require("server");
 function load() { server.hook("request", (req) => {}); }`,
 	})
@@ -701,7 +701,7 @@ function load() { server.hook("request", (req) => {}); }`,
 
 	// server.call 缺 allowSystemRPC：路由可用但 Promise reject。
 	zipPath = writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"NoRPC","short":"norpc","version":"1.0.0","permissions":{"allowRoutes":true}}`,
+		"komarix-plugin.json": `{"name":"NoRPC","short":"norpc","version":"1.0.0","permissions":{"allowRoutes":true}}`,
 		"script.js": `const server = require("server");
 function load() {
 	server.route("GET", "/call", async (req, res) => {
@@ -755,7 +755,7 @@ func TestHookFiltering(t *testing.T) {
 	Init(engine)
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": featureManifest,
+		"komarix-plugin.json": featureManifest,
 		"script.js": `
 			const server = require("server");
 			function load() {
@@ -815,7 +815,7 @@ func TestHookResponseContentLength(t *testing.T) {
 	Init(engine)
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": featureManifest,
+		"komarix-plugin.json": featureManifest,
 		"script.js": `
 			const server = require("server");
 			function load() {
@@ -866,7 +866,7 @@ func TestHookBodyLimit(t *testing.T) {
 	Init(engine)
 
 	zipPath := writePluginZip(t, map[string]string{
-		"komari-plugin.json": `{"name":"Limit","short":"limit","version":"1.0.0","permissions":{"allowHooks":true,"maxHTTPBodyBytes":256,"timeout":5}}`,
+		"komarix-plugin.json": `{"name":"Limit","short":"limit","version":"1.0.0","permissions":{"allowHooks":true,"maxHTTPBodyBytes":256,"timeout":5}}`,
 		"script.js": `
 			const server = require("server");
 			function load() {
