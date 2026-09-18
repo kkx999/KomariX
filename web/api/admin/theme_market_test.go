@@ -2,6 +2,7 @@ package admin
 
 import (
 	"archive/zip"
+	"net/url"
 	"testing"
 )
 
@@ -66,3 +67,29 @@ func TestThemeMarketI18nTextAndSourceOnlyEntry(t *testing.T) {
 		t.Fatalf("validateThemeMarketTheme() error = %v", err)
 	}
 }
+
+func TestBuildThemeMarketRequestURLBypassesCaches(t *testing.T) {
+	fresh, err := buildThemeMarketRequestURL("https://example.com/theme-v1.json?source=official", true)
+	if err != nil {
+		t.Fatalf("buildThemeMarketRequestURL() error = %v", err)
+	}
+	parsed, err := url.Parse(fresh)
+	if err != nil {
+		t.Fatalf("url.Parse() error = %v", err)
+	}
+	if parsed.Query().Get("source") != "official" {
+		t.Fatalf("existing query was not preserved: %q", fresh)
+	}
+	if parsed.Query().Get("_komarix_refresh") == "" {
+		t.Fatalf("cache-busting query was not added: %q", fresh)
+	}
+
+	plain, err := buildThemeMarketRequestURL("https://example.com/theme-v1.json?source=official", false)
+	if err != nil {
+		t.Fatalf("buildThemeMarketRequestURL() error = %v", err)
+	}
+	if plain != "https://example.com/theme-v1.json?source=official" {
+		t.Fatalf("non-refresh URL changed: %q", plain)
+	}
+}
+

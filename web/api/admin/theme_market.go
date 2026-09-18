@@ -365,7 +365,7 @@ func fetchThemeMarketCatalog(source ThemeMarketSource, force bool) ([]ThemeMarke
 			return append([]ThemeMarketTheme(nil), cached.Themes...), nil
 		}
 	}
-	data, err := downloadMarketURL(source.URL, marketCatalogMaxSize)
+	data, err := downloadMarketURLWithOptions(source.URL, marketCatalogMaxSize, force)
 	if err != nil {
 		return nil, err
 	}
@@ -458,6 +458,23 @@ func validateMarketURLSyntax(rawURL string) error {
 }
 
 func downloadMarketURL(rawURL string, maxSize int64) ([]byte, error) {
+	return downloadMarketURLWithOptions(rawURL, maxSize, false)
+}
+
+func buildThemeMarketRequestURL(rawURL string, bypassCache bool) (string, error) {
+	parsed, err := url.Parse(rawURL)
+	if err != nil {
+		return "", err
+	}
+	if bypassCache {
+		query := parsed.Query()
+		query.Set("_komarix_refresh", fmt.Sprintf("%d", time.Now().UnixNano()))
+		parsed.RawQuery = query.Encode()
+	}
+	return parsed.String(), nil
+}
+
+func downloadMarketURLWithOptions(rawURL string, maxSize int64, bypassCache bool) ([]byte, error) {
 	validate := func(candidate string) error {
 		parsed, err := url.Parse(candidate)
 		if err != nil || (parsed.Scheme != "http" && parsed.Scheme != "https") || parsed.Hostname() == "" || parsed.User != nil {
@@ -471,16 +488,32 @@ func downloadMarketURL(rawURL string, maxSize int64) ([]byte, error) {
 	if err := validate(rawURL); err != nil {
 		return nil, err
 	}
+	requestURL, err := buildThemeMarketRequestURL(rawURL, bypassCache)
+	if err != nil {
+		return nil, err
+	}
 	client := &http.Client{
 		Timeout: 45 * time.Second,
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			if len(via) >= 10 {
 				return errors.New("too many redirects")
 			}
+			if bypassCache {
+				req.Header.Set("Cache-Control", "no-cache, no-store, max-age=0")
+				req.Header.Set("Pragma", "no-cache")
+			}
 			return validate(req.URL.String())
 		},
 	}
-	resp, err := client.Get(rawURL)
+	req, err := http.NewRequest(http.MethodGet, requestURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	if bypassCache {
+		req.Header.Set("Cache-Control", "no-cache, no-store, max-age=0")
+		req.Header.Set("Pragma", "no-cache")
+	}
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}

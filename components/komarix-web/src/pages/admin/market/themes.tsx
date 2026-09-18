@@ -153,11 +153,32 @@ export default function ThemeMarketPage() {
     );
   }, []);
 
+  const autoRefreshCatalog = useCallback(() => {
+    if (document.visibilityState !== "visible") return;
+    void loadCatalog(true).catch((error) => {
+      console.warn("Failed to auto-refresh theme market:", error);
+    });
+  }, [loadCatalog]);
+
   useEffect(() => {
-    Promise.all([loadCatalog(), loadSources()])
+    Promise.all([loadCatalog(true), loadSources()])
       .catch((error) => toast.error(error instanceof Error ? error.message : String(error)))
       .finally(() => setLoading(false));
-  }, [loadCatalog, loadSources]);
+
+    const intervalID = window.setInterval(autoRefreshCatalog, 60_000);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") autoRefreshCatalog();
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", autoRefreshCatalog);
+
+    return () => {
+      window.clearInterval(intervalID);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", autoRefreshCatalog);
+    };
+  }, [autoRefreshCatalog, loadCatalog, loadSources]);
 
   const filteredThemes = useMemo(() => {
     const term = search.trim().toLocaleLowerCase();
