@@ -154,7 +154,7 @@ func static(r *gin.RouterGroup, noRoute func(handlers ...gin.HandlerFunc), force
 
 		cleanPath = filepath.Clean(cleanPath)
 
-		if themeID != DefaultTheme {
+		if themeID != DefaultTheme && themeID != DefaultPublicTheme {
 			if strings.Contains(themeID, "..") || strings.Contains(themeID, "/") || strings.Contains(themeID, "\\") {
 				return nil, "", false
 			}
