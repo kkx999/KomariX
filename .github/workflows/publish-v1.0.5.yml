@@ -108,6 +108,11 @@ jobs:
             echo "Remote file-management protocol residue remains."
             exit 1
           fi
+          if grep -Eq 'MethodAgentTaskResult|MethodAgentExec|MethodAgentTerminal|ExecParams|TerminalRequestParams|agent\.exec|agent\.terminal|agent\.taskResult' \
+              protocol/v2/jsonrpc.go; then
+            echo "Panel remote-command protocol residue remains."
+            exit 1
+          fi
           if grep -Eq '/terminal\?uuid|<Terminal' components/komarix-web/src/components/admin/NodeTable/NodeFunction.tsx; then
             echo "Obsolete terminal action remains."
             exit 1
