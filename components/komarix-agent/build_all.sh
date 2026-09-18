@@ -32,7 +32,7 @@ for GOOS in "${OS_LIST[@]}"; do
     echo -e "Building for $GOOS/$GOARCH..."
 
     # 设置输出二进制文件名
-    BINARY_NAME="komari-agent-${GOOS}-${GOARCH}"
+    BINARY_NAME="komarix-agent-${GOOS}-${GOARCH}"
     if [ "$GOOS" = "windows" ]; then
       BINARY_NAME="${BINARY_NAME}.exe"
     fi

@@ -19,7 +19,7 @@ import (
 
 func TestLegacyMonitoringTablesMigratedByOneShotMigration(t *testing.T) {
 	ctx := context.Background()
-	mainDB, err := gorm.Open(sqlite.Open("file:"+filepath.ToSlash(filepath.Join(t.TempDir(), "komari.db"))+"?mode=rwc"), &gorm.Config{})
+	mainDB, err := gorm.Open(sqlite.Open("file:"+filepath.ToSlash(filepath.Join(t.TempDir(), "komarix.db"))+"?mode=rwc"), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("open legacy db: %v", err)
 	}

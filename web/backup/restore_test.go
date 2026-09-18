@@ -35,9 +35,9 @@ func writeTestArchive(t *testing.T, entries map[string]string) string {
 
 func TestValidateArchiveAcceptsLegacyRootLayout(t *testing.T) {
 	archive := writeTestArchive(t, map[string]string{
-		"komari.db":            "database",
+		"komarix.db":            "database",
 		"theme/config.json":    "{}",
-		"komari-backup-markup": "backup marker",
+		"komarix-backup-markup": "backup marker",
 	})
 	if err := ValidateArchive(archive); err != nil {
 		t.Fatalf("ValidateArchive rejected legacy root layout: %v", err)
@@ -45,7 +45,7 @@ func TestValidateArchiveAcceptsLegacyRootLayout(t *testing.T) {
 }
 
 func TestValidateArchiveRequiresMarkup(t *testing.T) {
-	archive := writeTestArchive(t, map[string]string{"komari.db": "database"})
+	archive := writeTestArchive(t, map[string]string{"komarix.db": "database"})
 	if err := ValidateArchive(archive); err == nil {
 		t.Fatal("ValidateArchive accepted archive without markup")
 	}

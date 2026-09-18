@@ -317,7 +317,7 @@ const AutoDiscoverySection = ({
     if (selectedPlatform === "windows") {
       scriptFile = "install.ps1";
     }
-    let scriptUrl = `https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/${scriptFile}`;
+    let scriptUrl = `https://raw.githubusercontent.com/kkx999/KomariX/main/agent/${scriptFile}`;
     if (enableGhproxy && ghproxy) {
       scriptUrl = scriptUrl.slice(8); // 去掉 https://
       if (ghproxy.endsWith("/")) {
@@ -373,9 +373,9 @@ const AutoDiscoverySection = ({
         // 注意：文件挂载要求宿主机上文件已存在，否则 Docker 会将其创建为目录。
         finalCommand =
           `touch .komari-auto-discovery.json && ` +
-          `docker run -d --name komari-agent --restart=always ` +
+          `docker run -d --name komarix-agent --restart=always ` +
           `-v .komari-auto-discovery.json:/app/auto-discovery.json ` +
-          `ghcr.io/komari-monitor/komari-agent:latest ` +
+          `ghcr.io/kkx999/komarix-agent:latest ` +
           quoteShellArgs(dockerArgs);
         break;
       }
@@ -674,7 +674,7 @@ const AutoDiscoverySection = ({
               <TextField.Root
                 placeholder={t(
                   "admin.nodeTable.install_dir_placeholder",
-                  "安装目录，为空则使用默认目录(/opt/komari-agent)"
+                  "安装目录，为空则使用默认目录(/opt/komarix-agent)"
                 )}
                 value={installOptions.dir}
                 onChange={(e) =>
@@ -712,7 +712,7 @@ const AutoDiscoverySection = ({
               <TextField.Root
                 placeholder={t(
                   "admin.nodeTable.serviceName_placeholder",
-                  "服务名称，为空则使用默认名称(komari-agent)"
+                  "服务名称，为空则使用默认名称(komarix-agent)"
                 )}
                 value={installOptions.serviceName}
                 onChange={(e) =>
@@ -1525,7 +1525,7 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
       scriptFile = "install.ps1";
     }
     let scriptUrl =
-      `https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/${scriptFile}`;
+      `https://raw.githubusercontent.com/kkx999/KomariX/main/agent/${scriptFile}`;
     if (enableGhproxy) {
       if (enableGhproxy && ghproxy) {
         scriptUrl = scriptUrl.slice(8); // 去掉 https://
@@ -1577,8 +1577,8 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
           dockerArgs.push(args[i]);
         }
         finalCommand =
-          `docker run -d --name komari-agent --restart=always ` +
-          `ghcr.io/komari-monitor/komari-agent:latest ` +
+          `docker run -d --name komarix-agent --restart=always ` +
+          `ghcr.io/kkx999/komarix-agent:latest ` +
           quoteShellArgs(dockerArgs);
         break;
       }
@@ -1838,7 +1838,7 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
                 <TextField.Root
                   placeholder={t(
                     "admin.nodeTable.install_dir_placeholder",
-                    "安装目录，为空则使用默认目录(/opt/komari-agent)"
+                    "安装目录，为空则使用默认目录(/opt/komarix-agent)"
                   )}
                   value={installOptions.dir}
                   onChange={(e) =>
@@ -1882,7 +1882,7 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
                 <TextField.Root
                   placeholder={t(
                     "admin.nodeTable.serviceName_placeholder",
-                    "服务名称，为空则使用默认名称(komari-agent)"
+                    "服务名称，为空则使用默认名称(komarix-agent)"
                   )}
                   value={installOptions.serviceName}
                   onChange={(e) =>

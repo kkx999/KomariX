@@ -902,7 +902,7 @@ func TestEvalRemainsInterruptible(t *testing.T) {
 	}
 }
 
-const childHelperModeEnvironment = "KOMARI_JSRUNTIME_CHILD_HELPER_MODE"
+const childHelperModeEnvironment = "KOMARIX_JSRUNTIME_CHILD_HELPER_MODE"
 
 func childHelperEnvironment(mode string) map[string]string {
 	environment := make(map[string]string)

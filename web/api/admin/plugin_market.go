@@ -312,7 +312,7 @@ func InstallPluginFromMarket(c *gin.Context) {
 		api.RespondError(c, http.StatusBadRequest, "Plugin SHA-256 checksum does not match the market catalog")
 		return
 	}
-	tempFile, err := os.CreateTemp("", "komari-market-plugin-*.zip")
+	tempFile, err := os.CreateTemp("", "komarix-market-plugin-*.zip")
 	if err != nil {
 		api.RespondError(c, http.StatusInternalServerError, "Failed to create temporary plugin file")
 		return

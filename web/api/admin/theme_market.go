@@ -323,7 +323,7 @@ func InstallThemeFromMarket(c *gin.Context) {
 		api.RespondError(c, http.StatusBadRequest, "Theme SHA-256 checksum does not match the market catalog")
 		return
 	}
-	tempFile, err := os.CreateTemp("", "komari-market-theme-*.zip")
+	tempFile, err := os.CreateTemp("", "komarix-market-theme-*.zip")
 	if err != nil {
 		api.RespondError(c, http.StatusInternalServerError, "Failed to create temporary theme file")
 		return

@@ -30,9 +30,9 @@ var flags = pkg_flags.GlobalConfig
 var warningPanelHost, warningRunAsUser string
 
 var RootCmd = &cobra.Command{
-	Use:   "komari-agent",
-	Short: "komari agent",
-	Long:  `komari agent`,
+	Use:   "komarix-agent",
+	Short: "komarix agent",
+	Long:  `komarix agent`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// Notification helpers must not load the service's config or credentials.
 		if flags.ShowWarning {
@@ -83,7 +83,7 @@ var RootCmd = &cobra.Command{
 			}
 		}
 
-		log.Println("Komari Agent", update.CurrentVersion)
+		log.Println("KomariX Agent", update.CurrentVersion)
 		log.Println("Github Repo:", update.Repo)
 
 		// 设置 DNS 解析行为

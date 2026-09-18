@@ -64,7 +64,7 @@ func TestChildProcessStdioAreStreams(t *testing.T) {
 			const childProcess = require("child_process");
 			const stream = require("stream");
 			const child = childProcess.spawn(command, ["-test.run=^TestNodeChildProcessHelper$"], {
-				env: Object.assign({}, process.env, { KOMARI_JSRUNTIME_CHILD_HELPER_MODE: "echo" }),
+				env: Object.assign({}, process.env, { KOMARIX_JSRUNTIME_CHILD_HELPER_MODE: "echo" }),
 			});
 			const checks = [];
 			checks.push(child.stdin instanceof stream.Writable);

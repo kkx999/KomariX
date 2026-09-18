@@ -28,12 +28,12 @@ runs:
         # Route Agent install commands and project links to KomariX-owned resources.
         find .build/komarix-web/src -type f \( -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' \) -print0 | \
           xargs -0 -r sed -i \
-            -e 's#https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/#https://raw.githubusercontent.com/kkx999/KomariX/main/agent/#g' \
-            -e 's#https://raw.githubusercontent.com/komari-monitor/komari/refs/heads/main/README.md#https://raw.githubusercontent.com/kkx999/KomariX/main/README.md#g' \
-            -e 's#https://github.com/komari-monitor/komari/blob/main/README.md#https://github.com/kkx999/KomariX/blob/main/README.md#g' \
-            -e 's#https://api.github.com/repos/komari-monitor/komari/releases#https://api.github.com/repos/kkx999/KomariX/releases#g' \
+            -e 's#https://raw.githubusercontent.com/kkx999/KomariX/main/agent/#https://raw.githubusercontent.com/kkx999/KomariX/main/agent/#g' \
+            -e 's#https://raw.githubusercontent.com/kkx999/KomariX/main/README.md#https://raw.githubusercontent.com/kkx999/KomariX/main/README.md#g' \
+            -e 's#https://github.com/kkx999/KomariX/blob/main/README.md#https://github.com/kkx999/KomariX/blob/main/README.md#g' \
+            -e 's#https://api.github.com/repos/kkx999/KomariX/releases#https://api.github.com/repos/kkx999/KomariX/releases#g' \
             -e 's#https://github.com/komari-monitor"#https://github.com/kkx999/KomariX"#g' \
-            -e 's#ghcr.io/komari-monitor/komari-agent:latest#ghcr.io/kkx999/komarix-agent:latest#g'
+            -e 's#ghcr.io/kkx999/komarix-agent:latest#ghcr.io/kkx999/komarix-agent:latest#g'
 
         cd .build/komarix-web
         npm install
@@ -59,7 +59,7 @@ runs:
         cp -f .build/komarix-web/komari-theme.json web/public/defaultTheme/
         sed -i \
           -e 's/Komari/KomariX/g' \
-          -e 's#https://github.com/komari-monitor/komari-web#https://github.com/kkx999/KomariX#g' \
+          -e 's#https://github.com/kkx999/KomariX-web#https://github.com/kkx999/KomariX#g' \
           web/public/defaultTheme/komari-theme.json
         if [ -f .build/komarix-web/preview.png ]; then cp -f .build/komarix-web/preview.png web/public/defaultTheme/; fi
         if [ -f .build/komarix-web/perview.png ]; then cp -f .build/komarix-web/perview.png web/public/defaultTheme/; fi

@@ -110,7 +110,7 @@ KomariX
 komarix
 ```
 
-全新安装统一使用 KomariX 名称。检测到旧版 `/opt/komari`、`komari.service` 时，安装器会继续按旧路径兼容管理，不强制迁移数据。
+全新安装统一使用 KomariX 名称。检测到旧版 `/opt/komari`、`komarix.service` 时，安装器会继续按旧路径兼容管理，不强制迁移数据。
 
 ## 安全说明
 

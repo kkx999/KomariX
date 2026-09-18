@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""A small fake Komari v2 agent for testing a server's agent ingestion path."""
+"""A small fake KomariX v2 agent for testing a server's agent ingestion path."""
 
 import argparse
 import json
@@ -183,8 +183,8 @@ def register_client(server: str, adkey: str, name: str, timeout: float) -> dict[
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Generate fake Komari v2 agent reports and handle only ping events.")
-    parser.add_argument("--server", required=True, help="Komari server URL, e.g. https://komari.example.com")
+    parser = argparse.ArgumentParser(description="Generate fake KomariX v2 agent reports and handle only ping events.")
+    parser.add_argument("--server", required=True, help="KomariX server URL, e.g. https://komarix.example.com")
     parser.add_argument("--adkey", required=True, help="AutoDiscovery key; used only with -new")
     parser.add_argument("-new", action="store_true", dest="new_client", help="register and save a new fake client")
     parser.add_argument("--name", default=f"fake-{socket.gethostname()}", help="name suffix for a newly registered client")

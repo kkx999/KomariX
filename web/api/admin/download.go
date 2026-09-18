@@ -86,7 +86,7 @@ func writeBackupMarkup(zipWriter *zip.Writer) error {
 	now := time.Now().UTC()
 	markupContent := "此文件为 KomariX 备份标记文件，请勿删除。\nThis is a KomariX backup markup file, please do not delete.\n\n备份时间 / Backup Time: " + now.Format(time.RFC3339Nano)
 	markupWriter, err := zipWriter.CreateHeader(&zip.FileHeader{
-		Name:     "komari-backup-markup",
+		Name:     "komarix-backup-markup",
 		Method:   zip.Deflate,
 		Modified: now,
 	})
@@ -150,8 +150,8 @@ func DownloadBackup(c *gin.Context) {
 		return
 	}
 
-	// 3) 处理数据库备份 -> content/komari.db
-	destDB := filepath.Join(contentDir, "komari.db")
+	// 3) 处理数据库备份 -> content/komarix.db
+	destDB := filepath.Join(contentDir, "komarix.db")
 	dbFilePath := flags.DatabaseFile
 
 	if flags.IsSQLite() {

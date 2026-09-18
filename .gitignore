@@ -10,7 +10,7 @@
 __debug*
 
 # local development data
-komari.db
+komarix.db
 /data
 /utils/geoip/data
 .vscode/

@@ -894,9 +894,9 @@ func TestPostgreSQLMissingSchemaErrorsAreDistinguished(t *testing.T) {
 // fixture in place. It provides a repeatable full-data migration and size check
 // for an externally supplied MariaDB-to-SQLite conversion.
 func TestRestructureDump(t *testing.T) {
-	path := os.Getenv("KOMARI_METRIC_RESTRUCTURE_DUMP")
+	path := os.Getenv("KOMARIX_METRIC_RESTRUCTURE_DUMP")
 	if path == "" {
-		t.Skip("set KOMARI_METRIC_RESTRUCTURE_DUMP to run the full-dump migration")
+		t.Skip("set KOMARIX_METRIC_RESTRUCTURE_DUMP to run the full-dump migration")
 	}
 	ctx := context.Background()
 	policy := RollupPolicy{

@@ -73,7 +73,7 @@ func runTaskCommand(command string) (string, int) {
 func buildTaskCommand(command string) (*exec.Cmd, func(), error) {
 	var cmd *exec.Cmd
 	if runtime.GOOS == "windows" {
-		scriptFile, err := os.CreateTemp("", "komari-task-*.ps1")
+		scriptFile, err := os.CreateTemp("", "komarix-task-*.ps1")
 		if err != nil {
 			return nil, func() {}, err
 		}
@@ -307,7 +307,7 @@ func NewPingTask(conn *ws.SafeConn, taskID uint, pingType, pingTarget string) {
 	}
 	finishedAt := time.Now()
 	wsPayload := v2.BuildPingResultPayload(taskID, pingType, pingResult, finishedAt)
-	// https://github.com/komari-monitor/komari/commit/eb87a4fc330b7d1c407fa4ff70177615a4f50a1f
+	// https://github.com/kkx999/KomariX/commit/eb87a4fc330b7d1c407fa4ff70177615a4f50a1f
 	// -1 代表丢包，服务端计算
 	//if pingResult == -1 {
 	//	return

@@ -7,7 +7,7 @@ import (
 )
 
 func TestSQLiteFileSetSizeIncludesWALAndSHM(t *testing.T) {
-	databasePath := filepath.Join(t.TempDir(), "komari.db")
+	databasePath := filepath.Join(t.TempDir(), "komarix.db")
 	files := map[string]int{
 		databasePath:          11,
 		databasePath + "-wal": 7,

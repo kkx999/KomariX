@@ -145,7 +145,7 @@ const SettingsPanel = ({ isOpen, onClose }: SettingsPanelProps) => {
       encodeURIComponent(JSON.stringify(publicSettings?.theme_settings || {}));
     const downloadAnchorNode = document.createElement("a");
     downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "komari-theme-config.json");
+    downloadAnchorNode.setAttribute("download", "komarix-theme-config.json");
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();

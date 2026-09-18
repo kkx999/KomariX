@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Komari Theme Build Script
+# KomariX Theme Build Script
 # This script builds the theme package locally
 
 set -e  # Exit on any error
 
-echo "Building Komari Theme Package..."
+echo "Building KomariX Theme Package..."
 
 # Colors for output
 RED='\033[0;31m'
@@ -153,7 +153,7 @@ create_package() {
 # Main execution
 main() {
     echo "======================================"
-    echo "  Komari Theme Package Builder"
+    echo "  KomariX Theme Package Builder"
     echo "======================================"
     echo
     

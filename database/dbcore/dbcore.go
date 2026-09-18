@@ -172,7 +172,7 @@ var (
 )
 
 // SystemVersionKey 是记录“上次启动所用版本标识”的配置键（存于 configs 表）。
-// 取代旧的 ./data/.komari-version 文件：版本标识随配置库一起备份/恢复，
+// 取代旧的 ./data/.komarix-version 文件：版本标识随配置库一起备份/恢复，
 // 也避免额外的裸文件依赖。
 const SystemVersionKey = "system_version"
 
@@ -186,7 +186,7 @@ const (
 // versionID 是当前构建的版本标识，由 SetVersionID 在 Initialize 前注入。
 var versionID string
 
-// dbFileExistedAtStartup 记录本次进程启动、打开数据库之前 komari.db 是否已存在，
+// dbFileExistedAtStartup 记录本次进程启动、打开数据库之前 komarix.db 是否已存在，
 // 用于区分“全新安装”与“从旧版升级（无版本标记）”。在 doInitialize 打开数据库
 // 之前采集。
 var dbFileExistedAtStartup bool
@@ -201,7 +201,7 @@ func SetVersionID(id string) {
 func resolveDatabaseFile() string {
 	dbFile := flags.DatabaseFile
 	if dbFile == "" {
-		dbFile = "./data/komari.db"
+		dbFile = "./data/komarix.db"
 	}
 	return dbFile
 }
@@ -241,7 +241,7 @@ func backupOnVersionUpgrade() {
 	}
 
 	// 需要备份（升级或从旧稳定版首次带版本标记启动）。
-	// 先做一次 WAL checkpoint，确保 komari.db 主文件包含最新数据，
+	// 先做一次 WAL checkpoint，确保 komarix.db 主文件包含最新数据，
 	// 避免备份出的库缺少仍留在 -wal 中的写入。
 	if instance != nil {
 		instance.Exec("PRAGMA wal_checkpoint(TRUNCATE);")
@@ -273,7 +273,7 @@ func writeVersionMarker() {
 
 func buildSQLiteDSN(databaseFile string) string {
 	if databaseFile == "" {
-		databaseFile = "./data/komari.db"
+		databaseFile = "./data/komarix.db"
 	}
 
 	params := fmt.Sprintf("_busy_timeout=%d&_txlock=immediate", mainSQLiteBusyTimeout.Milliseconds())
@@ -378,15 +378,15 @@ func doInitialize() error {
 				logger.Infof("dbcore", "[restore] backup.zip removed")
 			}
 			// 8. 删除标记
-			if rmErr := os.Remove("./data/komari-backup-markup"); rmErr != nil {
-				logger.Errorf("dbcore", "[restore] failed to remove komari-backup-markup: %v", rmErr)
+			if rmErr := os.Remove("./data/komarix-backup-markup"); rmErr != nil {
+				logger.Errorf("dbcore", "[restore] failed to remove komarix-backup-markup: %v", rmErr)
 			} else {
-				logger.Infof("dbcore", "[restore] komari-backup-markup removed")
+				logger.Infof("dbcore", "[restore] komarix-backup-markup removed")
 			}
 		}
 	}()
 
-	// 记录“打开数据库之前”komari.db 是否已存在，用于区分全新安装与旧版升级。
+	// 记录“打开数据库之前”komarix.db 是否已存在，用于区分全新安装与旧版升级。
 	// 必须在（可能的）恢复逻辑之后、gorm.Open 之前采集：恢复会解压出旧库，
 	// gorm.Open 会创建空库。
 	if _, statErr := os.Stat(resolveDatabaseFile()); statErr == nil {

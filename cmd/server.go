@@ -22,8 +22,8 @@ var ServerCmd = &cobra.Command{
 
 func init() {
 	// 从环境变量获取监听地址
-	listenAddr := GetEnv("KOMARIX_LISTEN", GetEnv("KOMARI_LISTEN", "0.0.0.0:25774"))
-	ServerCmd.PersistentFlags().StringVarP(&flags.Listen, "listen", "l", listenAddr, "监听地址 [env: KOMARIX_LISTEN; legacy: KOMARI_LISTEN]")
+	listenAddr := GetEnv("KOMARIX_LISTEN", GetEnv("KOMARIX_LISTEN", "0.0.0.0:25774"))
+	ServerCmd.PersistentFlags().StringVarP(&flags.Listen, "listen", "l", listenAddr, "监听地址 [env: KOMARIX_LISTEN; legacy: KOMARIX_LISTEN]")
 	RootCmd.AddCommand(ServerCmd)
 }
 

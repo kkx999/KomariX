@@ -10,11 +10,11 @@ export default function GuideHeader() {
       <Flex align="center" gap="2">
         <img
           src="/assets/pwa-icon.png"
-          alt="Komari"
+          alt="KomariX"
           className="size-9 object-contain"
         />
         <Text size="3" weight="bold">
-          Komari
+          KomariX
         </Text>
       </Flex>
       <Flex gap="2">

@@ -9,7 +9,7 @@ import (
 // backupWhitelist 定义需要备份的 ./data/ 下文件/目录（相对路径）。
 // 目录项会递归包含其下所有文件。新增需持久化数据时在此追加。
 //
-// 注意：komari.db 不在白名单中——database 通过 DownloadBackup 中的
+// 注意：komarix.db 不在白名单中——database 通过 DownloadBackup 中的
 // SQLite VACUUM INTO 或 copyFile 单独备份，确保一致性快照。
 var backupWhitelist = []string{
 	"favicon.ico",

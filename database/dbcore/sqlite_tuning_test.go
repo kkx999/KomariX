@@ -10,7 +10,7 @@ import (
 )
 
 func TestMainSQLiteConnectorAppliesBoundedSettings(t *testing.T) {
-	databasePath := filepath.Join(t.TempDir(), "komari.db")
+	databasePath := filepath.Join(t.TempDir(), "komarix.db")
 	db, err := sqlitetune.Open(buildSQLiteDSN(databasePath), mainSQLiteOptions())
 	if err != nil {
 		t.Fatalf("open SQLite connector: %v", err)
@@ -55,7 +55,7 @@ func TestMainSQLiteConnectorAppliesBoundedSettings(t *testing.T) {
 }
 
 func TestMainSQLiteAutoCheckpointKeepsWALBounded(t *testing.T) {
-	databasePath := filepath.Join(t.TempDir(), "komari.db")
+	databasePath := filepath.Join(t.TempDir(), "komarix.db")
 	db, err := sqlitetune.Open(buildSQLiteDSN(databasePath), mainSQLiteOptions())
 	if err != nil {
 		t.Fatalf("open SQLite connector: %v", err)

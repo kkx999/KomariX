@@ -1,7 +1,7 @@
 {
   "about": {
-    "ai": "Komari プロジェクトの開発プロセスは、人工知能ツールの支援を受けています。これらのツールは、コード生成、リファクタリング、デバッグなどのタスクを実行するために使用され、開発効率とコード品質を向上させます。AI によって生成されたすべてのコードと提案は、人間の開発者によってレビューおよび検証されています。",
-    "open_source": "Komari は MIT ライセンスに基づいてオープンソースであり、以下のオープンソースソフトウェアを使用して構築されています：",
+    "ai": "KomariX プロジェクトの開発プロセスは、人工知能ツールの支援を受けています。これらのツールは、コード生成、リファクタリング、デバッグなどのタスクを実行するために使用され、開発効率とコード品質を向上させます。AI によって生成されたすべてのコードと提案は、人間の開発者によってレビューおよび検証されています。",
+    "open_source": "KomariX は MIT ライセンスに基づいてオープンソースであり、以下のオープンソースソフトウェアを使用して構築されています：",
     "open_source_title": "オープンソースソフトウェアライセンス",
     "readme_open_in_new_tab": "新しいタブで開く"
   },
@@ -126,7 +126,7 @@
       "includeMountpoints": "特定のマウントポイントのみを監視",
       "includeNics": "特定のNICのみを監視",
       "install_dir": "インストールディレクトリ",
-      "install_dir_placeholder": "インストールディレクトリ、空の場合はデフォルトディレクトリ（/opt/komari-agent）を使用",
+      "install_dir_placeholder": "インストールディレクトリ、空の場合はデフォルトディレクトリ（/opt/komarix-agent）を使用",
       "installCommand": "ワンクリックデプロイコマンド",
       "installOptions": "インストールオプション",
       "interval": "収集間隔（秒）",
@@ -143,7 +143,7 @@
       "priceTips": "0は表示しない、-1は無料を示す",
       "searchByName": "サーバーを検索",
       "serviceName": "サービス名",
-      "serviceName_placeholder": "サービス名、空の場合はデフォルト名（komari-agent）を使用",
+      "serviceName_placeholder": "サービス名、空の場合はデフォルト名（komarix-agent）を使用",
       "setToLongTerm": "長期に設定",
       "submit": "送信",
       "submitting": "待機中"
@@ -511,7 +511,7 @@
     "username_required": "ユーザー名を入力してください。",
     "welcome_description": "管理者アカウント、サイト情報、監視データベースを設定します。",
     "welcome_subtitle": "軽量なオープンソースのサーバー監視ツールです。",
-    "welcome_title": "Komari へようこそ"
+    "welcome_title": "KomariX へようこそ"
   },
   "just_now": "たった今",
   "loadAlert": {
@@ -525,7 +525,7 @@
     "title": "ログ"
   },
   "login": {
-    "desc": "Komari コントロールパネルにログインします。",
+    "desc": "KomariX コントロールパネルにログインします。",
     "login_with": "{{provider}} でログイン",
     "login_with_github": "GitHubでログイン",
     "password": "パスワード",
@@ -650,7 +650,7 @@
     "title": "通知",
     "traffic_report": {
       "daily": "日次レポート",
-      "deprecation_notice": "Komari 内蔵のトラフィックレポートは 1.5.0 で削除される予定です。できるだけ早く「定期トラフィックレポート」プラグインへ移行してください。",
+      "deprecation_notice": "KomariX 内蔵のトラフィックレポートは 1.5.0 で削除される予定です。できるだけ早く「定期トラフィックレポート」プラグインへ移行してください。",
       "errors": {
         "fetch_failed": "トラフィックレポート設定の取得に失敗しました",
         "save_failed": "トラフィックレポート設定の保存に失敗しました",
@@ -719,7 +719,7 @@
     "market_refresh_success": "プラグインソースを更新しました",
     "market_reinstall": "再インストール",
     "market_search": "プラグインを検索...",
-    "market_update_required": "Komari の更新が必要です",
+    "market_update_required": "KomariX の更新が必要です",
     "market_uninstall_success": "プラグインをアンインストールしました",
     "market_warning": "マーケットのサードパーティ製プラグインは公式の審査を受けていません。有害なコードが含まれている可能性があるため、インストール前に十分に確認してください。",
     "no_logs": "ログはありません",
@@ -910,7 +910,7 @@
         "vacuum": "SQLite ファイル領域を回収（VACUUM）",
         "vacuum_full": "PostgreSQL テーブルを完全回収・分析（VACUUM (FULL, ANALYZE)）"
       },
-      "confirm_description": "データベースのメンテナンス中はデータベースがロックされ、Komari が一時的に停止する場合があります。以下の操作を確認してください。",
+      "confirm_description": "データベースのメンテナンス中はデータベースがロックされ、KomariX が一時的に停止する場合があります。以下の操作を確認してください。",
       "confirm_title": "データベースメンテナンスの確認",
       "invalid_response": "サーバーから無効なデータベース情報が返されました",
       "load_error": "データベース情報の読み込みに失敗しました",
@@ -923,7 +923,7 @@
       "main": "メインデータベース",
       "maintaining": "メンテナンス中...",
       "maintenance_button": "領域を回収",
-      "maintenance_description": "メンテナンス中はデータベースがロックされ、Komari が一時的に応答しない場合があります。",
+      "maintenance_description": "メンテナンス中はデータベースがロックされ、KomariX が一時的に応答しない場合があります。",
       "maintenance_error": "データベースのメンテナンスに失敗しました",
       "maintenance_partial_failure": "データベースのメンテナンスは終了しましたが、失敗した操作があります",
       "maintenance_success": "データベースのメンテナンスが完了しました",
@@ -1178,7 +1178,7 @@
       "enable_description": "好みの方法でタイムリーな通知を受け取ります。",
       "Javascript": {
         "script": "JavaScript コード",
-        "script_help": "sendMessage(message, title) およびオプションの sendEvent(event) 関数を実装する JavaScript コード（ES6 の一部をサポート）。両方とも Promise またはブール値を返す必要があります。使用可能な API：fetch()、xhr()、console.log()。ガイド: https://komari-document.pages.dev/faq/notification-template.html"
+        "script_help": "sendMessage(message, title) およびオプションの sendEvent(event) 関数を実装する JavaScript コード（ES6 の一部をサポート）。両方とも Promise またはブール値を返す必要があります。使用可能な API：fetch()、xhr()、console.log()。ガイド: https://github.com/kkx999/KomariX"
       },
       "method": "通知チャネル",
       "method_description": "通知プラットフォームを選択してください",
@@ -1308,7 +1308,7 @@
       "sqlite_risk": "現在 {{servers}} 台のサーバーと約 {{days}} 日分のデータがあります。サーバー性能が十分でない場合、SQLite では処理できない可能性があります。",
       "sqlite_warning": "データ量が増えると SQLite は単一サーバーの CPU、メモリ、IO を大きく消費し、大量のダウンサンプリングや平均値計算には適しません。",
       "start": "アップグレードを開始",
-      "start_description": "すべての旧監視レコードを使用して系列ごとの 1 時間 P95 を計算します。旧テーブルは移行と領域回収が成功した後にのみ削除されます。移行中は Komari を停止したり、移行先データベースを変更したりしないでください。",
+      "start_description": "すべての旧監視レコードを使用して系列ごとの 1 時間 P95 を計算します。旧テーブルは移行と領域回収が成功した後にのみ削除されます。移行中は KomariX を停止したり、移行先データベースを変更したりしないでください。",
       "start_title": "アップグレードを開始しますか？",
       "subtitle": "移行が完了するまで通常サイトと Agent API は停止します。",
       "target": "移行先データベース",

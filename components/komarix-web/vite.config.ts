@@ -68,8 +68,8 @@ export default defineConfig(({ mode }) => {
         registerType: "autoUpdate",
         includeAssets: ["favicon.ico", "assets/pwa-icon.png"],
         manifest: {
-          name: "Komari Monitor",
-          short_name: "Komari Monitor",
+          name: "KomariX Monitor",
+          short_name: "KomariX Monitor",
           description: "A simple server monitor tool",
           theme_color: "#2563eb",
           background_color: "#ffffff",

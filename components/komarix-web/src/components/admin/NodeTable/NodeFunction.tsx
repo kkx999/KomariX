@@ -87,13 +87,13 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
     switch (selectedPlatform) {
       case "linux":
         finalCommand =
-          `wget -qO- https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/install.sh | sudo bash -s -- ` +
+          `wget -qO- https://raw.githubusercontent.com/kkx999/KomariX/main/agent/install.sh | sudo bash -s -- ` +
           quoteShellArgs(args);
         break;
       case "windows":
         finalCommand =
           `powershell.exe -NoProfile -ExecutionPolicy Bypass -Command ` +
-          `"iwr 'https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/install.ps1'` +
+          `"iwr 'https://raw.githubusercontent.com/kkx999/KomariX/main/agent/install.ps1'` +
           ` -UseBasicParsing -OutFile 'install.ps1'; &` +
           ` '.\\install.ps1'`;
         args.forEach((arg) => {
@@ -103,7 +103,7 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
         break;
       case "macos":
         finalCommand =
-          `zsh <(curl -sL https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/install.sh) ` +
+          `zsh <(curl -sL https://raw.githubusercontent.com/kkx999/KomariX/main/agent/install.sh) ` +
           quoteShellArgs(args);
         break;
     }
@@ -241,7 +241,7 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
                 <TextField.Root
                   placeholder={t(
                     "admin.nodeTable.install_dir_placeholder",
-                    "安装目录，为空则使用默认目录(/opt/komari-agent)"
+                    "安装目录，为空则使用默认目录(/opt/komarix-agent)"
                   )}
                   onChange={(e) =>
                     setInstallOptions((prev) => ({
@@ -256,7 +256,7 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
                 <TextField.Root
                   placeholder={t(
                     "admin.nodeTable.serviceName_placeholder",
-                    "服务名称，为空则使用默认名称(komari-agent)"
+                    "服务名称，为空则使用默认名称(komarix-agent)"
                   )}
                   onChange={(e) =>
                     setInstallOptions((prev) => ({

@@ -29,7 +29,7 @@ var (
 const (
 	snapshotVersionPrefix = "Snapshot-"
 	containerMarkerPath   = "/.komarix-agent-container"
-	legacyContainerMarkerPath = "/.komari-agent-container"
+	legacyContainerMarkerPath = "/.komarix-agent-container"
 	githubAPIBaseURL      = "https://api.github.com"
 )
 
