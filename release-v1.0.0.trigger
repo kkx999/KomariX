@@ -1,5 +1,6 @@
 Publish final KomariX v1.0.0.
 
-All 49 market theme packages have been rebranded to KomariX and verified.
-Theme authors and LICENSE/NOTICE/AUTHORS files remain unchanged.
-Use frozen artifact from workflow run 35336891764.
+Final branding pass completed on 2026-09-18.
+KomariX-owned manifests, fields, runtime identifiers and market metadata use KomariX naming.
+Third-party legacy theme/plugin formats remain supported only as compatibility input.
+Rebuild and replace the existing v1.0.0 release with normalized KomariX theme assets.
