@@ -169,3 +169,102 @@ func TestPeekThemeFromZipAcceptsLegacyManifest(t *testing.T) {
 		t.Fatalf("short = %q, want legacy-theme", theme.Short)
 	}
 }
+
+
+func TestWrappedLegacyThemePackageInstallsAtThemeRoot(t *testing.T) {
+	zipPath := filepath.Join(t.TempDir(), "wrapped-legacy-theme.zip")
+	archive, err := os.Create(zipPath)
+	if err != nil {
+		t.Fatalf("create zip: %v", err)
+	}
+	writer := zip.NewWriter(archive)
+	manifest, err := writer.Create("wrapped-theme/komari-theme.json")
+	if err != nil {
+		t.Fatalf("create wrapped manifest: %v", err)
+	}
+	if _, err := manifest.Write([]byte(`{
+  "name": "Wrapped Legacy Theme",
+  "short": "wrapped-theme",
+  "description": "Compatibility test",
+  "author": "Third Party",
+  "version": "1.0.0"
+}`)); err != nil {
+		t.Fatalf("write wrapped manifest: %v", err)
+	}
+	index, err := writer.Create("wrapped-theme/dist/index.html")
+	if err != nil {
+		t.Fatalf("create wrapped index: %v", err)
+	}
+	if _, err := index.Write([]byte("<html>wrapped</html>")); err != nil {
+		t.Fatalf("write wrapped index: %v", err)
+	}
+	if err := writer.Close(); err != nil {
+		t.Fatalf("close zip writer: %v", err)
+	}
+	if err := archive.Close(); err != nil {
+		t.Fatalf("close zip file: %v", err)
+	}
+
+	preview, err := peekThemeFromZip(zipPath)
+	if err != nil {
+		t.Fatalf("wrapped legacy package preview failed: %v", err)
+	}
+	if preview.Short != "wrapped-theme" {
+		t.Fatalf("preview short = %q, want wrapped-theme", preview.Short)
+	}
+
+	workDir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("get working directory: %v", err)
+	}
+	tempDir := t.TempDir()
+	if err := os.Chdir(tempDir); err != nil {
+		t.Fatalf("change working directory: %v", err)
+	}
+	t.Cleanup(func() { _ = os.Chdir(workDir) })
+
+	installed, err := extractAndValidateTheme(zipPath)
+	if err != nil {
+		t.Fatalf("wrapped legacy package install failed: %v", err)
+	}
+	if installed.Short != "wrapped-theme" {
+		t.Fatalf("installed short = %q, want wrapped-theme", installed.Short)
+	}
+	if _, err := os.Stat(filepath.Join("data", "theme", "wrapped-theme", "komarix-theme.json")); err != nil {
+		t.Fatalf("normalized manifest missing: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join("data", "theme", "wrapped-theme", "dist", "index.html")); err != nil {
+		t.Fatalf("wrapped dist was not flattened into theme root: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join("data", "theme", "wrapped-theme", "wrapped-theme")); !os.IsNotExist(err) {
+		t.Fatalf("unexpected nested wrapper directory remains after install: %v", err)
+	}
+}
+
+func TestWrappedThemePackageRejectsAmbiguousRoots(t *testing.T) {
+	zipPath := filepath.Join(t.TempDir(), "ambiguous-theme.zip")
+	archive, err := os.Create(zipPath)
+	if err != nil {
+		t.Fatalf("create zip: %v", err)
+	}
+	writer := zip.NewWriter(archive)
+	for _, name := range []string{"first/komarix-theme.json", "second/komari-theme.json"} {
+		file, err := writer.Create(name)
+		if err != nil {
+			t.Fatalf("create %s: %v", name, err)
+		}
+		if _, err := file.Write([]byte(`{"name":"Ambiguous","short":"ambiguous","version":"1.0.0","author":"Test"}`)); err != nil {
+			t.Fatalf("write %s: %v", name, err)
+		}
+	}
+	if err := writer.Close(); err != nil {
+		t.Fatalf("close zip writer: %v", err)
+	}
+	if err := archive.Close(); err != nil {
+		t.Fatalf("close zip file: %v", err)
+	}
+
+	if _, err := peekThemeFromZip(zipPath); err == nil {
+		t.Fatal("ambiguous one-level theme roots were accepted")
+	}
+}
