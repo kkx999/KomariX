@@ -204,21 +204,6 @@ function Uninstall-Previous {
         Remove-Item $AgentPath -Force
     }
 }
-# Clean up legacy Komari Agent service/binary before installing KomariX Agent.
-$LegacyServiceName = "komari-agent"
-$LegacyInstallDir = Join-Path $Env:ProgramFiles "Komari"
-$LegacyAgentPath = Join-Path $LegacyInstallDir "komari-agent.exe"
-if ($LegacyServiceName -ne $ServiceName) {
-    $legacySvc = Get-Service -Name $LegacyServiceName -ErrorAction SilentlyContinue
-    if ($legacySvc) {
-        try { nssm stop $LegacyServiceName 2>&1 | Out-Null } catch {}
-        try { nssm remove $LegacyServiceName confirm 2>&1 | Out-Null } catch {}
-        Stop-Service $LegacyServiceName -Force -ErrorAction SilentlyContinue
-        sc.exe delete $LegacyServiceName | Out-Null
-    }
-    Remove-Item -Path $LegacyAgentPath -Force -ErrorAction SilentlyContinue
-}
-
 Uninstall-Previous
 
 function Get-LatestSnapshotVersion {
