@@ -1,0 +1,53 @@
+name: Verify and publish v1.0.0
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/verify-release-v1.0.0.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  verify-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build KomariX frontend
+        uses: ./.github/actions/build-frontend
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Run Go tests
+        run: go test ./...
+
+      - name: Build Linux amd64 verification binary
+        env:
+          CGO_ENABLED: 1
+          GIN_MODE: release
+        run: |
+          go build -trimpath \
+            -ldflags="-s -w -X github.com/kkx999/KomariX/utils.CurrentVersion=v1.0.0 -X github.com/kkx999/KomariX/utils.VersionHash=${GITHUB_SHA}" \
+            -o komari-linux-amd64
+          ./komari-linux-amd64 --help >/dev/null
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view v1.0.0 >/dev/null 2>&1; then
+            echo "Release v1.0.0 already exists; skipping creation."
+            exit 0
+          fi
+          gh release create v1.0.0 \
+            --target "${GITHUB_SHA}" \
+            --title "KomariX v1.0.0" \
+            --notes "KomariX 首个版本，基于 Komari 1.4.3。除品牌名称与 Logo 外，保留原版功能与行为。"
