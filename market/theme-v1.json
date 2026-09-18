@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updated_at": "2026-09-18T19:02:41.415Z",
+  "updated_at": "2026-09-18T19:02:49.212Z",
   "themes": [
     {
       "name": {
@@ -804,6 +804,21 @@
       "upstream_download": "https://github.com/imbigbomb/komari-animal-island/releases/download/v1.0.6/AnimalIsland-1.0.6.zip",
       "upstream_preview": "https://raw.githubusercontent.com/imbigbomb/komari-animal-island/main/preview.png",
       "preview_sha256": "4b07d6d1d8305668aa5c9d67a064c3f56f9df24e33e3b387685c758569450d79",
+      "komarix_branding": true
+    },
+    {
+      "name": "Adhesive Note",
+      "short": "AdhesiveNote",
+      "description": "把每台服务器变成一张贴在墙上的手写便利贴",
+      "version": "1.0.0",
+      "author": "stqfdyr",
+      "url": "https://github.com/stqfdyr/komari-theme-adhesive-note",
+      "preview": "https://github.com/kkx999/KomariX/releases/download/v1.0.0/preview-01-AdhesiveNote-1.0.0-bcd8721a9ea2.webp",
+      "download": "https://github.com/kkx999/KomariX/releases/download/v1.0.0/theme-01-AdhesiveNote-1.0.0-b76b9bd8bfa0.zip",
+      "sha256": "b76b9bd8bfa0cea58a18e625f4b4de0163b829e4dab6772f2186c6bc7ca3b013",
+      "upstream_download": "https://github.com/stqfdyr/komari-theme-adhesive-note/releases/download/v1.0.0/komari-theme-adhesivenote-v1.0.0.zip",
+      "upstream_preview": "https://raw.githubusercontent.com/stqfdyr/komari-theme-adhesive-note/main/preview.webp",
+      "preview_sha256": "bcd8721a9ea223a68082110961ca8f8c1fd414b360974d75167833f6d357ab4d",
       "komarix_branding": true
     }
   ]
