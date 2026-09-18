@@ -1,0 +1,44 @@
+name: Rename upstream source archive
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/rename-upstream.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  rename:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Rename vendor to upstream and update references
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git mv vendor upstream
+
+          mapfile -t files < <(git grep -l 'vendor/komari-web\|vendor/komari-agent\|vendor/purcarte\|vendor/UPSTREAM_VERSIONS' || true)
+          if [ "${#files[@]}" -gt 0 ]; then
+            sed -i \
+              -e 's#vendor/komari-web#upstream/komari-web#g' \
+              -e 's#vendor/komari-agent#upstream/komari-agent#g' \
+              -e 's#vendor/purcarte#upstream/purcarte#g' \
+              -e 's#vendor/UPSTREAM_VERSIONS#upstream/UPSTREAM_VERSIONS#g' \
+              "${files[@]}"
+          fi
+
+          rm -f .github/workflows/rename-upstream.yml
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "refactor: store archived upstream sources outside Go vendor [skip ci]"
+          git push origin HEAD:main
