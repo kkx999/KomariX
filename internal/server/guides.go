@@ -54,9 +54,10 @@ func (a *App) DatabaseMigrationRequired() (DatabaseMigrationRequirement, error) 
 // does not mount authentication or normal application routes.
 func (a *App) RunInstallGuide() (bool, error) {
 	return a.runGuideServer(installweb.NewController(dbcore.GetDBInstance()), guideServerConfig{
-		pagePath:   installweb.PagePath,
-		missingAPI: "Not found in install mode",
-		logMessage: "First-run installation guide is available on %s",
+		pagePath:         installweb.PagePath,
+		missingAPI:       "Not found in install mode",
+		logMessage:       "First-run installation guide is available on %s",
+		restrictedStatic: true,
 	})
 }
 
