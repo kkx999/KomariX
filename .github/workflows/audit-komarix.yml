@@ -24,3 +24,5 @@ jobs:
             --exclude='audit-komarix.yml' \
             'komari-monitor|/opt/komari([^x]|$)|komari-agent\.service|komari\.service|komari-agent-|komari-linux-|komari-windows-|Komari Monitor|Komari Agent|\bkomari\b' \
             . || true
+
+# audit-pass-2
