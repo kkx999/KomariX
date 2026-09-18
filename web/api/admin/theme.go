@@ -31,10 +31,27 @@ const (
 // ListThemes 列出所有主题
 func ListThemes(c *gin.Context) {
 	dataDir := "./data/theme"
+	var themes []models.Theme
 
-	// 确保主题目录存在
+	// 系统内置后台/基础主题。
+	if raw, err := public.PublicFS.ReadFile("defaultTheme/komari-theme.json"); err == nil {
+		var theme models.Theme
+		if json.Unmarshal(raw, &theme) == nil {
+			themes = append(themes, theme)
+		}
+	}
+
+	// KomariX 内置 PurCarte 主题。
+	if raw, err := public.PublicFS.ReadFile("purcarteTheme/komari-theme.json"); err == nil {
+		var theme models.Theme
+		if json.Unmarshal(raw, &theme) == nil {
+			themes = append(themes, theme)
+		}
+	}
+
+	// 用户安装的主题继续从 data/theme 读取。
 	if _, err := os.Stat(dataDir); os.IsNotExist(err) {
-		api.RespondSuccess(c, []models.Theme{})
+		api.RespondSuccess(c, themes)
 		return
 	}
 
@@ -43,21 +60,14 @@ func ListThemes(c *gin.Context) {
 		api.RespondError(c, http.StatusInternalServerError, "读取主题目录失败: "+err.Error())
 		return
 	}
-
-	var themes []models.Theme
-	defaultTheme, err := public.PublicFS.ReadFile("defaultTheme/komari-theme.json")
-	if err == nil {
-		dt := models.Theme{}
-		err := json.Unmarshal(defaultTheme, &dt)
-		if err == nil {
-			themes = append(themes, dt)
-		}
-
-	}
 	for _, entry := range entries {
 		if entry.IsDir() {
 			themeConfigPath := filepath.Join(dataDir, entry.Name(), "komari-theme.json")
 			if themeInfo, err := loadThemeConfig(themeConfigPath); err == nil {
+				// 内置 PurCarte 不允许被同名外部主题覆盖展示。
+				if themeInfo.Short == public.DefaultPublicTheme {
+					continue
+				}
 				themes = append(themes, themeInfo)
 			}
 		}
@@ -77,8 +87,8 @@ func DeleteTheme(c *gin.Context) {
 		return
 	}
 
-	if req.Short == "default" {
-		api.RespondError(c, http.StatusBadRequest, "默认主题不能删除")
+	if req.Short == public.DefaultTheme || req.Short == public.DefaultPublicTheme {
+		api.RespondError(c, http.StatusBadRequest, "内置主题不能删除")
 		return
 	}
 
@@ -113,8 +123,8 @@ func SetTheme(c *gin.Context) {
 		return
 	}
 
-	// 如果不是default主题，检查主题是否存在
-	if themeName != "default" {
+	// 非内置主题需要检查本地主题目录。
+	if themeName != public.DefaultTheme && themeName != public.DefaultPublicTheme {
 		// 校验主题名称，防止路径穿越（如 ../）访问工作目录外的文件
 		if !isValidMarketShort(themeName) {
 			api.RespondError(c, http.StatusBadRequest, "无效的主题名称")
