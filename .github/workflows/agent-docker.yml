@@ -25,8 +25,8 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: vendor/komari-agent/go.mod
-          cache-dependency-path: vendor/komari-agent/go.sum
+          go-version-file: components/komarix-agent/go.mod
+          cache-dependency-path: components/komarix-agent/go.sum
 
       - name: Build Linux Agent binaries
         shell: bash
@@ -38,7 +38,7 @@ jobs:
           if [ -z "$VERSION" ]; then
             VERSION="dev"
           fi
-          cd vendor/komari-agent
+          cd components/komarix-agent
           LDFLAGS="-s -w -X github.com/komari-monitor/komari-agent/update.CurrentVersion=${VERSION} -X github.com/komari-monitor/komari-agent/update.Repo=kkx999/KomariX"
           GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="$LDFLAGS" -o komari-agent-linux-amd64 .
           GOOS=linux GOARCH=arm64 go build -trimpath -ldflags="$LDFLAGS" -o komari-agent-linux-arm64 .
@@ -68,7 +68,7 @@ jobs:
       - name: Build and push Agent image
         uses: docker/build-push-action@v5
         with:
-          context: vendor/komari-agent
+          context: components/komarix-agent
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ${{ steps.meta.outputs.tags }}

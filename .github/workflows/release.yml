@@ -166,8 +166,8 @@ jobs:
       - name: Set up Go for Agent
         uses: actions/setup-go@v5
         with:
-          go-version-file: vendor/komari-agent/go.mod
-          cache-dependency-path: vendor/komari-agent/go.sum
+          go-version-file: components/komarix-agent/go.mod
+          cache-dependency-path: components/komarix-agent/go.sum
 
       - name: Build KomariX Agent
         env:
@@ -178,7 +178,7 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          cd vendor/komari-agent
+          cd components/komarix-agent
           BINARY_NAME="komari-agent-${GOOS}-${GOARCH}"
           if [ "${GOOS}" = "windows" ]; then
             BINARY_NAME="${BINARY_NAME}.exe"

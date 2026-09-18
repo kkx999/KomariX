@@ -21,12 +21,12 @@ runs:
       shell: bash
       run: |
         set -euxo pipefail
-        rm -rf .build/komari-web
+        rm -rf .build/komarix-web
         mkdir -p .build
-        cp -a vendor/komari-web .build/komari-web
+        cp -a components/komarix-web .build/komarix-web
 
         # Route Agent install commands and project links to KomariX-owned resources.
-        find .build/komari-web/src -type f \( -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' \) -print0 | \
+        find .build/komarix-web/src -type f \( -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' \) -print0 | \
           xargs -0 -r sed -i \
             -e 's#https://raw.githubusercontent.com/komari-monitor/komari-agent/refs/heads/main/#https://raw.githubusercontent.com/kkx999/KomariX/main/agent/#g' \
             -e 's#https://raw.githubusercontent.com/komari-monitor/komari/refs/heads/main/README.md#https://raw.githubusercontent.com/kkx999/KomariX/main/README.md#g' \
@@ -35,19 +35,19 @@ runs:
             -e 's#https://github.com/komari-monitor"#https://github.com/kkx999/KomariX"#g' \
             -e 's#ghcr.io/komari-monitor/komari-agent:latest#ghcr.io/kkx999/komarix-agent:latest#g'
 
-        cd .build/komari-web
+        cd .build/komarix-web
         npm install
         npm run build
         cd ../..
 
         # Visible KomariX branding only; keep application behavior intact.
-        find .build/komari-web/dist -type f \( -name '*.js' -o -name '*.html' -o -name '*.json' -o -name '*.css' -o -name '*.webmanifest' \) -print0 | \
+        find .build/komarix-web/dist -type f \( -name '*.js' -o -name '*.html' -o -name '*.json' -o -name '*.css' -o -name '*.webmanifest' \) -print0 | \
           xargs -0 -r sed -i 's/Komari/KomariX/g'
 
-        mkdir -p .build/komari-web/dist/assets
-        cp -f docs/komarix.svg .build/komari-web/dist/assets/komarix.svg
+        mkdir -p .build/komarix-web/dist/assets
+        cp -f docs/komarix.svg .build/komarix-web/dist/assets/komarix.svg
 
-        find .build/komari-web/dist -type f \( -name '*.js' -o -name '*.html' -o -name '*.json' -o -name '*.webmanifest' \) -print0 | \
+        find .build/komarix-web/dist -type f \( -name '*.js' -o -name '*.html' -o -name '*.json' -o -name '*.webmanifest' \) -print0 | \
           xargs -0 -r sed -i \
             -e 's#assets/logo\.png#assets/komarix.svg#g' \
             -e 's#/assets/pwa-icon\.png#/assets/komarix.svg#g' \
@@ -55,14 +55,14 @@ runs:
 
         rm -rf web/public/defaultTheme
         mkdir -p web/public/defaultTheme/dist
-        cp -r .build/komari-web/dist/* web/public/defaultTheme/dist/
-        cp -f .build/komari-web/komari-theme.json web/public/defaultTheme/
+        cp -r .build/komarix-web/dist/* web/public/defaultTheme/dist/
+        cp -f .build/komarix-web/komari-theme.json web/public/defaultTheme/
         sed -i \
           -e 's/Komari/KomariX/g' \
           -e 's#https://github.com/komari-monitor/komari-web#https://github.com/kkx999/KomariX#g' \
           web/public/defaultTheme/komari-theme.json
-        if [ -f .build/komari-web/preview.png ]; then cp -f .build/komari-web/preview.png web/public/defaultTheme/; fi
-        if [ -f .build/komari-web/perview.png ]; then cp -f .build/komari-web/perview.png web/public/defaultTheme/; fi
+        if [ -f .build/komarix-web/preview.png ]; then cp -f .build/komarix-web/preview.png web/public/defaultTheme/; fi
+        if [ -f .build/komarix-web/perview.png ]; then cp -f .build/komarix-web/perview.png web/public/defaultTheme/; fi
         if [ -f web/public/defaultTheme/preview.png ] && [ ! -f web/public/defaultTheme/perview.png ]; then cp -f web/public/defaultTheme/preview.png web/public/defaultTheme/perview.png; fi
         if [ -f web/public/defaultTheme/perview.png ] && [ ! -f web/public/defaultTheme/preview.png ]; then cp -f web/public/defaultTheme/perview.png web/public/defaultTheme/preview.png; fi
 
@@ -70,32 +70,32 @@ runs:
       shell: bash
       run: |
         set -euxo pipefail
-        rm -rf .build/purcarte
+        rm -rf .build/komarix-theme-purcarte
         mkdir -p .build
-        cp -a vendor/purcarte .build/purcarte
+        cp -a components/komarix-theme-purcarte .build/komarix-theme-purcarte
 
-        mkdir -p .build/purcarte/public/assets
-        cp -f docs/komarix.svg .build/purcarte/public/assets/komarix.svg
+        mkdir -p .build/komarix-theme-purcarte/public/assets
+        cp -f docs/komarix.svg .build/komarix-theme-purcarte/public/assets/komarix.svg
 
         # Use KomariX logo/title in the built-in copy.
-        find .build/purcarte/src -type f \( -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' \) -print0 | \
+        find .build/komarix-theme-purcarte/src -type f \( -name '*.ts' -o -name '*.tsx' -o -name '*.js' -o -name '*.jsx' \) -print0 | \
           xargs -0 -r sed -i \
             -e 's#/assets/logo\.png#/assets/komarix.svg#g' \
             -e 's/Komari/KomariX/g'
 
-        cd .build/purcarte
+        cd .build/komarix-theme-purcarte
         npm install
         npm run build
         cd ../..
 
-        find .build/purcarte/dist -type f \( -name '*.js' -o -name '*.html' -o -name '*.json' -o -name '*.css' -o -name '*.webmanifest' \) -print0 | \
+        find .build/komarix-theme-purcarte/dist -type f \( -name '*.js' -o -name '*.html' -o -name '*.json' -o -name '*.css' -o -name '*.webmanifest' \) -print0 | \
           xargs -0 -r sed -i 's/Komari/KomariX/g'
 
         rm -rf web/public/purcarteTheme
         mkdir -p web/public/purcarteTheme/dist
-        cp -r .build/purcarte/dist/* web/public/purcarteTheme/dist/
-        cp -f .build/purcarte/komari-theme.json web/public/purcarteTheme/
-        if [ -f .build/purcarte/preview.png ]; then cp -f .build/purcarte/preview.png web/public/purcarteTheme/; fi
+        cp -r .build/komarix-theme-purcarte/dist/* web/public/purcarteTheme/dist/
+        cp -f .build/komarix-theme-purcarte/komari-theme.json web/public/purcarteTheme/
+        if [ -f .build/komarix-theme-purcarte/preview.png ]; then cp -f .build/komarix-theme-purcarte/preview.png web/public/purcarteTheme/; fi
 
     - name: Pack frontend artifact
       if: ${{ inputs.artifact-name != '' }}
