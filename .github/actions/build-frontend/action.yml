@@ -4,7 +4,7 @@ description: Build the vendored KomariX admin frontend and built-in PurCarte the
 inputs:
   node-version:
     description: Node.js version used to build frontends.
-    default: "23"
+    default: "22"
   artifact-name:
     description: Optional artifact name for the packed frontend bundle.
     default: ""
@@ -26,7 +26,8 @@ runs:
         cp -a components/komarix-web .build/komarix-web
 
         cd .build/komarix-web
-        npm install
+        npm ci
+        npm audit --audit-level=high
         npm run build
         cd ../..
 
@@ -66,7 +67,8 @@ runs:
             -e 's#/assets/logo\.png#/assets/komarix.svg#g'
 
         cd .build/komarix-theme-purcarte
-        npm install
+        npm ci
+        npm audit --audit-level=high
         npm run build
         cd ../..
 
