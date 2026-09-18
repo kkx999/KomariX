@@ -79,7 +79,7 @@ func TestStreamReadablePullModeAndEncoding(t *testing.T) {
 			await new Promise((resolve) => pulled.once("end", resolve));
 			const withEncoding = new Readable();
 			withEncoding.setEncoding("utf8");
-			withEncoding.push("komari");
+			withEncoding.push("komarix");
 			withEncoding.push(null);
 			const encoded = withEncoding.read();
 			const reordered = new Readable();
@@ -91,7 +91,7 @@ func TestStreamReadablePullModeAndEncoding(t *testing.T) {
 			return received.join(",") === "alpha,beta,gamma" &&
 				readableEvents > 0 &&
 				pulled.readableEnded === true &&
-				typeof encoded === "string" && encoded === "komari" &&
+				typeof encoded === "string" && encoded === "komarix" &&
 				first.toString() === "hello " && second.toString() === "world";
 		}
 	`)
@@ -125,7 +125,7 @@ func TestStreamReadableFromAndAsyncIteration(t *testing.T) {
 			const asyncIterator = fromAsync[Symbol.asyncIterator]();
 			let asyncStep;
 			while (!(asyncStep = await asyncIterator.next()).done) text += asyncStep.value;
-			const fromString = Readable.from("komari");
+			const fromString = Readable.from("komarix");
 			const stringChunks = [];
 			const stringIterator = fromString[Symbol.asyncIterator]();
 			let stringStep;
@@ -137,7 +137,7 @@ func TestStreamReadableFromAndAsyncIteration(t *testing.T) {
 			await new Promise((resolve) => done.once("close", resolve));
 			return collected.join(",") === "1,2,3" &&
 				text === "xyz" &&
-				stringChunks.join("") === "komari" &&
+				stringChunks.join("") === "komarix" &&
 				typeof fromArray[Symbol.asyncIterator] === "function" &&
 				endCount === 1 && done.readableEnded === true;
 		}
