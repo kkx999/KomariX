@@ -158,7 +158,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: komarix-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: komarix-${{ matrix.goos }}-${{ matrix.goarch }}*
+          path: |
+            komarix-${{ matrix.goos }}-${{ matrix.goarch }}*
+            komari-${{ matrix.goos }}-${{ matrix.goarch }}*
 
   build-agent-binaries:
     needs: prepare
@@ -214,7 +216,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: agent-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: komarix-agent-${{ matrix.goos }}-${{ matrix.goarch }}*
+          path: |
+            komarix-agent-${{ matrix.goos }}-${{ matrix.goarch }}*
+            komari-agent-${{ matrix.goos }}-${{ matrix.goarch }}*
 
   publish-snapshot-release:
     needs: [prepare, build-and-attach-binaries, build-agent-binaries]
