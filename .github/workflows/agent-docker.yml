@@ -15,7 +15,7 @@ env:
 
 jobs:
   build-and-push:
-    if: ${{ github.event_name == 'workflow_dispatch' || !github.event.release.prerelease }}
+    if: ${{ github.event_name == 'workflow_dispatch' || (startsWith(github.event.release.tag_name, 'v') && !github.event.release.prerelease) }}
     runs-on: ubuntu-latest
 
     steps:
@@ -63,7 +63,8 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=${{ github.event.release.tag_name }},enable=${{ github.event_name == 'release' }}
-            type=raw,value=latest
+            type=raw,value=latest,enable=${{ github.event_name == 'release' }}
+            type=sha,prefix=dev-,enable=${{ github.event_name == 'workflow_dispatch' }}
 
       - name: Build and push Agent image
         uses: docker/build-push-action@v5
