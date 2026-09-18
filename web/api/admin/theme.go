@@ -435,41 +435,12 @@ func isPrivateIP(host string) bool {
 }
 
 func downloadThemeFromURL(rawURL string) ([]byte, error) {
-	// SSRF protection: block requests to private/internal IPs
-	parsedURL, err := url.Parse(rawURL)
+	// Reuse the market downloader so direct theme updates get the same timeout,
+	// redirect re-validation, private-address blocking and streaming size cap.
+	data, err := downloadMarketURL(rawURL, marketPackageMaxSize)
 	if err != nil {
-		return nil, fmt.Errorf("invalid URL: %v", err)
+		return nil, fmt.Errorf("下载主题文件失败: %w", err)
 	}
-	if parsedURL.Scheme != "http" && parsedURL.Scheme != "https" {
-		return nil, fmt.Errorf("only http and https schemes are allowed")
-	}
-	if isPrivateIP(parsedURL.Hostname()) {
-		return nil, fmt.Errorf("requests to private/internal addresses are not allowed")
-	}
-
-	// 发送HTTP GET请求
-	resp, err := http.Get(rawURL)
-	if err != nil {
-		return nil, fmt.Errorf("下载主题文件失败: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// 检查响应状态码
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("下载主题文件失败，HTTP状态码: %d", resp.StatusCode)
-	}
-
-	// 读取响应内容
-	data, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("读取主题文件内容失败: %v", err)
-	}
-
-	// 检查文件大小
-	if len(data) == 0 {
-		return nil, errors.New("下载的主题文件为空")
-	}
-
 	return data, nil
 }
 
