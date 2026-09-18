@@ -11,7 +11,7 @@ import (
 func TestInstallZipExtractsValidPlugin(t *testing.T) {
 	withTempDataDir(t)
 	zipPath := writePluginZip(t, map[string]string{
-		"komarix-plugin.json": `{"name":"Demo","short":"demo","version":"1.0.0","komari":">=0.0.1","permissions":{"node":true}}`,
+		"komari-plugin.json": `{"name":"Demo","short":"demo","version":"1.0.0","komari":">=0.0.1","permissions":{"node":true}}`,
 		"script.js":          `function load() {}`,
 	})
 	info, err := InstallZip(zipPath)
@@ -69,7 +69,7 @@ func TestInstallZipRejectsTraversal(t *testing.T) {
 func TestInstallZipRejectsKomariXVersionMismatch(t *testing.T) {
 	withTempDataDir(t)
 	zipPath := writePluginZip(t, map[string]string{
-		"komarix-plugin.json": `{"name":"Demo","short":"demo","version":"1.0.0","komari":">=99.0.0"}`,
+		"komarix-plugin.json": `{"name":"Demo","short":"demo","version":"1.0.0","komarix":">=99.0.0"}`,
 		"script.js":          `function load() {}`,
 	})
 	if _, err := InstallZip(zipPath); err == nil {
