@@ -20,7 +20,7 @@ import (
 )
 
 // Plugin market mirrors the theme market: admin-managed catalog sources that
-// publish ZIP packages containing komari-plugin.json. The generic URL
+// publish ZIP packages using the KomariX plugin manifest; legacy third-party packages remain compatible. The generic URL
 // download/validation helpers are shared with the theme market.
 
 const defaultPluginMarketURL = "https://raw.githubusercontent.com/kkx999/KomariX/main/market/plugin-v1.json"
@@ -41,7 +41,7 @@ type PluginMarketPlugin struct {
 	URL         string `json:"url"`
 	Download    string `json:"download"`
 	SHA256      string `json:"sha256"`
-	KomariX      string `json:"komari"`
+	KomariX      string `json:"komarix"`
 	Installable bool   `json:"installable"`
 	SourceID    string `json:"source_id,omitempty"`
 	SourceName  string `json:"source_name,omitempty"`
