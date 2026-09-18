@@ -23,7 +23,7 @@ import (
 // publish ZIP packages containing komari-plugin.json. The generic URL
 // download/validation helpers are shared with the theme market.
 
-const defaultPluginMarketURL = "https://raw.githubusercontent.com/komari-monitor/plugin-market/main/v1.json"
+const defaultPluginMarketURL = "https://raw.githubusercontent.com/kkx999/KomariX/main/market/plugin-v1.json"
 
 type PluginMarketSource struct {
 	ID      string `json:"id"`
@@ -73,7 +73,7 @@ var pluginMarketCache = struct {
 func defaultPluginMarketSources() []PluginMarketSource {
 	return []PluginMarketSource{{
 		ID:      "official",
-		Name:    "KomariX Official",
+		Name:    "KomariX 市场镜像",
 		URL:     defaultPluginMarketURL,
 		Enabled: true,
 	}}
