@@ -158,8 +158,62 @@ jobs:
           name: komari-${{ matrix.goos }}-${{ matrix.goarch }}
           path: komari-${{ matrix.goos }}-${{ matrix.goarch }}*
 
+  build-agent-binaries:
+    needs: prepare
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        exclude:
+          - goos: windows
+            goarch: arm
+          - goos: darwin
+            goarch: 386
+          - goos: darwin
+            goarch: arm
+        include:
+          - goos: linux
+            goarch: loong64
+        goos: [windows, linux, darwin, freebsd]
+        goarch: [amd64, arm64, 386, arm]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go for Agent
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: vendor/komari-agent/go.mod
+          cache-dependency-path: vendor/komari-agent/go.sum
+
+      - name: Build KomariX Agent
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: 0
+          VERSION: ${{ needs.prepare.outputs.version }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cd vendor/komari-agent
+          BINARY_NAME="komari-agent-${GOOS}-${GOARCH}"
+          if [ "${GOOS}" = "windows" ]; then
+            BINARY_NAME="${BINARY_NAME}.exe"
+          fi
+          go build -trimpath \
+            -ldflags="-s -w -X github.com/komari-monitor/komari-agent/update.CurrentVersion=${VERSION} -X github.com/komari-monitor/komari-agent/update.Repo=kkx999/KomariX" \
+            -o "../../${BINARY_NAME}" .
+
+      - name: Upload Agent artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: komari-agent-${{ matrix.goos }}-${{ matrix.goarch }}*
+
   publish-snapshot-release:
-    needs: [prepare, build-and-attach-binaries]
+    needs: [prepare, build-and-attach-binaries, build-agent-binaries]
     runs-on: ubuntu-latest
     permissions:
       actions: write
