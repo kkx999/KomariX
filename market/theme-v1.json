@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updated_at": "2026-09-18T16:29:42.362Z",
+  "updated_at": "2026-09-18T16:29:56.733Z",
   "themes": [
     {
       "name": "blueprint",
@@ -62,22 +62,6 @@
       "sha256": "f76ac307431b141dda3048d537c7cfb43aac81d18cf2c5eeda047243c2022704",
       "upstream_download": "https://github.com/Tokinx/komari-theme-emerald/releases/download/v1.0.12/komari-theme-emerald-build-c2c5e88.zip",
       "upstream_preview": "https://raw.githubusercontent.com/Tokinx/komari-theme-emerald/refs/heads/master/docs/preview.png",
-      "preview_sha256": "f05c478062cbe3ad70ddb48ccdce30fdd221a391528804f65cc7f1246d1f29d5",
-      "komarix_branding": true
-    },
-    {
-      "name": "KomariX Emerald Cazi",
-      "short": "Emerald-Cazi",
-      "description": "A configurable multi-task KomariX theme customized for cazi.cc",
-      "version": "1.0.0",
-      "author": "cazi-cc",
-      "url": "https://github.com/cazi-cc/komari-theme-emerald",
-      "preview": "https://github.com/kkx999/KomariX/releases/download/v1.0.0/preview-09-Emerald-Cazi-1.0.0-f05c478062cb.png",
-      "download": "https://github.com/kkx999/KomariX/releases/download/v1.0.0/theme-09-Emerald-Cazi-1.0.0-220dbc072d81.zip",
-      "sha256": "220dbc072d815528eff89f468baac07f4a8404b7184942e67421927f275b1fd7",
-      "mirror_note": "KomariX verified current GitHub Release asset digest on 2026-09-18; upstream market SHA was stale after asset replacement.",
-      "upstream_download": "https://github.com/cazi-cc/komari-theme-emerald/releases/download/v1.0.0/komari-theme-emerald.zip",
-      "upstream_preview": "https://raw.githubusercontent.com/cazi-cc/komari-theme-emerald/master/docs/preview.png",
       "preview_sha256": "f05c478062cbe3ad70ddb48ccdce30fdd221a391528804f65cc7f1246d1f29d5",
       "komarix_branding": true
     },
