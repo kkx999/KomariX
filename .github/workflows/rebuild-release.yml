@@ -21,7 +21,21 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  validate-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate product release tag
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9] && ! "$RELEASE_TAG" =~ ^Snapshot- ]]; then
+            echo "Only KomariX product releases (v* or Snapshot-*) may be rebuilt."
+            exit 1
+          fi
+
   build-frontend:
+    needs: validate-release
     runs-on: ubuntu-latest
 
     steps:
@@ -81,7 +95,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.23"
+          go-version-file: go.mod
 
       - name: Install Zig cross-compiler toolchain
         uses: ./.github/actions/setup-zig
