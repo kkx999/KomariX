@@ -171,16 +171,12 @@ jobs:
           go build -trimpath \
             -ldflags="-s -w -X github.com/kkx999/KomariX/utils.CurrentVersion=${VERSION} -X github.com/kkx999/KomariX/utils.VersionHash=${GITHUB_SHA}" \
             -o "$BINARY_NAME" .
-          LEGACY_NAME="${BINARY_NAME/komarix-/komari-}"
-          cp "$BINARY_NAME" "$LEGACY_NAME"
 
       - name: Upload panel artifact
         uses: actions/upload-artifact@v4
         with:
           name: panel-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: |
-            komarix-${{ matrix.goos }}-${{ matrix.goarch }}*
-            komari-${{ matrix.goos }}-${{ matrix.goarch }}*
+          path: komarix-${{ matrix.goos }}-${{ matrix.goarch }}*
 
   build-agent:
     needs: test-panel
@@ -226,16 +222,12 @@ jobs:
           go build -trimpath \
             -ldflags="-s -w -X github.com/kkx999/KomariX/components/komarix-agent/update.CurrentVersion=${VERSION} -X github.com/kkx999/KomariX/components/komarix-agent/update.Repo=kkx999/KomariX" \
             -o "../../${BINARY_NAME}" .
-          LEGACY_NAME="${BINARY_NAME/komarix-agent-/komari-agent-}"
-          cp "../../${BINARY_NAME}" "../../${LEGACY_NAME}"
 
       - name: Upload Agent artifact
         uses: actions/upload-artifact@v4
         with:
           name: agent-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: |
-            komarix-agent-${{ matrix.goos }}-${{ matrix.goarch }}*
-            komari-agent-${{ matrix.goos }}-${{ matrix.goarch }}*
+          path: komarix-agent-${{ matrix.goos }}-${{ matrix.goarch }}*
 
   publish:
     needs: [build-panel, build-agent]
@@ -266,7 +258,7 @@ jobs:
             --target "$GITHUB_SHA" \
             --title "KomariX v1.0.2" \
             --notes "KomariX v1.0.2：完成独立化。内置并默认使用 PurCarte v1.2.5 的 KomariX 品牌版本；前端、Agent 与 PurCarte 源码已固定归档；Agent 安装与自更新改由 KomariX Release 提供；主题和插件市场默认使用 KomariX 镜像索引。基于 Komari 修改并继续独立维护，同时保留原始开源许可证。" \
-            artifacts/komari*
+            artifacts/komarix*
 
   publish-agent-docker:
     needs: publish
@@ -288,8 +280,8 @@ jobs:
         run: |
           cd components/komarix-agent
           LDFLAGS="-s -w -X github.com/kkx999/KomariX/components/komarix-agent/update.CurrentVersion=${VERSION} -X github.com/kkx999/KomariX/components/komarix-agent/update.Repo=kkx999/KomariX"
-          GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="$LDFLAGS" -o komari-agent-linux-amd64 .
-          GOOS=linux GOARCH=arm64 go build -trimpath -ldflags="$LDFLAGS" -o komari-agent-linux-arm64 .
+          GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="$LDFLAGS" -o komarix-agent-linux-amd64 .
+          GOOS=linux GOARCH=arm64 go build -trimpath -ldflags="$LDFLAGS" -o komarix-agent-linux-arm64 .
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
