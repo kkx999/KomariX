@@ -117,7 +117,8 @@
       "url": "https://github.com/cazi-cc/komari-theme-emerald",
       "preview": "https://raw.githubusercontent.com/cazi-cc/komari-theme-emerald/master/docs/preview.png",
       "download": "https://github.com/cazi-cc/komari-theme-emerald/releases/download/v1.0.0/komari-theme-emerald.zip",
-      "sha256": "4058d897ebdc2dfb859d92867a5145c7db7c7d4e9cfc2a7c18356437b578cb2a"
+      "sha256": "7425f1509f0e0bbd0f5bd11d505155854089381ec8020eca4363b71df21b4444",
+      "mirror_note": "KomariX verified current GitHub Release asset digest on 2026-09-18; upstream market SHA was stale after asset replacement."
     },
     {
       "name": "Emerald Globe Pro",
