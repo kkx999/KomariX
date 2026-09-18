@@ -35,7 +35,7 @@ const Footer = forwardRef<
         <p className="flex justify-center text-sm text-secondary-foreground theme-text-shadow whitespace-pre">
           {t("footer.poweredBy")}{" "}
           <a
-            href="https://github.com/komari-monitor/komari"
+            href="https://github.com/kkx999/KomariX"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500 hover:text-blue-600 transition-colors">
