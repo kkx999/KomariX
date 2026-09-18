@@ -12,7 +12,7 @@ import (
 
 func TestMain(m *testing.M) {
 	flags.DatabaseType = flags.DatabaseTypeSQLite
-	flags.DatabaseFile = "file:komari_plugin_test?mode=memory&cache=shared"
+	flags.DatabaseFile = "file:komarix_plugin_test?mode=memory&cache=shared"
 	db := dbcore.GetDBInstance()
 	if sqlDB, err := db.DB(); err == nil {
 		sqlDB.SetMaxOpenConns(1)
