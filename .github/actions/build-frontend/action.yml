@@ -44,10 +44,6 @@ runs:
         mkdir -p web/public/defaultTheme/dist
         cp -r .build/komarix-web/dist/* web/public/defaultTheme/dist/
         cp -f .build/komarix-web/komari-theme.json web/public/defaultTheme/
-        sed -i \
-          -e 's/Komari/KomariX/g' \
-          -e 's#https://github.com/kkx999/KomariX-web#https://github.com/kkx999/KomariX#g' \
-          web/public/defaultTheme/komari-theme.json
         if [ -f .build/komarix-web/preview.png ]; then cp -f .build/komarix-web/preview.png web/public/defaultTheme/; fi
         if [ -f .build/komarix-web/perview.png ]; then cp -f .build/komarix-web/perview.png web/public/defaultTheme/; fi
         if [ -f web/public/defaultTheme/preview.png ] && [ ! -f web/public/defaultTheme/perview.png ]; then cp -f web/public/defaultTheme/preview.png web/public/defaultTheme/perview.png; fi
