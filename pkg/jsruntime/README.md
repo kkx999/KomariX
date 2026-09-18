@@ -28,7 +28,7 @@ import (
 	"log"
 	"time"
 
-	jsruntime "github.com/kkx999/KomariX/pkg/jsruntime"
+	jsruntime "github.com/kkx999/KomariXX/pkg/jsruntime"
 )
 
 func main() {
@@ -36,7 +36,7 @@ func main() {
 		async function run(name) {
 			await new Promise((resolve) => setTimeout(resolve, 10));
 			console.log("hello %s", name);
-			return name === "komari";
+			return name === "komarix";
 		}
 	`, jsruntime.Options{
 		Timeout: 2 * time.Second,
@@ -47,7 +47,7 @@ func main() {
 	}
 	defer runtime.Close()
 
-	if err := runtime.Call("run", "komari"); err != nil {
+	if err := runtime.Call("run", "komarix"); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -62,7 +62,7 @@ func main() {
 | --- | --- | --- |
 | `HTTPClient` | 带 `Timeout` 的新 `http.Client` | 被 `fetch`、XHR 和 `http` 客户端使用。传入的 client 会被浅复制后按请求设置重定向策略。 |
 | `Timeout` | `30s` | 限制顶层脚本初始化、`Runtime.Call()`、异步请求和运行时回调。同步死循环可被中断。 |
-| `Console` | KomariX 应用日志 | 非空时，所有 console 输出写入该 `io.Writer`。 |
+| `Console` | KomariXX 应用日志 | 非空时，所有 console 输出写入该 `io.Writer`。 |
 | `RequireLoader` | `require.DefaultSourceLoader` | 自定义 CommonJS 源码加载器。设置 `BaseDir` 且未允许越界时，传给 loader 的路径仍会先经过目录和软链接校验。 |
 | `ConfigureRequire` | `nil` | 在脚本执行前向当前 runtime 的私有 registry 注册或覆盖原生模块。 |
 | `ConfigureHost` | `nil` | 在标准模块注册后、`ConfigureRequire` 前调用，提供 `Host` 宿主服务句柄与私有 registry，供宿主注入模块（如插件的 `require("server")`）并从其它 goroutine 调度事件循环。 |
@@ -142,7 +142,7 @@ runtime, err := jsruntime.New(`
 import (
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
-	jsruntime "github.com/kkx999/KomariX/pkg/jsruntime"
+	jsruntime "github.com/kkx999/KomariXX/pkg/jsruntime"
 )
 
 runtime, err := jsruntime.New(`
@@ -353,7 +353,7 @@ function loadText(url) {
 
 ```js
 const { Buffer } = require("buffer");
-const value = Buffer.from("komari").toString("hex");
+const value = Buffer.from("komarix").toString("hex");
 ```
 
 ### `url`
@@ -421,7 +421,7 @@ events.emit("ready", "ok");
 const { Readable } = require("stream");
 const source = new Readable({
   read() {
-    this.push("komari");
+    this.push("komarix");
     this.push(null); // 结束
   },
 });
@@ -670,16 +670,16 @@ stdout  stderr  stdin
 重要差异：
 
 - `process.env` 是构造 runtime 时的宿主环境快照；修改 JS 对象不会修改宿主环境。
-- `argv` 是合成值；`execPath/pid/ppid` 指向当前 KomariX/Go 宿主进程。
+- `argv` 是合成值；`execPath/pid/ppid` 指向当前 KomariXX/Go 宿主进程。
 - `version` 来自 Go 版本，`versions.node` 固定为 `"0.0.0-goja"`；`release`、`title`、
   `connected` 和 `config` 也不是完整 Node 值。
 - `process.uptime()` 是当前 JavaScript runtime 的存活时间；`os.uptime()` 才是宿主机 uptime。
 - `memoryUsage()` 混合 Go runtime heap 和整个宿主进程 RSS；`cpuUsage()`、
-  `resourceUsage()` 也是整个 KomariX 进程，不是单插件指标。
+  `resourceUsage()` 也是整个 KomariXX 进程，不是单插件指标。
 - 这些 process 指标当前只实现于 Linux 和 Windows；其他 GOOS 上会抛出“不支持”错误。
 - `process.kill()` 需要 `AllowExec`。只有 `SIGKILL` 映射到 Kill，其他 signal 统一按
   `os.Interrupt` 处理。
-- `process.exit()` 和 `abort()` 只抛出 JavaScript/Go error，不会退出 KomariX 进程。
+- `process.exit()` 和 `abort()` 只抛出 JavaScript/Go error，不会退出 KomariXX 进程。
 - `stdout/stderr` 是 `stream.Writable` 实例，写入会同步写宿主流，可能阻塞当前事件循环；
   `stdin` 是 `stream.Readable` 实例但未连接，永不产生数据。三个 stream 的 `fd` 固定为
   `-1`、`isTTY` 固定为 `false`。
@@ -898,9 +898,9 @@ function serveOnce() {
 
 ```js
 const crypto = require("node:crypto");
-const digest = crypto.createHash("sha256").update("komari").digest("hex");
+const digest = crypto.createHash("sha256").update("komarix").digest("hex");
 const mac = crypto.createHmac("sha256", "secret").update("body").digest("base64");
-const oneShot = crypto.hash("sha256", "komari", "hex");
+const oneShot = crypto.hash("sha256", "komarix", "hex");
 ```
 
 - `update(data[, inputEncoding])` 的 inputEncoding 支持 `utf8`/`hex`/`base64`/`base64url`/
@@ -1032,7 +1032,7 @@ const valid = crypto.createVerify("sha256").update(data).verify(publicKeyPem, si
 | timer handle | `ref/unref/refresh/hasRef`。 |
 | 插件资源隔离 | 没有单 runtime CPU、内存、goroutine、网络或文件 IO 统计，也没有 Docker/cgroup 式额度限制。 |
 
-`process.memoryUsage/cpuUsage/resourceUsage` 不能用于衡量单个插件：它们读取整个 KomariX
+`process.memoryUsage/cpuUsage/resourceUsage` 不能用于衡量单个插件：它们读取整个 KomariXX
 Go 进程。当前可用于约束单次执行的机制只有 `Timeout`、HTTP body 上限、child output
 上限、`BaseDir`、`AllowExec` 和 `AllowListen`；它们不是完整的资源配额系统。
 
