@@ -43,7 +43,7 @@ runs:
         rm -rf web/public/defaultTheme
         mkdir -p web/public/defaultTheme/dist
         cp -r .build/komarix-web/dist/* web/public/defaultTheme/dist/
-        cp -f .build/komarix-web/komari-theme.json web/public/defaultTheme/
+        cp -f .build/komarix-web/komarix-theme.json web/public/defaultTheme/
         if [ -f .build/komarix-web/preview.png ]; then cp -f .build/komarix-web/preview.png web/public/defaultTheme/; fi
         if [ -f .build/komarix-web/perview.png ]; then cp -f .build/komarix-web/perview.png web/public/defaultTheme/; fi
         if [ -f web/public/defaultTheme/preview.png ] && [ ! -f web/public/defaultTheme/perview.png ]; then cp -f web/public/defaultTheme/preview.png web/public/defaultTheme/perview.png; fi
@@ -74,7 +74,7 @@ runs:
         rm -rf web/public/purcarteTheme
         mkdir -p web/public/purcarteTheme/dist
         cp -r .build/komarix-theme-purcarte/dist/* web/public/purcarteTheme/dist/
-        cp -f .build/komarix-theme-purcarte/komari-theme.json web/public/purcarteTheme/
+        cp -f .build/komarix-theme-purcarte/komarix-theme.json web/public/purcarteTheme/
         if [ -f .build/komarix-theme-purcarte/preview.png ]; then cp -f .build/komarix-theme-purcarte/preview.png web/public/purcarteTheme/; fi
 
     - name: Pack frontend artifact
