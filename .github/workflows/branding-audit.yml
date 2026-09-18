@@ -1,0 +1,41 @@
+name: KomariX Branding Audit
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan legacy branding
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          text_exts = {
+              ".go", ".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".json",
+              ".md", ".yml", ".yaml", ".sh", ".ps1", ".py", ".html", ".css",
+              ".toml", ".mod", ".txt"
+          }
+          legacy = re.compile(r"komari(?!x)", re.I)
+          url = re.compile(r"https?://[^\\s\\\"'<>)]+")
+
+          for path in sorted(Path(".").rglob("*")):
+              if not path.is_file() or ".git" in path.parts:
+                  continue
+              if path.suffix.lower() not in text_exts:
+                  continue
+              try:
+                  text = path.read_text(encoding="utf-8")
+              except UnicodeDecodeError:
+                  continue
+              for lineno, line in enumerate(text.splitlines(), 1):
+                  scrubbed = url.sub("", line)
+                  if legacy.search(scrubbed):
+                      print(f"{path}:{lineno}:{line}")
+          PY
