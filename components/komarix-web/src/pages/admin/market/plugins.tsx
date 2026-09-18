@@ -239,7 +239,7 @@ export default function PluginMarketPage() {
   );
 
   useEffect(() => {
-    Promise.all([loadCatalog(), loadSources()])
+    Promise.all([loadCatalog(true), loadSources()])
       .catch((error) =>
         toast.error(error instanceof Error ? error.message : String(error)),
       )
