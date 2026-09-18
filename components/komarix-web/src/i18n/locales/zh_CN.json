@@ -1,7 +1,7 @@
 {
   "about": {
-    "ai": "KomariXX 项目的开发过程得到了人工智能工具的辅助。这些工具被用于执行代码生成、重构和调试等任务，以提高开发效率和代码质量。所有由 AI 生成的代码和建议都经过了人类开发者的审查与验证。",
-    "open_source": "KomariXX 基于 MIT 协议开源，并使用了以下开源软件构建：",
+    "ai": "KomariX 项目的开发过程得到了人工智能工具的辅助。这些工具被用于执行代码生成、重构和调试等任务，以提高开发效率和代码质量。所有由 AI 生成的代码和建议都经过了人类开发者的审查与验证。",
+    "open_source": "KomariX 基于 MIT 协议开源，并使用了以下开源软件构建：",
     "open_source_title": "开源软件许可协议",
     "readme_open_in_new_tab": "在新标签页中打开"
   },
@@ -96,7 +96,7 @@
         "tryIt": "试试自动发现"
       },
       "autoRenewal": "自动续费",
-      "autoRenewalDescription": "如果服务器过期且当前在线，KomariXX 将自动将到期时间设置为下个自然月（年）",
+      "autoRenewalDescription": "如果服务器过期且当前在线，KomariX 将自动将到期时间设置为下个自然月（年）",
       "billing": "账单",
       "billingCycle": "计费周期",
       "billingCycleTips": "<b>计费周期规则</b><br/> <br/> <b>按预设周期 (日历续费)</b><br/> 当输入的天数与预设方案（如月付、季付、年付）的数值相近时，将按对应的 <b>日历周期</b> 续费。<br/> - 常用数值: 30 (月), 92 (季), 365 (年), 730 (两年) 等。<br/> - 示例：输入 30，服务从3月15日续费，新的到期日为 4月15日。<br/> <br/> <b>按自定义天数</b><br/> 当输入其他天数时（如 7, 45, 100），将严格按 天数 续费。<br/> - 示例：输入 45，服务从3月15日续费，新的到期日为 4月29日 (45天后)。<br/> <br/> <b>一次性付费</b><br/> 输入 -1 表示一次性付费。",
@@ -511,7 +511,7 @@
     "username_required": "请输入用户名。",
     "welcome_description": "配置管理员账号、站点元信息和监控数据库。",
     "welcome_subtitle": "轻量、开源的服务器监控工具。",
-    "welcome_title": "欢迎使用 KomariXX"
+    "welcome_title": "欢迎使用 KomariX"
   },
   "just_now": "刚刚",
   "loadAlert": {
@@ -525,7 +525,7 @@
     "title": "日志"
   },
   "login": {
-    "desc": "登录到 KomariXX 控制面板。",
+    "desc": "登录到 KomariX 控制面板。",
     "login_with": "使用 {{provider}} 登录",
     "login_with_github": "使用 GitHub 登录",
     "password": "密码",
@@ -650,7 +650,7 @@
     "title": "通知",
     "traffic_report": {
       "daily": "日报",
-      "deprecation_notice": "KomariXX 内置的流量报告即将在 1.5.0 版本移除，请尽快迁移至插件“流量定期报告”。",
+      "deprecation_notice": "KomariX 内置的流量报告即将在 1.5.0 版本移除，请尽快迁移至插件“流量定期报告”。",
       "errors": {
         "fetch_failed": "获取流量定时报告配置失败",
         "save_failed": "保存流量定时报告配置失败",
@@ -720,7 +720,7 @@
     "market_reinstall": "重新安装",
     "market_search": "搜索插件...",
     "market_uninstall_success": "插件已卸载",
-    "market_update_required": "需要更新 KomariXX",
+    "market_update_required": "需要更新 KomariX",
     "market_warning": "插件市场中的第三方插件未经官方审查，可能包含有害代码，请仔细甄别后再安装。",
     "no_logs": "暂无日志",
     "no_plugins": "尚未安装插件",
@@ -822,7 +822,7 @@
     "can_install": "可以安装",
     "install": "安装",
     "install_prompt_desc": "添加到主屏幕以快速访问",
-    "install_prompt_title": "安装 KomariXX",
+    "install_prompt_title": "安装 KomariX",
     "install_status": "安装状态",
     "installed": "安装",
     "installed_hint": "该应用程序安装在设备上，您可以从主屏幕快速访问它。",
@@ -910,7 +910,7 @@
         "vacuum": "回收 SQLite 文件空间（VACUUM）",
         "vacuum_full": "完整回收并分析 PostgreSQL 数据表（VACUUM (FULL, ANALYZE)）"
       },
-      "confirm_description": "数据库维护可能锁定数据库并暂时阻塞 KomariXX，请确认以下操作。",
+      "confirm_description": "数据库维护可能锁定数据库并暂时阻塞 KomariX，请确认以下操作。",
       "confirm_title": "确认数据库维护",
       "invalid_response": "服务端返回了无效的数据库信息",
       "load_error": "读取数据库信息失败",
@@ -923,7 +923,7 @@
       "main": "主数据库",
       "maintaining": "维护中...",
       "maintenance_button": "回收空间",
-      "maintenance_description": "维护期间数据库可能被锁定，KomariXX 可能暂时无法响应。",
+      "maintenance_description": "维护期间数据库可能被锁定，KomariX 可能暂时无法响应。",
       "maintenance_error": "数据库维护失败",
       "maintenance_partial_failure": "数据库维护已结束，但存在失败操作",
       "maintenance_success": "数据库维护完成",
@@ -1178,7 +1178,7 @@
       "enable_description": "通过首选方式获取及时通知。",
       "Javascript": {
         "script": "JavaScript 代码",
-        "script_help": "实现 sendMessage(message, title) 及可选的 sendEvent(event) 函数的 JavaScript 代码（部分支持 ES6）。两者均应返回 Promise 或布尔值。可用 API：fetch()、xhr()、console.log()。指南: https://github.com/kkx999/KomariXX"
+        "script_help": "实现 sendMessage(message, title) 及可选的 sendEvent(event) 函数的 JavaScript 代码（部分支持 ES6）。两者均应返回 Promise 或布尔值。可用 API：fetch()、xhr()、console.log()。指南: https://github.com/kkx999/KomariX"
       },
       "method": "通知渠道",
       "method_description": "选择您偏好的通知平台",
@@ -1194,7 +1194,7 @@
         "endpoint_help": "Telegram Bot API 的请求端点，通常为 `https://api.telegram.org/bot`"
       },
       "template": "消息通知模板",
-      "template_description": "KomariXX 将按照消息通知模板发送通知",
+      "template_description": "KomariX 将按照消息通知模板发送通知",
       "test_description": "发送测试消息",
       "test_title": "发送测试消息",
       "title": "通知"
@@ -1308,7 +1308,7 @@
       "sqlite_risk": "当前有 {{servers}} 台服务器并保留约 {{days}} 天数据。如果服务器性能不足，SQLite 可能无法胜任后续处理。",
       "sqlite_warning": "SQLite 在数据量增长后会明显占用单机 CPU、内存和 IO，不适合承担大量降采样与均值计算。",
       "start": "开始升级",
-      "start_description": "全部旧监控记录都会用于计算每个系列的每小时 P95；迁移成功并回收空间后才删除旧表。期间请勿关闭 KomariXX 进程或修改目标数据库。",
+      "start_description": "全部旧监控记录都会用于计算每个系列的每小时 P95；迁移成功并回收空间后才删除旧表。期间请勿关闭 KomariX 进程或修改目标数据库。",
       "start_title": "确认开始升级",
       "subtitle": "迁移完成前，普通站点和 Agent 接口将保持关闭。",
       "target": "目标数据库",
