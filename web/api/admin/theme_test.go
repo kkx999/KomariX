@@ -30,14 +30,16 @@ func TestIsValidThemeShort_PathTraversal(t *testing.T) {
 		"a b",
 		"a;b",
 		"a$(id)",
+		"default",
+		"DEFAULT",
 	}
 	for _, in := range deny {
-		if isValidMarketShort(in) {
-			t.Errorf("isValidMarketShort(%q) = true, want false (路径穿越/非法字符未被拦截)", in)
+		if isValidThemeShort(in) {
+			t.Errorf("isValidThemeShort(%q) = true, want false (路径穿越/非法字符未被拦截)", in)
 		}
 	}
 
-	// 必须被接受：仅字母数字下划线连字符
+	// 必须被接受：主题 Short ID 允许字母数字、点、下划线和连字符
 	accept := []string{
 		"mytheme",
 		"my-theme",
@@ -45,10 +47,11 @@ func TestIsValidThemeShort_PathTraversal(t *testing.T) {
 		"theme123",
 		"ABC",
 		"a",
+		"theme.v2",
 	}
 	for _, in := range accept {
-		if !isValidMarketShort(in) {
-			t.Errorf("isValidMarketShort(%q) = false, want true (合法名称被误拒)", in)
+		if !isValidThemeShort(in) {
+			t.Errorf("isValidThemeShort(%q) = false, want true (合法名称被误拒)", in)
 		}
 	}
 }
