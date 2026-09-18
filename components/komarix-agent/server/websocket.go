@@ -182,7 +182,7 @@ func runV2PullLoop(ctx context.Context) {
 		pullID := fmt.Sprintf("pull-%d", time.Now().UnixNano())
 		ackIDs := snapshotV2AckEventIDs()
 		payload := v2.NewRequest(pullID, v2.MethodAgentPull, map[string]interface{}{
-			"capabilities":  []string{"ping", "message", "event", "file"},
+			"capabilities":  []string{"ping", "message", "event"},
 			"ack_event_ids": ackIDs,
 		})
 		resp, err := postV2RequestContext(ctx, payload)
@@ -384,14 +384,6 @@ func processV2Event(conn *ws.SafeConn, method string, params interface{}, eventI
 	case v2.MethodAgentMessage, v2.MethodAgentEvent:
 		log.Printf("received v2 %s: %+v", method, params)
 		return true
-	case v2.MethodAgentFile:
-		var operation v2.FileOperation
-		if err := v2.BindParams(params, &operation); err == nil {
-			go handleFileOperation(operation)
-			return true
-		} else {
-			log.Printf("bad v2 file params: %v", err)
-		}
 	default:
 		log.Printf("unknown v2 event method %s", method)
 	}
