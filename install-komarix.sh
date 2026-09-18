@@ -39,25 +39,6 @@ CHANNEL="stable"
 # TUI 工具: whiptail / dialog / 空（回退纯文本）
 TUI_TOOL=""
 
-# Legacy Komari 1.4.3 installation compatibility.
-# Fresh installs use KomariX names; existing legacy installs continue in-place.
-LEGACY_INSTALL_DIR="/opt/komari"
-LEGACY_DATA_DIR="/opt/komari"
-LEGACY_SERVICE_NAME="komari"
-LEGACY_BINARY_PATH="/opt/komari/komari"
-
-detect_legacy_install() {
-    if [ ! -f "$BINARY_PATH" ] && [ -f "$LEGACY_BINARY_PATH" ]; then
-        INSTALL_DIR="$LEGACY_INSTALL_DIR"
-        DATA_DIR="$LEGACY_DATA_DIR"
-        SERVICE_NAME="$LEGACY_SERVICE_NAME"
-        BINARY_PATH="$LEGACY_BINARY_PATH"
-        BACKUP_DIR="$INSTALL_DIR/backup"
-        DATA_BACKUP_DIR="$DATA_DIR/data/backup"
-        log_info "检测到旧版安装，将保持原目录和服务名进行兼容管理。"
-    fi
-}
-
 # ==========================================================
 # TUI / 交互层
 # ==========================================================
@@ -677,6 +658,5 @@ main_menu() {
 
 # Main execution
 check_root
-detect_legacy_install
 detect_tui
 main_menu
