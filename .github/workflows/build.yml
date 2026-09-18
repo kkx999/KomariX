@@ -17,7 +17,7 @@ jobs:
       - name: Build frontend artifact
         uses: ./.github/actions/build-frontend
         with:
-          artifact-name: komari-frontend
+          artifact-name: komarix-frontend
 
   build-binaries:
     needs: build-frontend
@@ -91,7 +91,7 @@ jobs:
           CC: zig cc -target ${{ matrix.zig_target_triple }}
           GIN_MODE: release
         run: |
-          BINARY_NAME=komari-${{ matrix.goos }}-${{ matrix.goarch }}
+          BINARY_NAME=komarix-${{ matrix.goos }}-${{ matrix.goarch }}
           # Append the appropriate executable extension based on the OS
           if [ "${{ matrix.binary_extension }}" != "" ]; then
             BINARY_NAME=${BINARY_NAME}${{ matrix.binary_extension }}
@@ -103,5 +103,5 @@ jobs:
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: komari-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: komari-${{ matrix.goos }}-${{ matrix.goarch }}*
+          name: komarix-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: komarix-${{ matrix.goos }}-${{ matrix.goarch }}*
