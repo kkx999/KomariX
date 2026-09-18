@@ -15,7 +15,7 @@ env:
 
 jobs:
   build-and-push:
-    if: ${{ github.event_name == 'workflow_dispatch' || (startsWith(github.event.release.tag_name, 'v') && !github.event.release.prerelease) }}
+    if: ${{ github.event_name == 'workflow_dispatch' || (!contains(github.event.release.body, '<!-- komarix-prebuilt-release -->') && startsWith(github.event.release.tag_name, 'v') && !github.event.release.prerelease) }}
     runs-on: ubuntu-latest
 
     steps:
