@@ -131,7 +131,28 @@ def main():
                     text = zout.read(info).decode("utf-8")
                 except Exception:
                     continue
-                audit_text = strip_ignored(text)
+
+                if Path(info.filename).name == "komari-theme.json":
+                    try:
+                        parsed = json.loads(text)
+                        ignored_keys = {"short", "author", "authors", "url", "homepage", "repository", "source", "preview"}
+                        visible = []
+                        def collect(obj, key=None):
+                            if isinstance(obj, dict):
+                                for k, v in obj.items():
+                                    collect(v, k)
+                            elif isinstance(obj, list):
+                                for v in obj:
+                                    collect(v, key)
+                            elif isinstance(obj, str) and key not in ignored_keys:
+                                visible.append(obj)
+                        collect(parsed)
+                        audit_text = "\n".join(visible)
+                    except Exception:
+                        audit_text = text
+                else:
+                    audit_text = strip_ignored(text)
+
                 for kind, rx in FORBIDDEN:
                     m = rx.search(audit_text)
                     if m:
