@@ -8,11 +8,11 @@ import (
 	"github.com/kkx999/KomariX/utils"
 )
 
-// CheckKomariVersion validates a manifest komari constraint against the
+// CheckKomariXVersion validates a manifest KomariX compatibility constraint against the
 // running server version. Supported constraints: empty (any version),
 // "x.y.z" (exact), and ">=x.y.z", ">x.y.z", "<=x.y.z", "<x.y.z". An optional
 // leading "v" is accepted.
-func CheckKomariVersion(constraint string) error {
+func CheckKomariXVersion(constraint string) error {
 	constraint = strings.TrimSpace(constraint)
 	if constraint == "" {
 		return nil

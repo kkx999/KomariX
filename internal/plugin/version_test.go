@@ -2,7 +2,7 @@ package plugin
 
 import "testing"
 
-func TestCheckKomariVersion(t *testing.T) {
+func TestCheckKomariXVersion(t *testing.T) {
 	tests := []struct {
 		constraint string
 		wantErr    bool
@@ -22,9 +22,9 @@ func TestCheckKomariVersion(t *testing.T) {
 		{">", true},
 	}
 	for _, tt := range tests {
-		err := CheckKomariVersion(tt.constraint)
+		err := CheckKomariXVersion(tt.constraint)
 		if (err != nil) != tt.wantErr {
-			t.Errorf("CheckKomariVersion(%q) error = %v, wantErr %v", tt.constraint, err, tt.wantErr)
+			t.Errorf("CheckKomariXVersion(%q) error = %v, wantErr %v", tt.constraint, err, tt.wantErr)
 		}
 	}
 }

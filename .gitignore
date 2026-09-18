@@ -33,6 +33,6 @@ go.work.sum
 .env
 
 # build
-komari
+komarix
 /dist/
 .codex

@@ -15,7 +15,7 @@ var (
 func Generate2Fa() (string, image.Image, error) {
 	otp, err := totp.Generate(totp.GenerateOpts{
 		Issuer:      TwoFactorIssuer,
-		AccountName: "komari",
+		AccountName: "komarix",
 	})
 	if err != nil {
 		return "", nil, err

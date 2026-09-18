@@ -285,8 +285,8 @@ func TestMySQLOptimizeResultError(t *testing.T) {
 	if err := mysqlOptimizeResultError("metric_points", "note", "recreate and analyze instead"); err != nil {
 		t.Fatalf("note result returned an error: %v", err)
 	}
-	err := mysqlOptimizeResultError("komari.metric_points", " Error ", "operation failed")
-	if err == nil || !strings.Contains(err.Error(), "komari.metric_points") || !strings.Contains(err.Error(), "operation failed") {
+	err := mysqlOptimizeResultError("komarix.metric_points", " Error ", "operation failed")
+	if err == nil || !strings.Contains(err.Error(), "komarix.metric_points") || !strings.Contains(err.Error(), "operation failed") {
 		t.Fatalf("error result was not preserved: %v", err)
 	}
 }

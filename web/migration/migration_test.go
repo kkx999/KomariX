@@ -44,7 +44,7 @@ func TestMetricConfigValidatesSelectedDriverAgainstDSN(t *testing.T) {
 	if _, err := metricConfig("mysql", "./data/metrics.db"); err == nil {
 		t.Fatal("expected mismatched MySQL/SQLite DSN to fail")
 	}
-	postgresConfig, err := metricConfig("postgresql", "host=127.0.0.1 port=5432 user=komari password=secret dbname=komari sslmode=disable")
+	postgresConfig, err := metricConfig("postgresql", "host=127.0.0.1 port=5432 user=komarix password=secret dbname=komarix sslmode=disable")
 	if err != nil {
 		t.Fatalf("build PostgreSQL config: %v", err)
 	}

@@ -107,9 +107,9 @@ class MigrationRequestError extends Error {
 
 const examples: Record<Driver, string> = {
   sqlite: "./data/metrics.db",
-  mysql: "user:password@tcp(127.0.0.1:3306)/komari?parseTime=true",
+  mysql: "user:password@tcp(127.0.0.1:3306)/komarix?parseTime=true",
   postgresql:
-    "host=127.0.0.1 port=5432 user=komari password=secret dbname=komari sslmode=disable",
+    "host=127.0.0.1 port=5432 user=komarix password=secret dbname=komarix sslmode=disable",
 };
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {

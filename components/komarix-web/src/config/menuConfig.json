@@ -164,7 +164,7 @@
     },
     {
       "labelKey": "common.documentation",
-      "path": "https://komari-document.pages.dev/",
+      "path": "https://github.com/kkx999/KomariX",
       "icon": "Book",
       "newTab": true,
       "bottom": true

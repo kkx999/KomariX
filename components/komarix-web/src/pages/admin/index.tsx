@@ -372,9 +372,9 @@ const AutoDiscoverySection = ({
         // 通过 bind mount 持久化该文件，容器更新重建后复用同一身份，避免重复注册。
         // 注意：文件挂载要求宿主机上文件已存在，否则 Docker 会将其创建为目录。
         finalCommand =
-          `touch .komari-auto-discovery.json && ` +
+          `touch .komarix-auto-discovery.json && ` +
           `docker run -d --name komarix-agent --restart=always ` +
-          `-v .komari-auto-discovery.json:/app/auto-discovery.json ` +
+          `-v .komarix-auto-discovery.json:/app/auto-discovery.json ` +
           `ghcr.io/kkx999/komarix-agent:latest ` +
           quoteShellArgs(dockerArgs);
         break;

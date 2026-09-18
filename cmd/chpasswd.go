@@ -19,7 +19,7 @@ var ChpasswdCmd = &cobra.Command{
 	Use:     "chpasswd",
 	Short:   "Force change password",
 	Long:    `Force change password`,
-	Example: `komari chpasswd -p <password>`,
+	Example: `komarix chpasswd -p <password>`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if NewPassword == "" {
 			cmd.Help()

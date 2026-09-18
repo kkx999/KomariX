@@ -986,15 +986,15 @@ const LoadChart = ({ data = [], onRealtimeActiveChange }: LoadChartProps) => {
   const [customQueryRevision, setCustomQueryRevision] = useState(0);
   const [customRangeError, setCustomRangeError] = useState<string | null>(null);
   const [aggregation, setAggregation] = useLocalStorage<Aggregation>(
-    "komari-instance-metric-aggregation",
+    "komarix-instance-metric-aggregation",
     "avg",
   );
   const [ewmaEnabled, setEwmaEnabled] = useLocalStorage(
-    "komari-instance-metric-ewma",
+    "komarix-instance-metric-ewma",
     false,
   );
   const [hiddenSeries, setHiddenSeries] = useLocalStorage<Record<string, boolean>>(
-    "komari-instance-metric-hidden-series",
+    "komarix-instance-metric-hidden-series",
     {},
   );
   const globalDashboardTemplate =

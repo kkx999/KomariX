@@ -164,7 +164,7 @@ const ApiCard = () => {
   // 生成32位随机字符串
   const generateRandomString = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let result = 'komari-';
+    let result = 'komarix-';
     for (let i = 0; i < 32; i++) {
       result += chars.charAt(Math.floor(Math.random() * chars.length));
     }

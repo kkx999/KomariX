@@ -137,7 +137,7 @@ create_package() {
     cp -r dist/ theme-package/
     
     # Create zip file with version and commit hash
-    ZIP_NAME="komari-theme-v${VERSION_DATE}-${COMMIT_HASH}.zip"
+    ZIP_NAME="komarix-theme-v${VERSION_DATE}-${COMMIT_HASH}.zip"
     
     cd theme-package
     zip -r "../dist/${ZIP_NAME}" .

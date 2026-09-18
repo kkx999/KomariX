@@ -16,7 +16,7 @@ function localKomariThemePlugin(): Plugin {
   const localThemeFile = path.resolve(__dirname, "komari-theme.json");
 
   return {
-    name: "local-komari-theme",
+    name: "local-komarix-theme",
     apply: "serve",
     enforce: "pre",
     configureServer(server) {

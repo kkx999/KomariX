@@ -68,7 +68,7 @@ case $os_type in
         ;;
     MINGW*|MSYS*|CYGWIN*)
         os_name="windows"
-        target_dir="/c/komarix-agent"  # Use C:\komari on Windows
+        target_dir="/c/komarix-agent"  # Use C:\komarix on Windows
         ;;
     *)
         log_error "Unsupported operating system: $os_type"
@@ -558,7 +558,7 @@ elif [ "$init_system" = "openrc" ]; then
 #!/sbin/openrc-run
 
 name="KomariX Agent Service"
-description="Komari monitoring agent"
+description="KomariX monitoring agent"
 command="${komarix_agent_path}"
 command_args="${komarix_args}"
 command_user="${service_user}"

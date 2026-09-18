@@ -131,7 +131,7 @@ func DownloadBackup(c *gin.Context) {
 	backupDir := filepath.Join(".", "data", "backup")
 
 	// 1) 创建临时目录，内容隔离到 content/ 子目录
-	tempDir, err := os.MkdirTemp("", "komari-backup-*")
+	tempDir, err := os.MkdirTemp("", "komarix-backup-*")
 	if err != nil {
 		api.RespondError(c, http.StatusInternalServerError, fmt.Sprintf("Error creating temporary directory: %v", err))
 		return

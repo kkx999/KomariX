@@ -1,7 +1,7 @@
 {
   "about": {
-    "ai": "Proses pengembangan proyek KomariX didukung oleh alat kecerdasan buatan. Alat-alat ini digunakan untuk menjalankan tugas seperti pembuatan kode, refactoring, dan debugging, untuk meningkatkan efisiensi pengembangan dan kualitas kode. Semua kode dan saran yang dihasilkan oleh AI telah diperiksa dan divalidasi oleh pengembang manusia.",
-    "open_source": "KomariX bersifat open source berdasarkan lisensi MIT dan dibangun menggunakan perangkat lunak open source berikut:",
+    "ai": "Proses pengembangan proyek KomariXX didukung oleh alat kecerdasan buatan. Alat-alat ini digunakan untuk menjalankan tugas seperti pembuatan kode, refactoring, dan debugging, untuk meningkatkan efisiensi pengembangan dan kualitas kode. Semua kode dan saran yang dihasilkan oleh AI telah diperiksa dan divalidasi oleh pengembang manusia.",
+    "open_source": "KomariXX bersifat open source berdasarkan lisensi MIT dan dibangun menggunakan perangkat lunak open source berikut:",
     "open_source_title": "Lisensi Perangkat Lunak Open Source",
     "readme_open_in_new_tab": "Buka di tab baru"
   },
@@ -96,7 +96,7 @@
         "tryIt": "Coba penemuan otomatis"
       },
       "autoRenewal": "Perpanjangan Otomatis",
-      "autoRenewalDescription": "Jika server kedaluwarsa dan masih online, KomariX akan otomatis mengatur waktu kedaluwarsa ke bulan (atau tahun) berikutnya.",
+      "autoRenewalDescription": "Jika server kedaluwarsa dan masih online, KomariXX akan otomatis mengatur waktu kedaluwarsa ke bulan (atau tahun) berikutnya.",
       "billing": "Penagihan",
       "billingCycle": "Siklus Penagihan",
       "billingCycleTips": "<b>Aturan Siklus Penagihan</b><br/> <br/> <b>Menurut Siklus yang Ditetapkan (Perpanjangan Kalender)</b><br/> Ketika jumlah hari yang dimasukkan mendekati nilai dari rencana yang ditetapkan (seperti pembayaran bulanan, triwulanan, tahunan), perpanjangan akan dilakukan sesuai dengan <b>Siklus Kalender</b> yang sesuai.<br/> - Nilai umum: 30 (bulanan), 92 (triwulanan), 365 (tahunan), 730 (dua tahun) dan sebagainya.<br/> - Contoh: Masukkan 30, layanan diperpanjang dari 15 Maret, tanggal kedaluwarsa baru adalah 15 April.<br/> <br/> <b>Menurut Jumlah Hari Kustom</b><br/> Ketika jumlah hari lain dimasukkan (seperti 7, 45, 100), perpanjangan akan dilakukan secara ketat sesuai dengan jumlah hari.<br/> - Contoh: Masukkan 45, layanan diperpanjang dari 15 Maret, tanggal kedaluwarsa baru adalah 29 April (setelah 45 hari).<br/> <br/> <b>Pembayaran Sekali</b><br/> Masukkan -1 untuk menunjukkan pembayaran sekali.",
@@ -155,9 +155,9 @@
       "expire_time_description": "Atur berapa hari sebelumnya notifikasi pengingat akan dikirim sebelum masa kedaluwarsa.",
       "expire_title": "Notifikasi Kedaluwarsa",
       "login": "Notifikasi Masuk",
-      "login_description": "Kirim notifikasi saat sesi baru masuk ke KomariX.",
+      "login_description": "Kirim notifikasi saat sesi baru masuk ke KomariXX.",
       "traffic": "Penggunaan Trafik",
-      "traffic_description": "KomariX akan mengirim notifikasi ketika penggunaan trafik server mencapai persentase tertentu, dengan pengingat setiap kenaikan 5%. Jika tidak ada batas trafik yang ditetapkan, maka tidak ada notifikasi yang dikirim. Atur ke 0 untuk menonaktifkan pengingat trafik."
+      "traffic_description": "KomariXX akan mengirim notifikasi ketika penggunaan trafik server mencapai persentase tertentu, dengan pengingat setiap kenaikan 5%. Jika tidak ada batas trafik yang ditetapkan, maka tidak ada notifikasi yang dikirim. Atur ke 0 untuk menonaktifkan pengingat trafik."
     }
   },
   "chart": {
@@ -361,7 +361,7 @@
     "none": "Tidak ada",
     "once": "Sekali",
     "previous_page": "Halaman sebelumnya",
-    "private_site": "Ini adalah situs KomariX privat. Silakan masuk terlebih dahulu.",
+    "private_site": "Ini adalah situs KomariXX privat. Silakan masuk terlebih dahulu.",
     "quarterly": "Triwulanan",
     "quinquennial": "Lima Tahunan",
     "real_time": "Waktu Nyata",
@@ -511,7 +511,7 @@
     "username_required": "Masukkan nama pengguna.",
     "welcome_description": "Konfigurasikan akun administrator, metadata situs, dan database pemantauan.",
     "welcome_subtitle": "Pemantau server sumber terbuka yang ringan.",
-    "welcome_title": "Selamat datang di KomariX"
+    "welcome_title": "Selamat datang di KomariXX"
   },
   "just_now": "Baru saja",
   "loadAlert": {
@@ -525,7 +525,7 @@
     "title": "Log"
   },
   "login": {
-    "desc": "Masuk ke panel kontrol KomariX.",
+    "desc": "Masuk ke panel kontrol KomariXX.",
     "login_with": "Masuk dengan {{provider}}",
     "login_with_github": "Masuk dengan GitHub",
     "password": "Kata Sandi",
@@ -650,7 +650,7 @@
     "title": "Notifikasi",
     "traffic_report": {
       "daily": "Harian",
-      "deprecation_notice": "Laporan trafik bawaan KomariX akan dihapus pada versi 1.5.0. Segera migrasikan ke plugin Scheduled Traffic Reports.",
+      "deprecation_notice": "Laporan trafik bawaan KomariXX akan dihapus pada versi 1.5.0. Segera migrasikan ke plugin Scheduled Traffic Reports.",
       "errors": {
         "fetch_failed": "Gagal memuat pengaturan laporan trafik",
         "save_failed": "Gagal menyimpan pengaturan laporan trafik",
@@ -719,7 +719,7 @@
     "market_refresh_success": "Sumber plugin disegarkan",
     "market_reinstall": "Pasang Ulang",
     "market_search": "Cari plugin...",
-    "market_update_required": "KomariX perlu diperbarui",
+    "market_update_required": "KomariXX perlu diperbarui",
     "market_uninstall_success": "Plugin dihapus",
     "market_warning": "Plugin pihak ketiga di pasar tidak diverifikasi oleh proyek ini dan mungkin berisi kode berbahaya. Harap periksa dengan cermat sebelum memasang.",
     "no_logs": "Tidak ada log",
@@ -822,7 +822,7 @@
     "can_install": "Dapat Diinstal",
     "install": "Instal",
     "install_prompt_desc": "Tambahkan ke layar utama untuk akses cepat",
-    "install_prompt_title": "Instal KomariX Monitor",
+    "install_prompt_title": "Instal KomariXX Monitor",
     "install_status": "Status Instalasi",
     "installed": "Terinstal",
     "installed_hint": "Aplikasi telah terinstal di perangkat Anda, Anda dapat mengaksesnya dengan cepat dari layar utama.",
@@ -910,7 +910,7 @@
         "vacuum": "Reklamasi ruang berkas SQLite (VACUUM)",
         "vacuum_full": "Reklamasi penuh dan analisis tabel PostgreSQL (VACUUM (FULL, ANALYZE))"
       },
-      "confirm_description": "Pemeliharaan basis data dapat mengunci basis data dan memblokir KomariX sementara. Konfirmasikan operasi berikut.",
+      "confirm_description": "Pemeliharaan basis data dapat mengunci basis data dan memblokir KomariXX sementara. Konfirmasikan operasi berikut.",
       "confirm_title": "Konfirmasi Pemeliharaan Basis Data",
       "invalid_response": "Server mengembalikan informasi basis data yang tidak valid",
       "load_error": "Gagal memuat informasi basis data",
@@ -923,7 +923,7 @@
       "main": "Basis Data Utama",
       "maintaining": "Memelihara...",
       "maintenance_button": "Reklamasi Ruang",
-      "maintenance_description": "Pemeliharaan dapat mengunci basis data dan membuat KomariX tidak tersedia untuk sementara.",
+      "maintenance_description": "Pemeliharaan dapat mengunci basis data dan membuat KomariXX tidak tersedia untuk sementara.",
       "maintenance_error": "Pemeliharaan basis data gagal",
       "maintenance_partial_failure": "Pemeliharaan basis data selesai dengan operasi yang gagal",
       "maintenance_success": "Pemeliharaan basis data selesai",
@@ -965,7 +965,7 @@
       "conns_invalid": "Masukkan jumlah koneksi yang valid",
       "current_status": "Status saat ini",
       "downsampling_title": "Downsampling data",
-      "dsn_description": "String koneksi basis data pemantauan yang sedang berjalan. Jenis basis data dideteksi otomatis dari string koneksi (SQLite / MariaDB / MySQL / PostgreSQL). SQLite: ./data/metrics.db; MariaDB / MySQL: user:password@tcp(host:3306)/metrics?charset=utf8mb4&parseTime=True; PostgreSQL: host=localhost user=komari password=secret dbname=metrics port=5432 sslmode=disable",
+      "dsn_description": "String koneksi basis data pemantauan yang sedang berjalan. Jenis basis data dideteksi otomatis dari string koneksi (SQLite / MariaDB / MySQL / PostgreSQL). SQLite: ./data/metrics.db; MariaDB / MySQL: user:password@tcp(host:3306)/metrics?charset=utf8mb4&parseTime=True; PostgreSQL: host=localhost user=komarix password=secret dbname=metrics port=5432 sslmode=disable",
       "dsn_title": "String koneksi (DSN)",
       "fetch_metrics_failed": "Gagal mengambil daftar metrik",
       "fetch_status_failed": "Gagal mengambil status migrasi",
@@ -1178,7 +1178,7 @@
       "enable_description": "Aktifkan untuk mendapatkan pembaruan melalui metode pilihan Anda.",
       "Javascript": {
         "script": "Kode JavaScript",
-        "script_help": "Kode JavaScript yang mengimplementasikan fungsi sendMessage(message, title) dan sendEvent(event) yang bersifat opsional (dukungan sebagian untuk ES6). Keduanya harus mengembalikan Promise atau nilai boolean. API yang tersedia: fetch(), xhr(), console.log(). Panduan: https://github.com/kkx999/KomariX"
+        "script_help": "Kode JavaScript yang mengimplementasikan fungsi sendMessage(message, title) dan sendEvent(event) yang bersifat opsional (dukungan sebagian untuk ES6). Keduanya harus mengembalikan Promise atau nilai boolean. API yang tersedia: fetch(), xhr(), console.log(). Panduan: https://github.com/kkx999/KomariXX"
       },
       "method": "Metode Pengiriman",
       "method_description": "Pilih platform favorit Anda untuk peringatan.",
@@ -1194,7 +1194,7 @@
         "endpoint_help": "Endpoint permintaan untuk API Bot Telegram, biasanya `https://api.telegram.org/bot`"
       },
       "template": "Template pemberitahuan pesan",
-      "template_description": "KomariX akan mengirim pemberitahuan sesuai dengan template pemberitahuan pesan",
+      "template_description": "KomariXX akan mengirim pemberitahuan sesuai dengan template pemberitahuan pesan",
       "test_description": "Kirim pesan uji coba",
       "test_title": "Kirim pesan uji coba",
       "title": "Notifikasi"
@@ -1308,7 +1308,7 @@
       "sqlite_risk": "Ada {{servers}} server dan sekitar {{days}} hari data. SQLite mungkin tidak memadai jika server ini kurang bertenaga.",
       "sqlite_warning": "Saat data bertambah, SQLite dapat membebani CPU, memori, dan IO satu server serta tidak cocok untuk downsampling dan perhitungan rata-rata dalam jumlah besar.",
       "start": "Mulai peningkatan",
-      "start_description": "Semua catatan pemantauan lama digunakan untuk menghitung P95 per jam bagi setiap seri. Tabel lama hanya dihapus setelah migrasi dan reklamasi ruang berhasil. Jangan hentikan KomariX atau ubah basis data tujuan selama migrasi.",
+      "start_description": "Semua catatan pemantauan lama digunakan untuk menghitung P95 per jam bagi setiap seri. Tabel lama hanya dihapus setelah migrasi dan reklamasi ruang berhasil. Jangan hentikan KomariXX atau ubah basis data tujuan selama migrasi.",
       "start_title": "Mulai peningkatan?",
       "subtitle": "Situs normal dan API Agent tetap nonaktif sampai migrasi selesai.",
       "target": "Basis data tujuan",
