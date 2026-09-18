@@ -14,7 +14,7 @@ env:
 
 jobs:
   resolve-release:
-    if: ${{ (startsWith(github.event.release.tag_name, 'v') && !github.event.release.prerelease) || startsWith(github.event.release.tag_name, 'Snapshot-') }}
+    if: ${{ !contains(github.event.release.body, '<!-- komarix-prebuilt-release -->') && ((startsWith(github.event.release.tag_name, 'v') && !github.event.release.prerelease) || startsWith(github.event.release.tag_name, 'Snapshot-')) }}
     runs-on: ubuntu-latest
     outputs:
       frontend_ref: ${{ steps.release.outputs.frontend_ref }}
