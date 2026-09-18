@@ -35,7 +35,7 @@ Web、Agent、默认 PurCarte 主题以及主题/插件市场均由 KomariX 独�
 - 节点分组与排序
 - 消息通知
 - 默认内置并启用 PurCarte 磨砂玻璃主题
-- 兼容第三方旧主题与插件格式
+- 兼容第三方旧主题与插件格式；旧主题支持 `komari-theme.json`，并兼容 ZIP 根目录或唯一一级外层目录打包
 - 使用 KomariX 自有主题/插件市场索引镜像
 - 支持第三方主题与插件扩展、投稿与审核
 - 支持从 Komari 迁移数据并持续处理兼容项
@@ -51,7 +51,7 @@ Web、Agent、默认 PurCarte 主题以及主题/插件市场均由 KomariX 独�
 bash <(curl -fsSL https://raw.githubusercontent.com/kkx999/KomariX/main/install-komarix.sh)
 ```
 
-安装脚本会自动识别系统架构，并提供稳定版与快照版选择。
+安装脚本会自动识别系统架构，并提供稳定版与快照版选择。正式版本下载会校验 `SHA256SUMS`；升级会先下载并校验新二进制，若新版本启动失败则自动恢复升级前版本。
 
 默认面板端口：
 
