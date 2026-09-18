@@ -497,6 +497,10 @@ func UpdateTheme(c *gin.Context) {
 		api.RespondError(c, http.StatusBadRequest, "参数错误: "+err.Error())
 		return
 	}
+	if req.Short == public.DefaultPublicTheme {
+		api.RespondError(c, http.StatusBadRequest, "内置 PurCarte 随 KomariX 一起更新，无需单独更新")
+		return
+	}
 
 	// 校验主题短名称，防止路径穿越（如 ../）访问工作目录外的文件
 	if !isValidMarketShort(req.Short) {
