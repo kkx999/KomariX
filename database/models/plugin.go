@@ -1,6 +1,8 @@
 package models
 
-// Plugin is the manifest of an installed plugin (komari-plugin.json).
+import "encoding/json"
+
+// Plugin is the manifest of an installed KomariX plugin (komarix-plugin.json).
 //
 // Name, Description and Author accept either a plain string or an i18n map
 // like {"zh_CN": "...", "en": "..."}, mirroring the theme manifest. The
@@ -14,11 +16,26 @@ type Plugin struct {
 	Version       string            `json:"version"`
 	URL           string            `json:"url"`
 	Icon          string            `json:"icon"`
-	KomariX        string            `json:"komari"` // supported server version constraint, e.g. ">=0.0.1"
+	KomariX        string            `json:"komarix"` // supported KomariX version constraint, e.g. ">=0.0.1"
 	Entry         string            `json:"entry"`  // entry script, defaults to "script.js"
 	Permissions   PluginPermissions `json:"permissions"`
 	Configuration Configuration     `json:"configuration"`   // declared config items, same shape as themes
 	Pages         []PluginPage      `json:"pages,omitempty"` // injected admin pages
+}
+
+func (p *Plugin) UnmarshalJSON(data []byte) error {
+	type alias Plugin
+	aux := struct {
+		*alias
+		LegacyKomari string `json:"komari"`
+	}{alias: (*alias)(p)}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	if p.KomariX == "" {
+		p.KomariX = aux.LegacyKomari
+	}
+	return nil
 }
 
 // PluginPermissions declares the plugin capabilities that require admin

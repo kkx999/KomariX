@@ -1,5 +1,6 @@
 // Package plugin manages KomariX plugins: ZIP packages with a
-// komari-plugin.json manifest, mirroring the theme package format. A plugin
+// komarix-plugin.json manifest, while accepting the legacy third-party
+// manifest name for compatibility. A plugin
 // runs in its own jsruntime instance confined to its data/plugin/<short>
 // directory, plus its long-term data directory data/plugin-data/<short>
 // exposed as __storageDir__ (which survives plugin updates), declares runtime
@@ -51,8 +52,9 @@ var DataDir = "./data/plugin"
 var StorageDir = "./data/plugin-data"
 
 const (
-	manifestFile = "komari-plugin.json"
-	defaultEntry = "script.js"
+	manifestFile       = "komarix-plugin.json"
+	legacyManifestFile = "komari-plugin.json"
+	defaultEntry        = "script.js"
 
 	defaultMaxHTTPBodyBytes int64 = 32 << 20
 	defaultLogBufferSize          = 64 << 10

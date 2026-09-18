@@ -22,7 +22,7 @@ PATTERNS = [
 def is_text(path: Path) -> bool:
     if path.name in SKIP_NAMES:
         return False
-    return path.suffix.lower() in TEXT_EXTS or path.name == "komari-theme.json"
+    return path.suffix.lower() in TEXT_EXTS or path.name in {"komarix-theme.json", "komari-theme.json"}
 
 def main():
     ap = argparse.ArgumentParser()
@@ -73,7 +73,7 @@ def main():
     output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     affected = [r for r in report if r["hits"]]
-    print(f"Scanned {len(report)} theme packages; {len(affected)} contain Komari branding candidates.")
+    print(f"Scanned {len(report)} theme packages; {len(affected)} contain legacy branding candidates.")
     for item in affected:
         kinds = {}
         for h in item["hits"]:

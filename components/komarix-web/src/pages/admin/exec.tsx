@@ -58,7 +58,7 @@ const COMMAND_EDITOR_VERTICAL_PADDING_VAR = "--command-editor-vertical-padding";
 const COMMAND_EDITOR_COLLAPSED_HEIGHT = `calc(${COMMAND_EDITOR_COLLAPSED_LINES} * var(${COMMAND_EDITOR_LINE_HEIGHT_VAR}) + var(${COMMAND_EDITOR_VERTICAL_PADDING_VAR}))`;
 const COMMAND_EDITOR_LINE_NUMBER_LIMIT = 500;
 // 客户端标记“执行超时”的内部结果（避免在 UI 中展示硬编码中文）
-const TIMEOUT_RESULT_MARKER = "__komari_exec_timeout__";
+const TIMEOUT_RESULT_MARKER = "__komarix_exec_timeout__";
 
 const parsePixelValue = (value: string) => {
     const parsedValue = Number.parseFloat(value);

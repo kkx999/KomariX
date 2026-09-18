@@ -5,55 +5,55 @@
     {
       "name": "自定义后台路径",
       "short": "admin-path",
-      "description": "自定义 Komari 后台页面路径，并关闭原 /admin 入口。",
+      "description": "自定义 KomariX 后台页面路径，并关闭原 /admin 入口。",
       "version": "1.0.0",
       "author": "Kristen",
-      "komari": "",
       "url": "https://github.com/Grandova/Backend-Customize-path-For-Komari",
       "download": "https://github.com/Grandova/Backend-Customize-path-For-Komari/releases/download/v1.0.0/komari-plugin-admin-path-v1.0.0.zip",
-      "sha256": "a1a825f1e588f2458f6a8e7983d8fb3680ad1e9ee0917e6e1128533c7c0526e1"
+      "sha256": "a1a825f1e588f2458f6a8e7983d8fb3680ad1e9ee0917e6e1128533c7c0526e1",
+      "komarix": ""
     },
     {
       "name": {
-        "zh_CN": "Komari DDNS",
-        "en": "Komari DDNS"
+        "zh_CN": "KomariX DDNS",
+        "en": "KomariX DDNS"
       },
       "short": "cf-ddns",
       "description": {
-        "zh_CN": "根据 Komari 节点上报的公网 IP，自动更新 Cloudflare DNS 解析记录，实现动态域名解析。",
-        "en": "Automatically update Cloudflare DNS records from the public IP reported by a Komari node, providing dynamic DNS."
+        "zh_CN": "根据 KomariX 节点上报的公网 IP，自动更新 Cloudflare DNS 解析记录，实现动态域名解析。",
+        "en": "Automatically update Cloudflare DNS records from the public IP reported by a KomariX node, providing dynamic DNS."
       },
       "version": "0.1.3",
       "author": "穿云箭",
-      "komari": ">=1.4.0",
       "url": "https://github.com/yunjianj/Komari-DDNS",
       "download": "https://github.com/yunjianj/Komari-DDNS/releases/download/v0.1.3/komari-ddns-0.1.3.zip",
-      "sha256": "0641d04299f721bba7103357895b603252047e91df5cd02b9b43d20bf8ef4b36"
+      "sha256": "0641d04299f721bba7103357895b603252047e91df5cd02b9b43d20bf8ef4b36",
+      "komarix": ">=1.4.0"
     },
     {
       "name": "Cloudflare DDNS",
       "short": "cloudflare-ddns",
-      "description": "使用 Cloudflare 邮箱和 Global API Key，将 Komari 服务器 IP 定时同步到多个域名。",
+      "description": "使用 Cloudflare 邮箱和 Global API Key，将 KomariX 服务器 IP 定时同步到多个域名。",
       "version": "1.0.1",
       "author": "Kristen",
-      "komari": "",
       "url": "https://github.com/Grandova/Cloudflare-DDNS-For-Komari",
       "download": "https://github.com/Grandova/Cloudflare-DDNS-For-Komari/releases/download/v1.0.1/cloudflare-ddns-1.0.1.zip",
-      "sha256": "7ecba07a0d8dda6d30785e02aa1fe573126dd4c089cd3021ccb1a8845fa3844b"
+      "sha256": "7ecba07a0d8dda6d30785e02aa1fe573126dd4c089cd3021ccb1a8845fa3844b",
+      "komarix": ""
     },
     {
       "name": "Cloudflare Tunnel",
       "short": "cloudflare-tunnel",
       "description": {
-        "zh-CN": "在 Komari 中下载、更新并管理 Cloudflare Tunnel。",
-        "en": "Download, update, and manage Cloudflare Tunnel from Komari."
+        "zh-CN": "在 KomariX 中下载、更新并管理 Cloudflare Tunnel。",
+        "en": "Download, update, and manage Cloudflare Tunnel from KomariX."
       },
       "version": "1.1.0",
       "author": "Akizon77",
-      "komari": ">=1.4.0",
       "url": "https://github.com/Akizon77/cloudflare-tunnel",
       "download": "https://github.com/Akizon77/cloudflare-tunnel/releases/download/v1.1.0/cloudflare-tunnel-1.1.0.zip",
-      "sha256": "2068ad4ca1cd3665d08599363635cf444ac912a389c65d4faa8262dbe37bf30d"
+      "sha256": "2068ad4ca1cd3665d08599363635cf444ac912a389c65d4faa8262dbe37bf30d",
+      "komarix": ">=1.4.0"
     },
     {
       "name": "Domain Watch",
@@ -61,10 +61,10 @@
       "description": "域名监控插件：基于 RDAP 协议的 Whois 查询与域名续费到期提醒。",
       "version": "1.0.2",
       "author": "Geekertao",
-      "komari": ">=1.0.0",
       "url": "https://github.com/Geekertao/komari-plugin-domain-watch",
       "download": "https://github.com/Geekertao/komari-plugin-domain-watch/releases/download/v1.0.2/domain-watch-1.0.2.zip",
-      "sha256": "e0e34b976c912335bd5bdf1ed295c9d32eb49e19762ebc866020d893979e5284"
+      "sha256": "e0e34b976c912335bd5bdf1ed295c9d32eb49e19762ebc866020d893979e5284",
+      "komarix": ">=1.0.0"
     },
     {
       "name": "1.5.x 后台 404 修复",
@@ -75,7 +75,7 @@
       "url": "https://ss.akz.moe",
       "download": "https://b2.akz.moe/awesome-pictures/komari-screenshot/fix-1-5-0-theme-404.zip",
       "sha256": "e5794c56c1a47922afdf6b81b5930b6097c56e648a816ff6aa741615650d3abb",
-      "komari": ""
+      "komarix": ""
     },
     {
       "name": {
@@ -89,10 +89,10 @@
       },
       "version": "1.3.3",
       "author": "komari",
-      "komari": ">=1.0.0",
       "url": "https://github.com/ting1e/komari-github-proxy",
       "download": "https://github.com/ting1e/komari-github-proxy/releases/download/v1.3.3/komari-github-proxy-v1.3.3.zip",
-      "sha256": "696736900d8c568d8df94340c7755422bc05a627b39fb196745b70862e3b70f5"
+      "sha256": "696736900d8c568d8df94340c7755422bc05a627b39fb196745b70862e3b70f5",
+      "komarix": ">=1.0.0"
     },
     {
       "name": {
@@ -101,15 +101,15 @@
       },
       "short": "komari-passkey",
       "description": {
-        "zh-CN": "为 Komari 提供通行密钥登录。安装后请前往账户页面添加并启用通行密钥。需要 Komari >=1.4.3。",
-        "en": "Passkey sign-in for Komari. After installation, open the Account page to add and enable a Passkey. Requires Komari >=1.4.3."
+        "zh-CN": "为 KomariX 提供通行密钥登录。安装后请前往账户页面添加并启用通行密钥。需要 KomariX >=1.4.3。",
+        "en": "Passkey sign-in for KomariX. After installation, open the Account page to add and enable a Passkey. Requires KomariX >=1.4.3."
       },
       "version": "0.1.13",
       "author": "Akizon77",
-      "komari": ">=1.4.3",
       "url": "https://github.com/Akizon77/komari-passkey",
       "download": "https://github.com/Akizon77/komari-passkey/releases/download/v0.1.13/komari-passkey-0.1.13.zip",
-      "sha256": "eee8f160caa2cd6b0d32e90ef2c0c3204c4db274fe26b121fa90f86ffccd6fd9"
+      "sha256": "eee8f160caa2cd6b0d32e90ef2c0c3204c4db274fe26b121fa90f86ffccd6fd9",
+      "komarix": ">=1.4.3"
     },
     {
       "name": {
@@ -118,15 +118,15 @@
       },
       "short": "mjpeg",
       "description": {
-        "zh-CN": "将 Komari 节点状态渲染为实时 MJPEG 表格流。",
-        "en": "Renders Komari node status as a live MJPEG table stream."
+        "zh-CN": "将 KomariX 节点状态渲染为实时 MJPEG 表格流。",
+        "en": "Renders KomariX node status as a live MJPEG table stream."
       },
       "version": "1.1.0",
       "author": "Komari Monitor",
-      "komari": "",
       "url": "https://github.com/Akizon77/mjpeg-plugin",
       "download": "https://github.com/Akizon77/mjpeg-plugin/releases/download/v1.1.0/mjpeg-plugin.zip",
-      "sha256": "94b6cb3952da82ed91dfec4781332c57bb19d3937b936a725a483aa17a4180d1"
+      "sha256": "94b6cb3952da82ed91dfec4781332c57bb19d3937b936a725a483aa17a4180d1",
+      "komarix": ""
     },
     {
       "name": {
@@ -142,10 +142,10 @@
       },
       "version": "0.1.0",
       "author": "Komari Monitor",
-      "komari": ">=1.4.3",
       "url": "https://github.com/Akizon77/komari-traffic-report-plugin",
       "download": "https://github.com/Akizon77/komari-traffic-report-plugin/releases/download/v0.1.0/traffic-report-0.1.0.zip",
-      "sha256": "8c8ff265cdfcb005f5e90e9aaa58c142b17f1cc919a498b297c1286f8aa1c4d7"
+      "sha256": "8c8ff265cdfcb005f5e90e9aaa58c142b17f1cc919a498b297c1286f8aa1c4d7",
+      "komarix": ">=1.4.3"
     }
   ]
 }

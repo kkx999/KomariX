@@ -73,28 +73,28 @@ func New(runtime *bridge.Runtime, client *http.Client, maxBodyBytes int64) *Modu
 
 func (m *Module) Inject(vm *goja.Runtime) error {
 	m.vm = vm
-	if err := vm.Set("__komariBodyBuffer", m.bodyBuffer); err != nil {
+	if err := vm.Set("__komarixBodyBuffer", m.bodyBuffer); err != nil {
 		return err
 	}
-	if err := vm.Set("__komariBodyText", m.bodyText); err != nil {
+	if err := vm.Set("__komarixBodyText", m.bodyText); err != nil {
 		return err
 	}
-	if err := vm.Set("__komariEncodeFormData", m.encodeFormData); err != nil {
+	if err := vm.Set("__komarixEncodeFormData", m.encodeFormData); err != nil {
 		return err
 	}
-	if err := vm.Set("__komariParseFormData", m.parseFormData); err != nil {
+	if err := vm.Set("__komarixParseFormData", m.parseFormData); err != nil {
 		return err
 	}
-	if err := vm.Set("__komariNewAbortSignal", m.newAbortSignal); err != nil {
+	if err := vm.Set("__komarixNewAbortSignal", m.newAbortSignal); err != nil {
 		return err
 	}
-	if err := vm.Set("__komariAbortSignal", m.abortSignal); err != nil {
+	if err := vm.Set("__komarixAbortSignal", m.abortSignal); err != nil {
 		return err
 	}
-	if err := vm.Set("__komariFetch", m.createFetchFunction(false)); err != nil {
+	if err := vm.Set("__komarixFetch", m.createFetchFunction(false)); err != nil {
 		return err
 	}
-	if err := vm.Set("__komariFetchSync", m.createFetchFunction(true)); err != nil {
+	if err := vm.Set("__komarixFetchSync", m.createFetchFunction(true)); err != nil {
 		return err
 	}
 	if _, err := vm.RunString(fetchAPISource); err != nil {

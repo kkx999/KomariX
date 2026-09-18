@@ -97,8 +97,8 @@ verify_files() {
         files_missing=true
     fi
     
-    if [ ! -f "komari-theme.json" ]; then
-        print_error "komari-theme.json not found"
+    if [ ! -f "komarix-theme.json" ]; then
+        print_error "komarix-theme.json not found"
         files_missing=true
     fi
     
@@ -133,7 +133,7 @@ create_package() {
     
     # Copy required files
     cp preview.png theme-package/
-    cp komari-theme.json theme-package/
+    cp komarix-theme.json theme-package/
     cp -r dist/ theme-package/
     
     # Create zip file with version and commit hash

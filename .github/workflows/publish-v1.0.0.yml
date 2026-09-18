@@ -35,10 +35,10 @@ jobs:
 
           test -f web/public/defaultTheme/dist/index.html
           test -f web/public/purcarteTheme/dist/index.html
-          test -f web/public/purcarteTheme/komari-theme.json
+          test -f web/public/purcarteTheme/komarix-theme.json
 
-          grep -q '"short": "PurCarte"' web/public/purcarteTheme/komari-theme.json
-          grep -q 'KomariX Theme PurCarte' web/public/purcarteTheme/komari-theme.json
+          grep -q '"short": "PurCarte"' web/public/purcarteTheme/komarix-theme.json
+          grep -q 'KomariX Theme PurCarte' web/public/purcarteTheme/komarix-theme.json
 
           if grep -R -F 'https://github.com/komari-monitor/komari' web/public/defaultTheme/dist web/public/purcarteTheme/dist; then
             echo "Found stale Komari project URL in built frontend."
@@ -268,7 +268,7 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
             --title "KomariX v1.0.0" \
-            --notes "KomariX v1.0.0：首个正式独立版本。面板、Agent、默认 PurCarte 与市场资源均由 KomariX 自行维护；49 个主题安装包已逐个完成 KomariX 品牌处理并重新校验 SHA256，作者署名与 LICENSE/NOTICE 保持原样；49 张主题预览与主题安装包均托管于本 Release。插件市场使用 KomariX 镜像索引。项目基于 Komari 修改并继续独立维护。" \
+            --notes "KomariX v1.0.0：首个正式独立版本。面板、Agent、默认 PurCarte 与市场资源均由 KomariX 自行维护；49 个主题安装包已逐个完成 KomariX 品牌处理并重新校验 SHA256，作者署名与 LICENSE/NOTICE 保持原样；49 张主题预览与主题安装包均托管于本 Release。插件市场使用 KomariX 镜像索引。项目来源说明见 README。" \
             artifacts/komarix-linux-* \
             artifacts/komarix-windows-* \
             artifacts/komarix-agent-* \

@@ -1,13 +1,13 @@
 (function () {
 	"use strict";
-	const nativeBodyBuffer = globalThis.__komariBodyBuffer;
-	const nativeBodyText = globalThis.__komariBodyText;
-	const nativeEncodeFormData = globalThis.__komariEncodeFormData;
-	const nativeParseFormData = globalThis.__komariParseFormData;
-	const nativeNewAbortSignal = globalThis.__komariNewAbortSignal;
-	const nativeAbortSignal = globalThis.__komariAbortSignal;
-	const nativeFetch = globalThis.__komariFetch;
-	const nativeFetchSync = globalThis.__komariFetchSync;
+	const nativeBodyBuffer = globalThis.__komarixBodyBuffer;
+	const nativeBodyText = globalThis.__komarixBodyText;
+	const nativeEncodeFormData = globalThis.__komarixEncodeFormData;
+	const nativeParseFormData = globalThis.__komarixParseFormData;
+	const nativeNewAbortSignal = globalThis.__komarixNewAbortSignal;
+	const nativeAbortSignal = globalThis.__komarixAbortSignal;
+	const nativeFetch = globalThis.__komarixFetch;
+	const nativeFetchSync = globalThis.__komarixFetchSync;
 	const slots = new WeakMap();
 	const slot = (value) => slots.get(value);
 
@@ -491,16 +491,16 @@
 
 	Object.assign(globalThis, { Headers, Event, ProgressEvent, EventTarget, DOMException, AbortSignal, AbortController,
 		Blob, File, FormData, Request, Response, fetch });
-	Object.defineProperty(globalThis, "__komariXHRBridge", { configurable: true, value: {
+	Object.defineProperty(globalThis, "__komarixXHRBridge", { configurable: true, value: {
 		nativeFetchSync, rawToResponse, bodyText: nativeBodyText, nativeRequest, defineEventHandler,
 		requestBodyLength: (request) => slot(request).bodyBuffer.byteLength
 	} });
-	delete globalThis.__komariBodyBuffer;
-	delete globalThis.__komariBodyText;
-	delete globalThis.__komariEncodeFormData;
-	delete globalThis.__komariParseFormData;
-	delete globalThis.__komariNewAbortSignal;
-	delete globalThis.__komariAbortSignal;
-	delete globalThis.__komariFetch;
-	delete globalThis.__komariFetchSync;
+	delete globalThis.__komarixBodyBuffer;
+	delete globalThis.__komarixBodyText;
+	delete globalThis.__komarixEncodeFormData;
+	delete globalThis.__komarixParseFormData;
+	delete globalThis.__komarixNewAbortSignal;
+	delete globalThis.__komarixAbortSignal;
+	delete globalThis.__komarixFetch;
+	delete globalThis.__komarixFetchSync;
 })();

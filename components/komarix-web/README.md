@@ -1,6 +1,6 @@
 # KomariX Web UI
 
-参与翻译Komari？
+参与翻译 KomariX？
 - 直接提PR
 
 We use AI to assist with translations. If you find any issues, please let us know!
@@ -50,7 +50,7 @@ npm run build
 
 > 如果你是在 Linux 系统下开发，可以直接运行脚本 `build-theme.sh` 快速生成主题包。
 
-2. 修改 `komari-theme.json` 中的相关配置，具体可参考 [主题配置文件 | KomariX](https://komari-document.pages.dev/dev/theme.html#%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6)
+2. 修改 `komarix-theme.json` 中的相关配置，具体可参考 [主题配置文件 | KomariX](https://komari-document.pages.dev/dev/theme.html#%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6)
 
    `configuration` 会根据 `type` 复用 `data` 字段：
 
@@ -68,7 +68,7 @@ npm run build
 
 5. 生成的主题文件位于 `dist` 目录下，创建一个新的文件夹 `my-theme`（名称自定），将 `dist` 目录下复制到 `my-theme` 文件夹中。
 
-6. 将 `komari-theme.json` 文件复制到 `my-theme` 文件夹中。
+6. 将 `komarix-theme.json` 文件复制到 `my-theme` 文件夹中。
 
 7. 将 `my-theme` 文件夹打包为 ZIP 文件。
 

@@ -25,7 +25,7 @@ def is_text(name: str) -> bool:
     p = Path(name)
     if p.name in LEGAL_NAMES:
         return False
-    return p.suffix.lower() in TEXT_EXTS or p.name == "komari-theme.json"
+    return p.suffix.lower() in TEXT_EXTS or p.name in {"komarix-theme.json", "komari-theme.json"}
 
 def protect_urls(text: str):
     saved = []
@@ -99,7 +99,7 @@ def transform_bytes(name: str, data: bytes) -> bytes:
     except UnicodeDecodeError:
         return data
 
-    if Path(name).name == "komari-theme.json":
+    if Path(name).name in {"komarix-theme.json", "komari-theme.json"}:
         try:
             parsed = json.loads(text)
             parsed = replace_json_values(parsed)
@@ -111,11 +111,15 @@ def transform_bytes(name: str, data: bytes) -> bytes:
 
 def repack(src: Path, tmp_out: Path):
     with zipfile.ZipFile(src, "r") as zin, zipfile.ZipFile(tmp_out, "w") as zout:
+        names = {Path(info.filename).name for info in zin.infolist() if not info.is_dir()}
         for info in zin.infolist():
             data = zin.read(info.filename) if not info.is_dir() else b""
             if not info.is_dir():
                 data = transform_bytes(info.filename, data)
-            new_info = zipfile.ZipInfo(info.filename, date_time=info.date_time)
+            output_name = info.filename
+            if Path(info.filename).name == "komari-theme.json" and "komarix-theme.json" not in names:
+                output_name = str(Path(info.filename).with_name("komarix-theme.json")).replace("\\", "/")
+            new_info = zipfile.ZipInfo(output_name, date_time=info.date_time)
             new_info.compress_type = info.compress_type
             new_info.comment = info.comment
             new_info.extra = info.extra
