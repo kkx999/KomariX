@@ -1,66 +1,134 @@
+<div align="center">
+
+<img src="./docs/komarix.svg" width="120" alt="KomariX Logo">
+
 # KomariX
 
-![Badge](https://hitscounter.dev/api/hit?url=https%3A%2F%2Fgithub.com%2Fkkx999%2FKomariX&label=&icon=github&color=%23a370f7&message=&style=flat&tz=UTC)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/komari-monitor/komari)
+**轻量、直观、自托管的服务器监控面板**
 
-![KomariX](https://socialify.git.ci/kkx999/KomariX/image?description=1&font=Inter&forks=1&issues=1&language=1&logo=https%3A%2F%2Fraw.githubusercontent.com%2Fkkx999%2FKomariX%2Fmain%2Fdocs%2Fkomarix.svg&name=1&owner=1&pattern=Plus&pulls=1&stargazers=1&theme=Auto)
+实时监控服务器运行状态，在一个面板中查看 CPU、内存、磁盘、网络、负载、延迟与在线状态。
 
-[English](./README.md) | [简体中文](./README_zh-cn.md)
+[![版本](https://img.shields.io/github/v/release/kkx999/KomariX?label=版本)](https://github.com/kkx999/KomariX/releases)
+[![许可证](https://img.shields.io/github/license/kkx999/KomariX?label=许可证)](./LICENSE)
 
-KomariX is a lightweight, self-hosted server monitoring solution. It provides a simple and efficient way to track server performance through a web interface, with metrics collected by a lightweight agent.
+</div>
 
-> [!WARNING]
-> KomariX is a self-hosted monitoring and control application. Deploy it only on systems you own or are authorized to manage. You are solely responsible for how you deploy and use KomariX. The developers accept no liability for unauthorized access, persistence, command execution, other misuse, or any resulting consequences.
+## 项目介绍
 
-[Documentation](https://www.komari.wiki/) | [Telegram Group](https://t.me/komari_monitor)
+KomariX 是一个面向个人用户和小型服务器集群的自托管监控面板。
 
-## Features
+它通过轻量级 Agent 采集服务器运行数据，并在 Web 面板中进行实时展示。你可以用一套面板集中查看多台服务器的在线状态、资源占用、网络流量和历史数据，也可以使用通知、任务、插件和终端等扩展功能。
 
-- **Real-time monitoring**: Displays monitoring data at one-second intervals.
-- **Lightweight and efficient**: Uses minimal system resources and works well on servers of any size.
-- **Self-hosted**: Keeps you in control of your data and privacy.
-- **Web interface**: Provides an intuitive, easy-to-use monitoring dashboard.
-- **Extensible**: Supports custom themes and plugins.
+KomariX 当前基于 **Komari 1.4.3** 进行维护，在保持原版功能、接口和 Agent 兼容性的基础上，更换为 KomariX 品牌并继续独立维护。
 
-## Quick Start
+## 主要功能
 
-| Platform                                                                                                                                                                                                  | Description                                                                                                                                                              |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| <a href="https://app.rainyun.com/apps/rca/store/6780/NzYxNzAz_"><img src="https://rainyun-apps.cn-nb1.rains3.com/materials/deploy-on-rainyun-cn.svg" alt="Rainyun" width="180"></a>                       | Deploy websites, databases, and hundreds of popular apps in seconds with flexible hourly billing.                                                                        |
-| <a href="https://apps.fit2cloud.com/1panel/komari"><img src="https://raw.githubusercontent.com/komari-monitor/public/refs/heads/main/images/1panel-logo-blue.png" alt="1Panel App Store" width="180"></a> | A modern, open-source Linux server management panel for websites, databases, containers, files, backups, security, and AI, with one-click deployment from its app store. |
+- 多服务器集中监控
+- CPU、内存、磁盘、负载实时数据
+- 网络上传、下载与流量统计
+- 在线状态与延迟监控
+- 历史监控数据与趋势图表
+- 节点分组与排序
+- 消息通知
+- Web 终端
+- 插件与主题扩展
+- 数据备份与恢复
+- 多架构 Linux / Windows 构建
+- 自托管部署，监控数据由自己掌控
 
-For instructions on Docker deployment, binary installation, building from source, and updates, see the [installation guide](https://www.komari.wiki/en/install/quick-start).
+## 快速安装
 
-## Screenshots
+推荐使用 Debian / Ubuntu 等支持 systemd 的 Linux 系统，并使用 root 用户执行：
 
-| Page                | Screenshot                                                                                                                                                             |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Home Dashboard      | <img src="https://b2.akz.moe/awesome-pictures/komari-screenshot/%E4%B8%BB%E9%A1%B5%E4%BB%AA%E8%A1%A8%E7%9B%98-en.webp" width="800" alt="Home Dashboard">               |
-| Admin Dashboard     | <img src="https://b2.akz.moe/awesome-pictures/komari-screenshot/%E5%90%8E%E5%8F%B0%E4%BB%AA%E8%A1%A8%E7%9B%98-en.webp" width="800" alt="Admin Dashboard">              |
-| History Charts      | <img src="https://b2.akz.moe/awesome-pictures/komari-screenshot/%E5%8E%86%E5%8F%B2%E5%9B%BE%E8%A1%A8-en.webp" width="800" alt="History Charts">                        |
-| Web Terminal        | <img src="https://b2.akz.moe/awesome-pictures/komari-screenshot/%E7%BD%91%E9%A1%B5%E7%BB%88%E7%AB%AF.webp" width="800" alt="Web Terminal">                             |
-| Customizable Themes | <img src="https://b2.akz.moe/awesome-pictures/komari-screenshot/%E4%B8%BB%E9%A2%98%E5%8F%AF%E8%87%AA%E5%AE%9A%E4%B9%89-en.webp" width="800" alt="Customizable Themes"> |
-| Theme Market        | <img src="https://b2.akz.moe/awesome-pictures/komari-screenshot/%E4%B8%BB%E9%A2%98%E5%B8%82%E5%9C%BA-en.webp" width="800" alt="Theme Market">                          |
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/kkx999/KomariX/main/install-komari.sh)
+```
 
-## Sponsors
+安装脚本会自动识别系统架构，并提供稳定版与快照版选择。
 
-Interested in sponsoring KomariX? Contact the developer via [email](mailto:komari@akz.moe) or [Telegram](https://t.me/mamomoe).
+默认面板端口：
 
-| Sponsor                                                                                                                                                                                          | Description                                                                                                                                                                                                                                                                   |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <a href="https://whmcs.as211392.com/aff.php?aff=110"><img src="https://raw.githubusercontent.com/komari-monitor/public/refs/heads/main/images/dreamcloud.png" alt="Dream Cloud" width="180"></a> | Cost-effective Asia-Pacific hosting with direct connectivity and robust DDoS protection, backed by transparent capacity claims.                                                                                                                                               |
-| <a href="https://sharon.io"><img src="https://raw.githubusercontent.com/komari-monitor/public/refs/heads/main/images/sharon-networks.webp" alt="Sharon Networks" width="180"></a>                | Premium China-optimized connectivity from Asia-Pacific data centers, featuring low latency, high bandwidth, and Tbps-scale local DDoS mitigation. Join the [Telegram community](https://t.me/SharonNetwork) to participate in charitable initiatives and community giveaways. |
+```text
+25774
+```
 
-## Contributors
+安装完成后，在浏览器中访问：
 
-Thanks to everyone who has contributed code, themes, plugins, documentation, translations, bug reports, or feedback to KomariX.
+```text
+http://服务器IP:25774
+```
 
-<a href="https://github.com/kkx999/KomariX/graphs/contributors"><img src="https://contributors-img.web.app/image?repo=komari-monitor/komari" alt="KomariX contributors" width="600"></a>
+首次打开后按照页面提示完成初始化即可。
 
-## Support the Project
+## 支持架构
 
-If KomariX has been useful to you, consider buying me a coffee. Thank you for your support!
+正式版本目前提供以下构建：
 
-| WeChat Pay                                                                                                   | TRON Network                                                                                |
-| ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
-| ![WeChat Pay QR code](https://b2.akz.moe/awesome-pictures/%E5%BE%AE%E4%BF%A1%E8%B5%9E%E8%B5%8F%E7%A0%81.png) | ![TRON Network QR code](https://b2.akz.moe/awesome-pictures/PixPin_2026-08-07_15-16-52.png) |
+| 系统 | 架构 |
+| --- | --- |
+| Linux | amd64 |
+| Linux | arm64 |
+| Linux | 386 |
+| Linux | riscv64 |
+| Linux | loong64 |
+| Windows | amd64 |
+| Windows | arm64 |
+| Windows | 386 |
+
+最新正式版可在 [Releases](https://github.com/kkx999/KomariX/releases) 下载。
+
+## 版本说明
+
+KomariX 的首个正式版本为 **v1.0.0**。
+
+当前基础版本：
+
+```text
+Komari 1.4.3
+↓
+KomariX v1.0.0
+```
+
+目前保持原版监控逻辑、数据库结构、API、Agent 协议和主要功能行为，优先保证兼容性与稳定性。
+
+## 数据与目录
+
+默认安装目录：
+
+```text
+/opt/komari
+```
+
+默认 systemd 服务名：
+
+```text
+komari
+```
+
+现阶段继续保留这些内部名称，是为了维持与 Komari 1.4.3 的兼容性，并降低升级和迁移风险。
+
+## 安全说明
+
+KomariX 包含服务器监控和远程管理能力，请只部署在你拥有或已获得授权管理的服务器上。
+
+建议：
+
+- 为管理后台设置高强度密码
+- 优先通过 HTTPS 访问面板
+- 不要将管理入口暴露给不可信网络
+- 定期备份数据目录
+- 及时安装经过验证的正式版本
+
+## 开源说明
+
+KomariX 基于开源项目 Komari 1.4.3 继续维护。
+
+原项目版权声明、MIT License 与 NOTICE 均在仓库中完整保留。KomariX 的后续品牌、维护和版本发布由本仓库独立进行。
+
+## 项目地址
+
+```text
+https://github.com/kkx999/KomariX
+```
+
+如果你正在使用 Komari 1.4.3，KomariX 当前优先保持原版使用习惯与兼容性，后续功能会在稳定的前提下逐步增加。
