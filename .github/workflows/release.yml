@@ -142,6 +142,63 @@ jobs:
           gh release upload ${{ github.event.release.tag_name }} $BINARY_NAME --repo ${{ github.repository }}
         shell: bash
 
+  build-and-attach-agent:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        exclude:
+          - goos: windows
+            goarch: arm
+          - goos: darwin
+            goarch: 386
+          - goos: darwin
+            goarch: arm
+        include:
+          - goos: linux
+            goarch: loong64
+        goos: [windows, linux, darwin, freebsd]
+        goarch: [amd64, arm64, 386, arm]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go for Agent
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: vendor/komari-agent/go.mod
+          cache-dependency-path: vendor/komari-agent/go.sum
+
+      - name: Build KomariX Agent
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: 0
+          VERSION: ${{ github.event.release.tag_name }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cd vendor/komari-agent
+          BINARY_NAME="komari-agent-${GOOS}-${GOARCH}"
+          if [ "${GOOS}" = "windows" ]; then
+            BINARY_NAME="${BINARY_NAME}.exe"
+          fi
+          go build -trimpath \
+            -ldflags="-s -w -X github.com/komari-monitor/komari-agent/update.CurrentVersion=${VERSION} -X github.com/komari-monitor/komari-agent/update.Repo=kkx999/KomariX" \
+            -o "../../${BINARY_NAME}" .
+
+      - name: Upload Agent to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          BINARY_NAME="komari-agent-${{ matrix.goos }}-${{ matrix.goarch }}"
+          if [ "${{ matrix.goos }}" = "windows" ]; then
+            BINARY_NAME="${BINARY_NAME}.exe"
+          fi
+          gh release upload "${{ github.event.release.tag_name }}" "$BINARY_NAME" --repo "${{ github.repository }}" --clobber
+
   build-and-push-docker:
     needs: build-and-attach-binaries
     runs-on: ubuntu-latest
