@@ -86,59 +86,45 @@ if (-not $nssmCmd) {
     }
 }
 
-# If still no usable nssm command, proceed to download
+# If still no usable nssm command, download a pinned, checksum-verified build.
 if (-not $nssmCmd) {
-    Log-Info "nssm not found or not usable. Attempting to download to $InstallDir..."
-    $NssmVersion = "2.24"
-    $NssmZipUrl = "https://nssm.cc/release/nssm-$NssmVersion.zip"
-    $TempNssmZipPath = Join-Path $env:TEMP "nssm-$NssmVersion.zip"
-    $TempExtractDir = Join-Path $env:TEMP "nssm_extract_temp"
+    Log-Info "nssm not found or not usable. Attempting to download a verified build to $InstallDir..."
+    $NssmVersion = "2.24-101-g897c7ad"
+    $NssmZipUrl = "https://nssm.cc/ci/nssm-$NssmVersion.zip"
+    $NssmZipSha256 = "99F5045FFFBFFB745D67FE3A065A953C4A3D9C253B868892D9B685B0EE7D07B8"
+    $TempNssmZipPath = Join-Path $env:TEMP ("nssm-" + [IO.Path]::GetRandomFileName() + ".zip")
+    $TempExtractDir = Join-Path $env:TEMP ("nssm-extract-" + [IO.Path]::GetRandomFileName())
 
     try {
         Log-Info "Downloading nssm from $NssmZipUrl..."
-        Invoke-WebRequest -Uri $NssmZipUrl -OutFile $TempNssmZipPath -UseBasicParsing
+        Invoke-WebRequest -Uri $NssmZipUrl -OutFile $TempNssmZipPath -UseBasicParsing -TimeoutSec 120
+        $ActualNssmZipSha256 = (Get-FileHash -Algorithm SHA256 -Path $TempNssmZipPath).Hash.ToUpperInvariant()
+        if ($ActualNssmZipSha256 -ne $NssmZipSha256) {
+            throw "nssm archive SHA256 verification failed. Expected $NssmZipSha256, got $ActualNssmZipSha256."
+        }
+        Log-Success "nssm archive SHA256 verified."
 
-        if (Test-Path $TempExtractDir) { Remove-Item -Recurse -Force $TempExtractDir }
         New-Item -ItemType Directory -Path $TempExtractDir -Force | Out-Null
         Expand-Archive -Path $TempNssmZipPath -DestinationPath $TempExtractDir -Force
-        
-        $NssmSourceDirInsideZip = "nssm-$NssmVersion" # Used for Get-ChildItem search path
-        # The path part within the extracted nssm folder, e.g., "nssm-2.24\win32"
-        # 'win32' nssm is used for both 'amd64' and 'arm64' PowerShell architectures.
-        $NssmArchSubDir = Join-Path "nssm-$NssmVersion" "win32"
-        $NssmSourceExePath = Join-Path (Join-Path $TempExtractDir $NssmArchSubDir) "nssm.exe"
 
+        $NssmPlatformDir = if ($arch -eq "amd64") { "win64" } else { "win32" }
+        $NssmSourceExePath = Join-Path (Join-Path (Join-Path $TempExtractDir "nssm-$NssmVersion") $NssmPlatformDir) "nssm.exe"
         if (-not (Test-Path $NssmSourceExePath)) {
-            Log-Error "Could not find nssm.exe at expected path: $NssmSourceExePath after extraction."
-            # Fallback search for nssm.exe within the extracted directory
-            $foundNssmFallback = Get-ChildItem -Path $TempExtractDir -Recurse -Filter "nssm.exe" | 
-            Where-Object { $_.FullName -like "*$NssmArchSubDir\nssm.exe" } | 
-            Select-Object -First 1
-            if ($foundNssmFallback) {
-                Log-Warning "Found nssm.exe at $($foundNssmFallback.FullName) using fallback search. Using this."
-                $NssmSourceExePath = $foundNssmFallback.FullName
-            }
-            else {
-                Log-Error "nssm.exe ($NssmArchSubDir) still not found in $TempExtractDir. Please install nssm manually (from https://nssm.cc) and ensure it's in your PATH."
-                exit 1
-            }
+            throw "Could not find verified nssm.exe at expected path: $NssmSourceExePath"
         }
-        
-        Copy-Item -Path $NssmSourceExePath -Destination $nssmExeToUse -Force
 
+        Copy-Item -Path $NssmSourceExePath -Destination $nssmExeToUse -Force
         $env:Path = "$($InstallDir);$($env:Path)"
-        $nssmCmd = Get-Command nssm -ErrorAction SilentlyContinue # Re-check after adding to PATH
-        if ($nssmCmd) {
-            Log-Success "Downloaded nssm is now configured and available in PATH."
+        $nssmCmd = Get-Command nssm -ErrorAction SilentlyContinue
+        if (-not $nssmCmd) {
+            throw "Downloaded nssm could not be added to PATH."
         }
-        else {
-            Log-Error "Failed to configure downloaded nssm in PATH from $nssmExeToUse. Please ensure $InstallDir is in your system PATH or nssm is installed globally."
-            exit 1
-        }
+        $nssmVersionOutput = nssm version 2>&1
+        Log-Success "Verified nssm $nssmVersionOutput is configured."
     }
     catch {
-        Log-Error "Failed to download or configure nssm: $_"
-        Log-Error "Please install nssm manually from https://nssm.cc and ensure nssm.exe is in your PATH."
+        Log-Error "Failed to download or configure verified nssm: $_"
+        Log-Error "Please install a trusted nssm build manually and ensure nssm.exe is in PATH."
         exit 1
     }
     finally {
