@@ -146,6 +146,9 @@ func adminEditSettings(ctx context.Context, req *rpc.JsonRpcRequest) (any, *rpc.
 	if err := validateMetricRollupSettingChanges(cfg); err != nil {
 		return nil, rpc.MakeError(rpc.InvalidParams, err.Error(), nil)
 	}
+	if err := validateAuditLogSettingChanges(cfg); err != nil {
+		return nil, rpc.MakeError(rpc.InvalidParams, err.Error(), nil)
+	}
 
 	// 若本次修改涉及 metrics 数据库配置，则在落库前先用「当前配置 + 本次改动」
 	// 合并出的目标配置做一次连接测试。metric store 始终启用，只要触及 metrics
@@ -264,6 +267,22 @@ func mergedMetricConfig(cfg map[string]interface{}) (*metricstore.MetricStoreCon
 	}
 
 	return merged, nil
+}
+
+func validateAuditLogSettingChanges(cfg map[string]interface{}) error {
+	if value, ok := cfg[config.AuditLogRetentionDaysKey]; ok {
+		n, err := metricRollupSettingInt(value)
+		if err != nil || n < 0 || n > 3650 {
+			return fmt.Errorf("%s must be between 0 and 3650", config.AuditLogRetentionDaysKey)
+		}
+	}
+	if value, ok := cfg[config.AuditLogMaxRowsKey]; ok {
+		n, err := metricRollupSettingInt(value)
+		if err != nil || n < 0 || n > 1000000 {
+			return fmt.Errorf("%s must be between 0 and 1000000", config.AuditLogMaxRowsKey)
+		}
+	}
+	return nil
 }
 
 func validateMetricRollupSettingChanges(cfg map[string]interface{}) error {
