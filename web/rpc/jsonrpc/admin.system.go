@@ -31,6 +31,12 @@ func init() {
 		},
 		Returns: "{ logs: Log[], total: number }",
 	})
+	RegisterWithGroupAndMeta("cleanupLogs", rpc.RoleAdmin, adminCleanupLogs, &rpc.MethodMeta{
+		Name: "admin:cleanupLogs", Summary: "Apply configured audit-log retention policy", Returns: "{ deleted: number }",
+	})
+	RegisterWithGroupAndMeta("clearLogs", rpc.RoleAdmin, adminClearLogs, &rpc.MethodMeta{
+		Name: "admin:clearLogs", Summary: "Delete all audit logs", Returns: "{ deleted: number }",
+	})
 	reg("testSendMessage", adminTestSendMessage, "Send a test notification")
 	reg("testGeoip", adminTestGeoip, "Test GeoIP lookup")
 }
@@ -84,6 +90,26 @@ func filterAdminLogsByMessageType(query *gorm.DB, msgType string) *gorm.DB {
 		return query.Where("msg_type = ?", msgType)
 	}
 	return query
+}
+
+func adminCleanupLogs(ctx context.Context, _ *rpc.JsonRpcRequest) (any, *rpc.JsonRpcError) {
+	deleted, err := auditlog.CleanupConfigured()
+	if err != nil {
+		return nil, rpc.MakeError(rpc.InternalError, "Failed to clean audit logs: "+err.Error(), nil)
+	}
+	actor, ip := auditActor(ctx)
+	auditlog.Log(ip, actor, fmt.Sprintf("clean audit logs: deleted %d entries", deleted), "info")
+	return map[string]any{"deleted": deleted}, nil
+}
+
+func adminClearLogs(ctx context.Context, _ *rpc.JsonRpcRequest) (any, *rpc.JsonRpcError) {
+	deleted, err := auditlog.ClearAll()
+	if err != nil {
+		return nil, rpc.MakeError(rpc.InternalError, "Failed to clear audit logs: "+err.Error(), nil)
+	}
+	actor, ip := auditActor(ctx)
+	auditlog.Log(ip, actor, fmt.Sprintf("clear all audit logs: deleted %d entries", deleted), "warn")
+	return map[string]any{"deleted": deleted}, nil
 }
 
 func adminTestSendMessage(_ context.Context, _ *rpc.JsonRpcRequest) (any, *rpc.JsonRpcError) {
