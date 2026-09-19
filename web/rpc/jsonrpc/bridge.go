@@ -13,6 +13,8 @@ import (
 // 声明式路由桥：把一个 gin 路由直接绑定到 RPC2 方法，无需手写 handler。
 // 负责从 gin 请求装配参数、调用 RPC、并按指定渲染器把响应映射回原有 HTTP/JSON 契约。
 
+const maxBoundRPCBodyBytes int64 = 4 << 20
+
 // renderKind 决定成功响应如何映射回 HTTP body。
 type renderKind int
 
@@ -79,6 +81,7 @@ func Bind(method string, opts ...BindOption) gin.HandlerFunc {
 func assembleParams(c *gin.Context, cfg *bindConfig) (any, bool) {
 	var bodyVal any
 	if c.Request.Body != nil {
+		c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, maxBoundRPCBodyBytes)
 		if raw, err := io.ReadAll(c.Request.Body); err == nil && len(raw) > 0 {
 			if err := json.Unmarshal(raw, &bodyVal); err != nil {
 				return nil, false
