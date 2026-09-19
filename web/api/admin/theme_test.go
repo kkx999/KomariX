@@ -164,6 +164,13 @@ func TestPeekThemeFromZipAcceptsLegacyManifest(t *testing.T) {
 	if err != nil {
 		t.Fatalf("write legacy manifest: %v", err)
 	}
+	index, err := writer.Create("dist/index.html")
+	if err != nil {
+		t.Fatalf("create legacy dist index: %v", err)
+	}
+	if _, err := index.Write([]byte("<html>legacy</html>")); err != nil {
+		t.Fatalf("write legacy dist index: %v", err)
+	}
 	if err := writer.Close(); err != nil {
 		t.Fatalf("close zip writer: %v", err)
 	}
@@ -276,5 +283,54 @@ func TestWrappedThemePackageRejectsAmbiguousRoots(t *testing.T) {
 
 	if _, err := peekThemeFromZip(zipPath); err == nil {
 		t.Fatal("ambiguous one-level theme roots were accepted")
+	}
+}
+
+
+func TestThemeInstallFailurePreservesExistingTheme(t *testing.T) {
+	workDir, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := t.TempDir()
+	if err := os.Chdir(root); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = os.Chdir(workDir) })
+
+	oldIndex := filepath.Join("data", "theme", "safe-theme", "dist", "index.html")
+	if err := os.MkdirAll(filepath.Dir(oldIndex), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(oldIndex, []byte("old-theme"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	zipPath := filepath.Join(t.TempDir(), "bad-update.zip")
+	f, err := os.Create(zipPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	w := zip.NewWriter(f)
+	manifest, err := w.Create("komarix-theme.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := manifest.Write([]byte(`{"name":"Safe","short":"safe-theme","version":"2.0.0","author":"Test"}`)); err != nil {
+		t.Fatal(err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := extractAndValidateTheme(zipPath, "safe-theme"); err == nil {
+		t.Fatal("theme update without dist/index.html was accepted")
+	}
+	got, err := os.ReadFile(oldIndex)
+	if err != nil || string(got) != "old-theme" {
+		t.Fatalf("existing theme was damaged after failed update: data=%q err=%v", got, err)
 	}
 }
