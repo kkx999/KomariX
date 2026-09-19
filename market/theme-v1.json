@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updated_at": "2026-09-19T13:57:04.296586Z",
+  "updated_at": "2026-09-19T14:02:27.421Z",
   "themes": [
     {
       "name": "Adhesive Note",
@@ -30,21 +30,6 @@
       "upstream_download": "https://github.com/adminsama/Aemeath/releases/download/v1.9.1/aemeath-komari-theme-v1.9.1.zip",
       "upstream_preview": "https://gov.yachts/themes/aemeath/preview.png",
       "preview_sha256": "d3eb94cdee8b025f0eeb51add8bfded1f6aad9bf229a06f93c1297edcc12bf39",
-      "komarix_branding": true
-    },
-    {
-      "name": "KomariX Animal Island",
-      "short": "AnimalIsland",
-      "description": "使用 Animal Island UI 构建的温暖游戏风简单的 KomariX 监控主题。",
-      "version": "1.0.6",
-      "author": "JeraldMaster",
-      "url": "https://github.com/imbigbomb/komari-animal-island",
-      "preview": "https://raw.githubusercontent.com/imbigbomb/komari-animal-island/main/preview.png",
-      "download": "https://github.com/imbigbomb/komari-animal-island/releases/download/v1.0.6/AnimalIsland-1.0.6.zip",
-      "sha256": "ec4b71cb8679e69919f1653f5ed8803881738e243b931cb6b38c6e8d0b749c13",
-      "upstream_download": "https://github.com/imbigbomb/komari-animal-island/releases/download/v1.0.6/AnimalIsland-1.0.6.zip",
-      "upstream_preview": "https://raw.githubusercontent.com/imbigbomb/komari-animal-island/main/preview.png",
-      "preview_sha256": "4b07d6d1d8305668aa5c9d67a064c3f56f9df24e33e3b387685c758569450d79",
       "komarix_branding": true
     },
     {
