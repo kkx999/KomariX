@@ -375,13 +375,15 @@ func static(r *gin.RouterGroup, noRoute func(handlers ...gin.HandlerFunc), force
 			return
 		}
 
-		// 如果资源不存在，且路径包含扩展名 (如 .js, .css, .png)，则返回 404
-		// 避免将 index.html 作为 js 文件返回导致 "Failed to fetch dynamically imported module"
-		//ext := filepath.Ext(reqPath)
-		//if ext != "" && ext != ".html" {
-		//	c.Status(http.StatusNotFound)
-		//	return
-		//}
+		// Missing file-like requests must not fall through to the SPA index.
+		// Returning index.html with HTTP 200 for a missing JS/CSS/image makes the
+		// browser report misleading "HTTP 200" / MIME / dynamic import failures
+		// after switching to a third-party theme.
+		ext := strings.ToLower(filepath.Ext(reqPath))
+		if ext != "" && ext != ".html" {
+			c.Status(http.StatusNotFound)
+			return
+		}
 
 		// 路由 (如 /dashboard, /settings) -> 返回 index.html
 		serveIndex(c)
