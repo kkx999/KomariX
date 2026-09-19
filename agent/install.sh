@@ -214,9 +214,6 @@ uninstall_previous() {
     fi
 }
 
-# Uninstall previous KomariX Agent installation
-uninstall_previous
-
 install_dependencies() {
     log_step "Checking and installing dependencies..."
 
@@ -356,6 +353,41 @@ resolve_snapshot_version() {
     return 1
 }
 
+resolve_stable_version() {
+    stable_api_url="https://api.github.com/repos/kkx999/KomariX/releases/latest"
+    if [ -n "$github_proxy" ]; then
+        stable_api_urls="$stable_api_url ${github_proxy}/${stable_api_url}"
+    else
+        stable_api_urls="$stable_api_url"
+    fi
+
+    for api_url in $stable_api_urls; do
+        if release_json=$(curl -fsSL --retry 3 --connect-timeout 15 --max-time 60 \
+            -H "Accept: application/vnd.github+json" \
+            -H "User-Agent: komarix-agent-installer" \
+            "$api_url"); then
+            RESOLVED_STABLE_VERSION=$(printf '%s\n' "$release_json" |
+                grep -o '"tag_name":[[:space:]]*"v[0-9][^"]*"' |
+                head -n 1 |
+                sed 's/.*"\(v[^"]*\)".*/\1/')
+            if [ -n "$RESOLVED_STABLE_VERSION" ]; then
+                return 0
+            fi
+        fi
+    done
+    return 1
+}
+
+sha256_file() {
+    if command -v sha256sum >/dev/null 2>&1; then
+        sha256sum "$1" | awk '{print $1}'
+    elif command -v shasum >/dev/null 2>&1; then
+        shasum -a 256 "$1" | awk '{print $1}'
+    else
+        return 1
+    fi
+}
+
 version_to_install="latest"
 if [ -n "$install_version" ]; then
     if [ "$install_version" = "snapshot" ]; then
@@ -371,15 +403,24 @@ if [ -n "$install_version" ]; then
         version_to_install="$install_version"
     fi
 else
-    log_info "No version specified, installing the latest version."
+    log_info "Resolving the latest stable version..."
+    if ! resolve_stable_version; then
+        log_error "Failed to resolve the latest stable KomariX release."
+        exit 1
+    fi
+    version_to_install="$RESOLVED_STABLE_VERSION"
+    log_success "Latest stable version: ${GREEN}$version_to_install${NC}"
 fi
 
-# Construct download URL
-if [ "$version_to_install" = "latest" ]; then
-    download_path="latest/download"
-else
-    download_path="download/${version_to_install}"
-fi
+case "$version_to_install" in
+    v[0-9]*|Snapshot-*) ;;
+    *)
+        log_error "Invalid KomariX release tag: $version_to_install"
+        exit 1
+        ;;
+esac
+
+download_path="download/${version_to_install}"
 
 if [ -n "$github_proxy" ]; then
     # Use proxy for GitHub releases
@@ -408,24 +449,89 @@ https://ghproxy.net/${download_url}
 "
 fi
 
+candidate_path=$(mktemp "${target_dir}/.agent.download.XXXXXX") || {
+    log_error "Failed to create temporary download file"
+    exit 1
+}
+checksum_path=$(mktemp "${target_dir}/.agent.checksums.XXXXXX") || {
+    rm -f "$candidate_path"
+    log_error "Failed to create temporary checksum file"
+    exit 1
+}
+cleanup_downloads() {
+    [ -n "${candidate_path:-}" ] && rm -f "$candidate_path"
+    [ -n "${checksum_path:-}" ] && rm -f "$checksum_path"
+}
+trap cleanup_downloads EXIT INT TERM
+
+checksum_direct_url="https://github.com/kkx999/KomariX/releases/download/${version_to_install}/SHA256SUMS"
+checksum_urls="$checksum_direct_url"
+if [ -n "$github_proxy" ]; then
+    checksum_urls="$checksum_direct_url ${github_proxy}/${checksum_direct_url}"
+fi
+checksum_ok=""
+for checksum_url in $checksum_urls; do
+    log_step "Downloading release checksums..."
+    if curl -fL --retry 3 --retry-delay 1 --connect-timeout 15 --max-time 90 -o "$checksum_path" "$checksum_url"; then
+        checksum_ok=1
+        break
+    fi
+done
+if [ -z "$checksum_ok" ]; then
+    log_error "Failed to download SHA256SUMS. Existing Agent was not changed."
+    exit 1
+fi
+expected_sha=$(awk -v file="$file_name" '$2 == file || $2 == "*" file { print $1; exit }' "$checksum_path")
+if [ -z "$expected_sha" ]; then
+    log_error "SHA256SUMS does not contain $file_name. Existing Agent was not changed."
+    exit 1
+fi
+
 dl_ok=""
 for u in $download_urls; do
     log_step "Downloading $file_name ..."
     log_info "URL: ${CYAN}$u${NC}"
-    if curl -fL --connect-timeout 15 -o "$komarix_agent_path" "$u" && [ -s "$komarix_agent_path" ]; then
-        dl_ok=1
-        break
+    if curl -fL --retry 3 --retry-delay 1 --connect-timeout 15 --max-time 300 -o "$candidate_path" "$u" && [ -s "$candidate_path" ]; then
+        actual_sha=$(sha256_file "$candidate_path") || {
+            log_error "No SHA-256 implementation found (sha256sum or shasum)."
+            exit 1
+        }
+        if [ "$actual_sha" = "$expected_sha" ]; then
+            dl_ok=1
+            break
+        fi
+        log_warning "SHA256 mismatch from this download source; trying the next source."
     fi
-    rm -f "$komarix_agent_path"
+    : > "$candidate_path"
 done
 
 if [ -z "$dl_ok" ]; then
-    log_error "Download failed from all sources (direct + mirrors)"
-    log_error "Retry later, or specify --install-ghproxy <mirror-prefix> manually"
+    log_error "Download or SHA256 verification failed from all sources."
+    log_error "Existing KomariX Agent was not changed."
     exit 1
 fi
+log_success "SHA256 verified for $file_name"
 
-# Set executable permissions
+old_binary_backup=""
+if [ -f "$komarix_agent_path" ]; then
+    old_binary_backup="${target_dir}/.agent.previous.$"
+    if ! cp -p "$komarix_agent_path" "$old_binary_backup"; then
+        log_error "Failed to back up the existing Agent. Upgrade cancelled."
+        exit 1
+    fi
+fi
+
+# Only tear down the previous service after the new binary is fully downloaded and verified.
+uninstall_previous
+if ! mv -f "$candidate_path" "$komarix_agent_path"; then
+    if [ -n "$old_binary_backup" ] && [ -f "$old_binary_backup" ]; then
+        cp -p "$old_binary_backup" "$komarix_agent_path" || true
+    fi
+    log_error "Failed to publish the verified Agent binary."
+    exit 1
+fi
+candidate_path=""
+
 chmod +x "$komarix_agent_path"
 if [ "$EUID" -eq 0 ] && [ "$service_user" != "root" ]; then
     chown "$service_user" "$komarix_agent_path"
@@ -529,6 +635,60 @@ if [ "$user_service" = true ]; then
     init_system="systemd-user"
 fi
 log_info "Detected init system: ${GREEN}$init_system${NC}"
+
+service_is_active() {
+    case "$init_system" in
+        nixos) return 0 ;;
+        systemd-user) systemctl --user is-active --quiet "${service_name}.service" ;;
+        systemd) systemctl is-active --quiet "${service_name}.service" ;;
+        openrc) rc-service "${service_name}" status >/dev/null 2>&1 ;;
+        procd) /etc/init.d/"${service_name}" status >/dev/null 2>&1 ;;
+        upstart) initctl status "${service_name}" 2>/dev/null | grep -q "start/running" ;;
+        launchd)
+            if [ "${is_user_install:-false}" = true ]; then
+                launchctl print "gui/$(id -u)/com.komarix.${service_name}" >/dev/null 2>&1
+            else
+                launchctl print "system/com.komarix.${service_name}" >/dev/null 2>&1
+            fi
+            ;;
+        *) return 1 ;;
+    esac
+}
+
+restart_installed_service() {
+    case "$init_system" in
+        systemd-user) systemctl --user restart "${service_name}.service" ;;
+        systemd) systemctl restart "${service_name}.service" ;;
+        openrc) rc-service "${service_name}" restart ;;
+        procd) /etc/init.d/"${service_name}" restart ;;
+        upstart) initctl restart "${service_name}" ;;
+        launchd)
+            if [ "${is_user_install:-false}" = true ]; then
+                launchctl bootout "gui/$(id -u)" "$plist_file" >/dev/null 2>&1 || true
+                launchctl bootstrap "gui/$(id -u)" "$plist_file"
+            else
+                launchctl bootout system "$plist_file" >/dev/null 2>&1 || true
+                launchctl bootstrap system "$plist_file"
+            fi
+            ;;
+        nixos) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+rollback_previous_binary() {
+    if [ -z "$old_binary_backup" ] || [ ! -f "$old_binary_backup" ]; then
+        return 1
+    fi
+    log_warning "New Agent service did not start correctly; restoring the previous binary."
+    cp -p "$old_binary_backup" "$komarix_agent_path" || return 1
+    chmod +x "$komarix_agent_path"
+    if [ "$EUID" -eq 0 ] && [ "$service_user" != "root" ]; then
+        chown "$service_user" "$komarix_agent_path" || true
+    fi
+    restart_installed_service >/dev/null 2>&1 || true
+    service_is_active
+}
 
 # Handle each init system
 if [ "$init_system" = "nixos" ]; then
@@ -738,7 +898,6 @@ EOF
             log_success "User-level launchd service configured and started"
         else
             log_error "Failed to load user-level launchd service"
-            exit 1
         fi
     else
         # System-level service
@@ -746,7 +905,6 @@ EOF
             log_success "System-level launchd service configured and started"
         else
             log_error "Failed to load system-level launchd service"
-            exit 1
         fi
     fi
 elif [ "$init_system" = "upstart" ]; then
@@ -785,8 +943,26 @@ EOF
 else
     log_error "Unsupported or unknown init system detected: $init_system"
     log_error "Supported init systems: systemd, openrc, procd, launchd"
+    if [ -n "$old_binary_backup" ] && [ -f "$old_binary_backup" ]; then
+        cp -p "$old_binary_backup" "$komarix_agent_path" || true
+    fi
     exit 1
 fi
+
+if [ "$init_system" != "nixos" ] && ! service_is_active; then
+    if rollback_previous_binary; then
+        rm -f "$old_binary_backup"
+        log_error "Agent upgrade failed; the previous binary was restored and restarted."
+    else
+        log_error "Agent service did not start and automatic rollback could not restore a running service."
+    fi
+    exit 1
+fi
+if [ -n "$old_binary_backup" ]; then
+    rm -f "$old_binary_backup"
+fi
+trap - EXIT INT TERM
+cleanup_downloads
 
 echo ""
 echo -e "${WHITE}===========================================${NC}"
