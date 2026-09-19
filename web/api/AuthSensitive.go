@@ -61,6 +61,8 @@ func VerifySensitive2FA(c *gin.Context) error {
 	return VerifySensitive2FACore(uuid, get2FACode(c), isAPIKey)
 }
 
+const maxSensitive2FABodyBytes int64 = 64 << 10
+
 func get2FACode(c *gin.Context) string {
 	if code, ok := c.Get("2fa_code"); ok {
 		if codeString, ok := code.(string); ok && codeString != "" {
@@ -81,6 +83,7 @@ func get2FACode(c *gin.Context) string {
 	if c.Request.Body == nil || c.Request.Method == http.MethodGet {
 		return ""
 	}
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, maxSensitive2FABodyBytes)
 	bodyBytes, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		return ""
