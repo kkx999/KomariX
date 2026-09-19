@@ -1,5 +1,5 @@
 name: Verify and publish KomariX release
-run-name: Publish KomariX ${{ inputs.version || 'v1.0.10' }}
+run-name: Publish KomariX ${{ inputs.version }}
 
 on:
   workflow_dispatch:
@@ -12,18 +12,13 @@ on:
         description: "Optional release summary. Leave empty to use the matching CHANGELOG section."
         required: false
         type: string
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/release-v1.0.10.trigger"
 
 permissions:
   contents: write
   packages: write
 
 env:
-  VERSION: ${{ inputs.version || 'v1.0.10' }}
+  VERSION: ${{ inputs.version }}
 
 jobs:
   validate:
@@ -58,7 +53,7 @@ jobs:
       - name: Build KomariX frontend
         uses: ./.github/actions/build-frontend
         with:
-          artifact-name: komarix-frontends-${{ env.VERSION }}
+          artifact-name: komarix-frontends-${{ inputs.version }}
 
   test-panel:
     needs: build-frontends
@@ -70,7 +65,7 @@ jobs:
       - name: Restore frontend
         uses: ./.github/actions/restore-frontend
         with:
-          artifact-name: komarix-frontends-${{ env.VERSION }}
+          artifact-name: komarix-frontends-${{ inputs.version }}
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -235,7 +230,7 @@ jobs:
       - name: Restore frontend
         uses: ./.github/actions/restore-frontend
         with:
-          artifact-name: komarix-frontends-${{ env.VERSION }}
+          artifact-name: komarix-frontends-${{ inputs.version }}
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -422,7 +417,7 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ghcr.io/kkx999/komarix:${{ env.VERSION }}
+            ghcr.io/kkx999/komarix:${{ inputs.version }}
             ghcr.io/kkx999/komarix:latest
           provenance: false
 
@@ -470,7 +465,7 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            ghcr.io/kkx999/komarix-agent:${{ env.VERSION }}
+            ghcr.io/kkx999/komarix-agent:${{ inputs.version }}
             ghcr.io/kkx999/komarix-agent:latest
           provenance: false
 
