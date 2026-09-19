@@ -10,7 +10,10 @@ import (
 	"github.com/kkx999/KomariX/web/api"
 )
 
-const maxChunkRequestSize = ChunkSize + 1*1024*1024
+const (
+	maxChunkRequestSize = ChunkSize + 1*1024*1024
+	maxUploadControlRequestSize int64 = 64 << 10
+)
 
 type Result struct {
 	Message string
@@ -29,6 +32,7 @@ func NewHandler(store *Store, finalizers map[Purpose]Finalizer) *Handler {
 }
 
 func (h *Handler) Init(c *gin.Context) {
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, maxUploadControlRequestSize)
 	var request struct {
 		Purpose  Purpose `json:"purpose" binding:"required"`
 		Size     int64   `json:"size" binding:"required"`
@@ -75,6 +79,7 @@ func (h *Handler) Chunk(c *gin.Context) {
 }
 
 func (h *Handler) Merge(c *gin.Context) {
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, maxUploadControlRequestSize)
 	var request struct {
 		UploadID string `json:"upload_id" binding:"required"`
 	}
@@ -104,6 +109,7 @@ func (h *Handler) Merge(c *gin.Context) {
 }
 
 func (h *Handler) Cancel(c *gin.Context) {
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, maxUploadControlRequestSize)
 	var request struct {
 		UploadID string `json:"upload_id" binding:"required"`
 	}
