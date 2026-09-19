@@ -319,6 +319,77 @@ try {
         }
     }
     if (-not $ExpectedHash -or $ExpectedHash -notmatch '^[0-9A-F]{64}
+        throw "SHA256SUMS does not contain a valid checksum for $BinaryName."
+    }
+
+    Log-Info "URL: $DownloadUrl"
+    Invoke-WebRequest -Uri $DownloadUrl -OutFile $CandidatePath -UseBasicParsing -TimeoutSec 300
+    $ActualHash = (Get-FileHash -Algorithm SHA256 -Path $CandidatePath).Hash.ToUpperInvariant()
+    if ($ActualHash -ne $ExpectedHash) {
+        throw "SHA256 verification failed for $BinaryName."
+    }
+    Log-Success "SHA256 verified for $BinaryName"
+
+    if (Test-Path $AgentPath) {
+        $BackupAgentPath = Join-Path $InstallDir (".agent.previous." + $PID + ".exe")
+        Copy-Item -Path $AgentPath -Destination $BackupAgentPath -Force
+    }
+
+    # Do not stop or remove the existing service until the new binary is fully verified.
+    Uninstall-Previous
+    Move-Item -Path $CandidatePath -Destination $AgentPath -Force
+
+    Log-Step "Configuring Windows service with nssm..."
+    $argString = $KomariXArgs -join ' '
+    & nssm install $ServiceName $AgentPath $argString | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "nssm install failed with exit code $LASTEXITCODE" }
+    & nssm set $ServiceName DisplayName "KomariX Agent Service" | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "failed to set service display name" }
+    & nssm set $ServiceName Start SERVICE_AUTO_START | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "failed to set service startup mode" }
+    & nssm set $ServiceName AppExit Default Restart | Out-Null
+    & nssm set $ServiceName AppRestartDelay 5000 | Out-Null
+    & nssm start $ServiceName | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "failed to start service" }
+    Start-Sleep -Seconds 1
+    $status = (& nssm status $ServiceName 2>&1 | Out-String).Trim()
+    if ($status -notmatch "SERVICE_RUNNING") { throw "service status is $status" }
+
+    if ($BackupAgentPath -and (Test-Path $BackupAgentPath)) { Remove-Item $BackupAgentPath -Force }
+    Log-Success "Service $ServiceName installed and started using nssm."
+}
+catch {
+    $failure = $_
+    Log-Error "Agent installation or upgrade failed: $failure"
+    if ($BackupAgentPath -and (Test-Path $BackupAgentPath)) {
+        Log-Warning "Restoring the previous Agent binary..."
+        & nssm stop $ServiceName 2>&1 | Out-Null
+        & nssm remove $ServiceName confirm 2>&1 | Out-Null
+        Copy-Item -Path $BackupAgentPath -Destination $AgentPath -Force
+        $argString = $KomariXArgs -join ' '
+        & nssm install $ServiceName $AgentPath $argString | Out-Null
+        & nssm set $ServiceName DisplayName "KomariX Agent Service" | Out-Null
+        & nssm set $ServiceName Start SERVICE_AUTO_START | Out-Null
+        & nssm set $ServiceName AppExit Default Restart | Out-Null
+        & nssm set $ServiceName AppRestartDelay 5000 | Out-Null
+        & nssm start $ServiceName | Out-Null
+        Start-Sleep -Seconds 1
+        $rollbackStatus = (& nssm status $ServiceName 2>&1 | Out-String).Trim()
+        if ($rollbackStatus -match "SERVICE_RUNNING") {
+            Log-Warning "Previous Agent binary restored and restarted."
+        }
+        else {
+            Log-Error "Rollback restored the binary but the service is not running: $rollbackStatus"
+        }
+    }
+    exit 1
+}
+finally {
+    if (Test-Path $CandidatePath) { Remove-Item $CandidatePath -Force -ErrorAction SilentlyContinue }
+    if (Test-Path $ChecksumPath) { Remove-Item $ChecksumPath -Force -ErrorAction SilentlyContinue }
+}
+
+Log-Success "KomariX Agent installation completed!"
 Log-Config "Service name: $ServiceName"
 Log-Config "Arguments: $argString"
 ) {
