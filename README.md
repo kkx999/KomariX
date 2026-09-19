@@ -97,7 +97,11 @@ http://服务器IP:25774
 
 KomariX 保持对旧 Komari 数据和 Agent 监控协议的兼容。通过完整数据迁移升级到 KomariX 后，原有 Komari Agent 可以继续连接并上报监控数据，不要求立即重装。
 
-为了后续持续使用 KomariX 的更新与新功能，建议逐步将旧 Komari Agent 替换为 KomariX Agent。迁移单个节点时，先在 KomariX 后台打开**原有节点**并复制该节点当前生成的一键安装命令，然后在被监控机执行：
+为了后续持续使用 KomariX 的更新与新功能，建议逐步将旧 Komari Agent 替换为 KomariX Agent。迁移单个节点时，先在 KomariX 后台打开**原有节点**并复制该节点当前生成的一键安装命令，然后先清理旧 Komari Agent，再安装 KomariX Agent。
+
+### 卸载旧 Komari Agent
+
+> 仅用于从原 Komari 迁移到 KomariX 的被监控机。
 
 ```bash
 systemctl stop komari-agent 2>/dev/null || true; systemctl disable komari-agent 2>/dev/null || true; rm -f /etc/systemd/system/komari-agent.service; systemctl daemon-reload; systemctl reset-failed komari-agent 2>/dev/null || true; rm -f /opt/komari/agent; echo "旧 Komari Agent 已清理完成"
@@ -105,9 +109,11 @@ systemctl stop komari-agent 2>/dev/null || true; systemctl disable komari-agent 
 
 随后执行该节点在 KomariX 后台生成的一键安装命令，即可安装并启动 `komarix-agent`。
 
-> **不要删除 KomariX 后台中的原有节点再重新创建。** 继续使用迁移后的原节点，可以保留节点身份以及已有历史监控数据。上面的清理命令只删除旧 Komari Agent 服务与 `/opt/komari/agent`，不会删除整个 `/opt/komari` 目录。
+> **不要删除 KomariX 后台中的原有节点再重新创建。** 继续使用迁移后的原节点，可以保留节点身份以及已有历史监控数据。上面的命令只删除旧 Komari Agent 服务与 `/opt/komari/agent`，不会删除整个 `/opt/komari` 目录。
 
-## Agent 卸载
+## 卸载 KomariX Agent
+
+> 仅用于已经安装 KomariX Agent 的被监控机。
 
 默认 Linux / systemd 安装可使用：
 
@@ -115,7 +121,7 @@ systemctl stop komari-agent 2>/dev/null || true; systemctl disable komari-agent 
 systemctl stop komarix-agent 2>/dev/null || true; systemctl disable komarix-agent 2>/dev/null || true; rm -f /etc/systemd/system/komarix-agent.service; systemctl daemon-reload; systemctl reset-failed komarix-agent 2>/dev/null || true; rm -rf /opt/komarix-agent; echo "KomariX Agent 已卸载"
 ```
 
-仅卸载被监控机上的 KomariX Agent，不会删除面板中的节点和历史监控数据。
+该命令只卸载被监控机上的 KomariX Agent，不会删除 KomariX 面板中的节点或历史监控数据。
 
 ## 数据与目录
 
