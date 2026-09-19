@@ -556,6 +556,7 @@
     "installed": "已安装",
     "installed_version": "已安装 v{{version}}",
     "manage_sources": "管理源",
+    "http_source_warning": "HTTP 源未加密，仅建议用于可信的内网或测试市场。",
     "no_sources": "尚未配置源",
     "no_themes": "未找到主题",
     "project_page": "项目主页",
