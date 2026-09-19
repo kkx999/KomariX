@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"context"
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
@@ -8,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -313,7 +315,7 @@ func InstallThemeFromMarket(c *gin.Context) {
 		api.RespondError(c, http.StatusBadRequest, "This theme does not provide an installable package")
 		return
 	}
-	data, err := downloadMarketURL(selected.Download, marketPackageMaxSize)
+	data, err := downloadMarketURLForSource(selected.Download, marketPackageMaxSize, false, source.ID != "official")
 	if err != nil {
 		api.RespondError(c, http.StatusBadRequest, "Failed to download theme: "+err.Error())
 		return
@@ -365,7 +367,7 @@ func fetchThemeMarketCatalog(source ThemeMarketSource, force bool) ([]ThemeMarke
 			return append([]ThemeMarketTheme(nil), cached.Themes...), nil
 		}
 	}
-	data, err := downloadMarketURLWithOptions(source.URL, marketCatalogMaxSize, force)
+	data, err := downloadMarketURLForSource(source.URL, marketCatalogMaxSize, force, source.ID != "official")
 	if err != nil {
 		return nil, err
 	}
@@ -458,7 +460,11 @@ func validateMarketURLSyntax(rawURL string) error {
 }
 
 func downloadMarketURL(rawURL string, maxSize int64) ([]byte, error) {
-	return downloadMarketURLWithOptions(rawURL, maxSize, false)
+	return downloadMarketURLWithTrust(rawURL, maxSize, false, false)
+}
+
+func downloadMarketURLForSource(rawURL string, maxSize int64, bypassCache, allowPrivate bool) ([]byte, error) {
+	return downloadMarketURLWithTrust(rawURL, maxSize, bypassCache, allowPrivate)
 }
 
 func buildThemeMarketRequestURL(rawURL string, bypassCache bool) (string, error) {
@@ -474,14 +480,51 @@ func buildThemeMarketRequestURL(rawURL string, bypassCache bool) (string, error)
 	return parsed.String(), nil
 }
 
+func blockedOutboundIP(ip net.IP) bool {
+	return ip == nil || ip.IsLoopback() || ip.IsPrivate() || ip.IsUnspecified() ||
+		ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || ip.IsMulticast()
+}
+
+func publicMarketDialContext(ctx context.Context, network, address string) (net.Conn, error) {
+	host, port, err := net.SplitHostPort(address)
+	if err != nil {
+		return nil, err
+	}
+	ips, err := net.DefaultResolver.LookupIP(ctx, "ip", host)
+	if err != nil || len(ips) == 0 {
+		return nil, fmt.Errorf("resolve public market host %q: %w", host, err)
+	}
+	for _, ip := range ips {
+		if blockedOutboundIP(ip) {
+			return nil, fmt.Errorf("market host %q resolves to a private or special-use address", host)
+		}
+	}
+	dialer := &net.Dialer{Timeout: 10 * time.Second, KeepAlive: 30 * time.Second}
+	var lastErr error
+	for _, ip := range ips {
+		conn, dialErr := dialer.DialContext(ctx, network, net.JoinHostPort(ip.String(), port))
+		if dialErr == nil {
+			return conn, nil
+		}
+		lastErr = dialErr
+	}
+	return nil, fmt.Errorf("connect to public market host %q: %w", host, lastErr)
+}
+
 func downloadMarketURLWithOptions(rawURL string, maxSize int64, bypassCache bool) ([]byte, error) {
+	return downloadMarketURLWithTrust(rawURL, maxSize, bypassCache, false)
+}
+
+func downloadMarketURLWithTrust(rawURL string, maxSize int64, bypassCache, allowPrivate bool) ([]byte, error) {
 	validate := func(candidate string) error {
 		parsed, err := url.Parse(candidate)
 		if err != nil || (parsed.Scheme != "http" && parsed.Scheme != "https") || parsed.Hostname() == "" || parsed.User != nil {
-			return errors.New("only public HTTP and HTTPS URLs are allowed")
+			return errors.New("only HTTP and HTTPS URLs without embedded credentials are allowed")
 		}
-		if isPrivateIP(parsed.Hostname()) {
-			return errors.New("requests to private or internal addresses are not allowed")
+		if !allowPrivate {
+			if ip := net.ParseIP(parsed.Hostname()); ip != nil && blockedOutboundIP(ip) {
+				return errors.New("requests to private or special-use addresses are not allowed")
+			}
 		}
 		return nil
 	}
@@ -492,8 +535,16 @@ func downloadMarketURLWithOptions(rawURL string, maxSize int64, bypassCache bool
 	if err != nil {
 		return nil, err
 	}
+	transport := http.DefaultTransport.(*http.Transport).Clone()
+	if !allowPrivate {
+		// Strict public downloads bypass environment proxies and connect to the
+		// exact IPs validated by the dialer, closing the DNS-rebinding gap.
+		transport.Proxy = nil
+		transport.DialContext = publicMarketDialContext
+	}
 	client := &http.Client{
-		Timeout: 45 * time.Second,
+		Transport: transport,
+		Timeout:   45 * time.Second,
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			if len(via) >= 10 {
 				return errors.New("too many redirects")
