@@ -29,6 +29,18 @@ runs:
         npm ci
         npm audit --audit-level=high
         npm run build
+
+        # Fail the build if removed remote-control UI leaks back into source or
+        # the generated JavaScript bundle.
+        if grep -R -nE 'disable-web-ssh|disableWebSsh|/terminal\?uuid=|terminal\.title' src --include='*.ts' --include='*.tsx'; then
+          echo "Obsolete remote-control UI remains in KomariX frontend source."
+          exit 1
+        fi
+        if grep -R -a -nE -- '--disable-web-ssh|disableWebSsh|/terminal\?uuid=' dist --include='*.js'; then
+          echo "Obsolete remote-control UI leaked into the built frontend artifact."
+          exit 1
+        fi
+
         cd ../..
 
 
