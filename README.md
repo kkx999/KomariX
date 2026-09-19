@@ -56,6 +56,16 @@ bash <(curl -fsSL https://raw.githubusercontent.com/kkx999/KomariX/main/install-
 
 安装脚本会自动识别系统架构，并提供稳定版与快照版选择。正式版本下载会校验 `SHA256SUMS`；升级会先下载并校验新二进制，若新版本启动失败则自动恢复升级前版本。
 
+### 呼出管理菜单
+
+已经安装 KomariX 后，再次执行同一条命令即可重新呼出管理菜单：
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/kkx999/KomariX/main/install-komarix.sh)
+```
+
+菜单可用于升级、卸载、查看状态与日志、重启或停止服务，以及清理升级历史备份。
+
 默认面板端口：
 
 ```text
