@@ -143,6 +143,7 @@ export default function ThemeMarketPage() {
     const [catalogPayload, installedPayload] = await Promise.all([
       request<{ themes: MarketTheme[]; sources: MarketSourceStatus[] }>(
         `/api/admin/theme/market/catalog${suffix}`,
+        { cache: "no-store" },
       ),
       request<InstalledTheme[]>("/api/admin/theme/list"),
     ]);
