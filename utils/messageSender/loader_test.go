@@ -26,7 +26,7 @@ func TestParseTemplateFormatsAnyTypedEventField(t *testing.T) {
 		event any
 		want  string
 	}{
-		{event: models.EventMessage{Event: "Offline"}, want: "Offline"},
+		{event: models.EventMessage{Event: "Offline"}, want: "节点离线"},
 		{event: models.EventMessage{Event: 42}, want: "42"},
 		{event: models.EventMessage{Event: nil}, want: ""},
 	} {
