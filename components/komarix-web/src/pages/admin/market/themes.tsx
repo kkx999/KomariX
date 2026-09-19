@@ -165,7 +165,7 @@ export default function ThemeMarketPage() {
       .catch((error) => toast.error(error instanceof Error ? error.message : String(error)))
       .finally(() => setLoading(false));
 
-    const intervalID = window.setInterval(autoRefreshCatalog, 60_000);
+    const intervalID = window.setInterval(autoRefreshCatalog, 20_000);
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") autoRefreshCatalog();
     };
@@ -228,7 +228,9 @@ export default function ThemeMarketPage() {
   const setActiveTheme = async (theme: MarketTheme) => {
     setSettingTheme(theme.short);
     try {
-      await request(`/api/admin/theme/set?theme=${encodeURIComponent(theme.short)}`);
+      await request(`/api/admin/theme/set?theme=${encodeURIComponent(theme.short)}`, {
+        method: "POST",
+      });
       await refetchSettings();
       await refreshPublicInfo();
       refreshNavigation();
