@@ -30,6 +30,7 @@ import (
 	recoveryweb "github.com/kkx999/KomariX/web/recovery"
 	"github.com/kkx999/KomariX/web/router"
 	"github.com/kkx999/KomariX/web/security"
+	webupload "github.com/kkx999/KomariX/web/upload"
 )
 
 // ErrRestartRequested is returned after a clean shutdown when a configuration
@@ -218,6 +219,11 @@ func cleanupScheduledData() {
 	}
 	auditlog.RemoveOldLogs()
 	accounts.RemoveExpiredSessions()
+	if removed, err := webupload.DefaultStore.CleanupExpired(24 * time.Hour); err != nil {
+		logger.Errorf("server", "Failed to clean expired upload sessions: %v", err)
+	} else if removed > 0 {
+		logger.Infof("server", "Removed %d expired upload sessions", removed)
+	}
 }
 
 func compactMetricStore(ctx context.Context) {
