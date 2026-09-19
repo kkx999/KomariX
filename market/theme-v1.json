@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updated_at": "2026-09-19T13:31:45.503Z",
+  "updated_at": "2026-09-19T13:31:52.885Z",
   "themes": [
     {
       "name": "爱弥斯 / Aemeath",
@@ -15,6 +15,21 @@
       "upstream_download": "https://github.com/adminsama/Aemeath/releases/download/v1.9.1/aemeath-komari-theme-v1.9.1.zip",
       "upstream_preview": "https://gov.yachts/themes/aemeath/preview.png",
       "preview_sha256": "d3eb94cdee8b025f0eeb51add8bfded1f6aad9bf229a06f93c1297edcc12bf39",
+      "komarix_branding": true
+    },
+    {
+      "name": "blueprint",
+      "short": "blueprint",
+      "description": "A Blueprint theme for KomariX",
+      "version": "0.1.19",
+      "author": "jacob-bytes",
+      "url": "https://github.com/jacob-bytes/komari-theme-blueprint",
+      "preview": "https://github.com/kkx999/KomariX/releases/download/v1.0.0/preview-05-blueprint-0.1.19-9a6508601454.png",
+      "download": "https://github.com/kkx999/KomariX/releases/download/v1.0.0/theme-05-blueprint-0.1.19-13c2582feb8e.zip",
+      "sha256": "13c2582feb8e8bc0e6617ad558422a72e467058c5af922171436b6e41ce281f3",
+      "upstream_download": "https://github.com/jacob-bytes/komari-theme-blueprint/releases/download/v0.1.19/blueprint-build-f4bbf9f.zip",
+      "upstream_preview": "https://raw.githubusercontent.com/jacob-bytes/komari-theme-blueprint/main/docs/preview.png",
+      "preview_sha256": "9a650860145445f7dfa228e8fb1631473b098ab86ce762468e57cdde1e053021",
       "komarix_branding": true
     },
     {
