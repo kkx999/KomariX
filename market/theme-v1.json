@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updated_at": "2026-09-19T13:31:52.885Z",
+  "updated_at": "2026-09-19T13:32:01.874Z",
   "themes": [
     {
       "name": "爱弥斯 / Aemeath",
@@ -15,6 +15,21 @@
       "upstream_download": "https://github.com/adminsama/Aemeath/releases/download/v1.9.1/aemeath-komari-theme-v1.9.1.zip",
       "upstream_preview": "https://gov.yachts/themes/aemeath/preview.png",
       "preview_sha256": "d3eb94cdee8b025f0eeb51add8bfded1f6aad9bf229a06f93c1297edcc12bf39",
+      "komarix_branding": true
+    },
+    {
+      "name": "KomariX Theme ASCII",
+      "short": "ASCII",
+      "description": "A terminal-style ASCII dashboard theme for KomariX",
+      "version": "1.0",
+      "author": "faust",
+      "url": "https://github.com/facl/komari-ascii",
+      "preview": "https://github.com/kkx999/KomariX/releases/download/v1.0.0/preview-04-ASCII-1.0-e79efce39572.png",
+      "download": "https://github.com/kkx999/KomariX/releases/download/v1.0.0/theme-04-ASCII-1.0-ed2c2214be68.zip",
+      "sha256": "ed2c2214be68ffdc3a5e85e260d5086f856490881b9895934cb799d446d6e314",
+      "upstream_download": "https://github.com/facl/komari-ascii/releases/download/v1.0/komari-ascii.zip",
+      "upstream_preview": "https://raw.githubusercontent.com/facl/komari-ascii/main/preview.png",
+      "preview_sha256": "e79efce395722bbacfe8b1a887945514b697f15eed3293335ee92db20901004d",
       "komarix_branding": true
     },
     {
