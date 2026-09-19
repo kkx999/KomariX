@@ -247,7 +247,9 @@ export default function ThemeMarketPage() {
     try {
       const wasActive = currentTheme === theme.short;
       if (wasActive) {
-        await request("/api/admin/theme/set?theme=default");
+        await request("/api/admin/theme/set?theme=PurCarte", {
+          method: "POST",
+        });
       }
       await request("/api/admin/theme/delete", {
         method: "POST",
