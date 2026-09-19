@@ -189,3 +189,38 @@ func TestInstallZipAcceptsRelativeIcon(t *testing.T) {
 		t.Fatalf("icons = %+v", info)
 	}
 }
+
+
+func TestInstallZipAcceptsSingleWrapperDirectory(t *testing.T) {
+	withTempDataDir(t)
+	zipPath := writePluginZip(t, map[string]string{
+		"wrapped/komari-plugin.json": `{"name":"Wrapped","short":"wrapped","version":"1.0.0","komari":">=0.0.1"}`,
+		"wrapped/script.js":          `function load() {}`,
+	})
+	info, err := InstallZip(zipPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if info.Short != "wrapped" {
+		t.Fatalf("short = %q, want wrapped", info.Short)
+	}
+	if _, err := os.Stat(filepath.Join(DataDir, "wrapped", "script.js")); err != nil {
+		t.Fatalf("wrapped entry not flattened into plugin root: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(DataDir, "wrapped", "wrapped")); !os.IsNotExist(err) {
+		t.Fatalf("unexpected wrapper directory remains: %v", err)
+	}
+}
+
+func TestInstallZipRejectsAmbiguousWrapperDirectories(t *testing.T) {
+	withTempDataDir(t)
+	zipPath := writePluginZip(t, map[string]string{
+		"first/komarix-plugin.json":  `{"name":"First","short":"first","version":"1.0.0"}`,
+		"first/script.js":            `function load() {}`,
+		"second/komari-plugin.json":  `{"name":"Second","short":"second","version":"1.0.0"}`,
+		"second/script.js":           `function load() {}`,
+	})
+	if _, err := InstallZip(zipPath); err == nil {
+		t.Fatal("expected ambiguous wrapper roots to be rejected")
+	}
+}
