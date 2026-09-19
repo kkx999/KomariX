@@ -88,6 +88,18 @@ func (a *App) registerReloadHandlers(cors *security.CorsController) {
 // BuildRouter constructs the normal application router and starts reloads.
 func (a *App) BuildRouter() error {
 	r := gin.New()
+	// Never trust forwarding headers from arbitrary internet clients. Local and
+	// container reverse proxies remain supported by default; public proxy/CDN
+	// ranges can still be terminated by a trusted local reverse proxy.
+	if err := r.SetTrustedProxies([]string{
+		"127.0.0.0/8",
+		"::1/128",
+		"10.0.0.0/8",
+		"172.16.0.0/12",
+		"192.168.0.0/16",
+	}); err != nil {
+		return fmt.Errorf("configure trusted proxies: %w", err)
+	}
 	r.Use(logger.GinLogger(), logger.GinRecovery())
 	cors := security.NewCorsController(a.settings.CorsOriginCheckEnabled, a.settings.CorsAllowedOrigins)
 	r.Use(cors.Middleware(), api.IdentityMiddleware(), api.PrivateSiteMiddleware(), noStoreAPIResponses())
