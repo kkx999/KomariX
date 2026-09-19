@@ -2,6 +2,22 @@
 
 这里记录 KomariX 正式版本的主要变化。完整构建产物与发布信息请查看 [GitHub Releases](https://github.com/kkx999/KomariX/releases)。
 
+## v1.0.7
+
+- 修复备份白名单中插件数据目录拼写错误，确保 `data/plugin-data/` 会进入备份；备份打包改为逐文件及时关闭句柄，避免大量文件时耗尽文件描述符。
+- 备份恢复改为 staging 验证 + 事务式替换：坏备份不会触碰在线数据，替换失败会从 pre-restore 快照回滚；成功后消费的 `backup.zip` 不会在下次启动被重复应用。
+- 主题与插件安装/更新改为 staging 校验后再替换旧版本；坏包、缺少入口文件或加载失败时保留原有可用版本。插件同时兼容 ZIP 根目录或唯一一级外层目录。
+- 主题更新强制校验目标 Short ID，临时文件改用安全随机文件；GitHub Release 更新只选择可识别的 ZIP 资产，不再盲取第一个附件。主题切换改为 POST。
+- 主题/插件市场安装同时校验 catalog 与包内 manifest 的 Short ID / Version；官方公网市场下载绑定 DNS 校验后的实际 IP，收口 DNS rebinding，管理员自定义市场仍兼容 HTTP 与内网源并显示风险提示。
+- 账号密码由旧固定盐 SHA-256 迁移到 bcrypt；旧账号无需重置密码，首次成功登录后自动升级哈希。
+- 新增登录防爆破：同一 IP 连续失败 10 次后临时封禁 15 分钟，并记录密码/2FA 失败与封禁安全日志；封禁期间日志按 IP 限频，避免被反向刷盘。
+- 新增审计日志保留策略与后台清理功能：支持 7/30/90/180 天或永久保留、最大日志条数保护、手动按策略清理和清空全部；后台按钮沿用现有设置卡片与响应式工具栏布局。
+- 对登录、RPC、WebSocket、敏感 2FA 与上传控制请求增加大小上限；分片上传会话按活跃时间刷新，并由后台任务自动清理超过 24 小时的残留。
+- Agent Linux/macOS/Windows 安装升级统一为“先下载校验、再替换”：使用正式 Release `SHA256SUMS` 验证二进制，下载/校验失败不触碰旧 Agent，启动失败自动恢复旧版本。
+- Windows Agent 固定并校验 NSSM 2.24-101-g897c7ad 安装包 SHA256；Linux Agent 在发布二进制失败时保持旧 service 不变，回滚临时文件使用安全随机路径。
+- 收紧 OAuth 临时 Cookie 与反代协议判断：Cookie 按实际 HTTPS 设置 Secure，默认只信任本机/私网反代转发头。
+- 新增备份恢复、插件数据备份、主题/插件失败回滚、bcrypt 迁移、防爆破、日志保留和上传 TTL 等回归测试，并在 CI 中同步校验 Agent 两份 Bash/PowerShell 安装脚本一致性及语法。
+
 ## v1.0.6
 
 - 收口正式 Release 与 Docker 发布链路：主题/插件市场 Release 不再触发 Panel/Agent 正式构建，也不会污染 `latest`；专用预构建发布避免与通用 Release 工作流重复执行。
