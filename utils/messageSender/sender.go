@@ -13,8 +13,14 @@ import (
 	"github.com/kkx999/KomariX/database/auditlog"
 	"github.com/kkx999/KomariX/database/clients"
 	"github.com/kkx999/KomariX/database/models"
+	messageevent "github.com/kkx999/KomariX/database/models/messageEvent"
 	"github.com/kkx999/KomariX/internal/config"
 	"github.com/kkx999/KomariX/utils/messageSender/factory"
+)
+
+const (
+	oldDefaultNotificationTemplate = "{{emoji}}{{emoji}}{{emoji}}\nEvent: {{event}}\nClients: {{client}}\nMessage: {{message}}\nTime: {{time}}"
+	defaultNotificationTemplateZH  = "{{emoji}}{{emoji}}{{emoji}}\n事件：{{event}}\n节点：{{client}}\n消息：{{message}}\n时间：{{time}}"
 )
 
 var (
@@ -22,6 +28,33 @@ var (
 	mu              = sync.Mutex{}
 	once            = sync.Once{}
 )
+
+func notificationEventTitle(event any) string {
+	switch fmt.Sprint(event) {
+	case messageevent.Offline:
+		return "节点离线"
+	case messageevent.Online:
+		return "节点上线"
+	case messageevent.Expire:
+		return "到期提醒"
+	case messageevent.Renew:
+		return "自动续费"
+	case messageevent.Login:
+		return "登录通知"
+	case messageevent.Alert:
+		return "负载告警"
+	case messageevent.Traffic:
+		return "流量告警"
+	case messageevent.DReport:
+		return "流量日报"
+	case messageevent.WReport:
+		return "流量周报"
+	case messageevent.MReport:
+		return "流量月报"
+	default:
+		return fmt.Sprint(event)
+	}
+}
 
 func CurrentProvider() factory.IMessageSender {
 	mu.Lock()
@@ -139,7 +172,7 @@ func SendEvent(event models.EventMessage) error {
 	var err error
 	cfg, err := config.GetMany(map[string]any{
 		config.NotificationEnabledKey:  false,
-		config.NotificationTemplateKey: "{{emoji}}{{emoji}}{{emoji}}\nEvent: {{event}}\nClients: {{client}}\nMessage: {{message}}\nTime: {{time}}",
+		config.NotificationTemplateKey: defaultNotificationTemplateZH,
 	})
 	if err != nil {
 		return err
@@ -164,11 +197,16 @@ func SendEvent(event models.EventMessage) error {
 
 	// 如果没有实现,使用模板格式化为文本消息
 	messageTemplate := cfg[config.NotificationTemplateKey].(string)
+	// 兼容已经保存到数据库中的旧版英文默认模板；仅替换默认模板，不覆盖用户自定义模板。
+	if strings.TrimSpace(messageTemplate) == strings.TrimSpace(oldDefaultNotificationTemplate) {
+		messageTemplate = defaultNotificationTemplateZH
+	}
 
 	messageTemplate = parseTemplate(messageTemplate, event)
+	eventTitle := notificationEventTitle(event.Event)
 
 	for i := 0; i < 3; i++ {
-		err = CurrentProvider().SendTextMessage(messageTemplate, fmt.Sprint(event.Event))
+		err = CurrentProvider().SendTextMessage(messageTemplate, eventTitle)
 		if err == nil || err.Error() == "short response: \x00\x00\x00\x1a\x00\x00\x00" { // QQ 会返回这个错误，但实际上消息是发送成功的
 			auditlog.Log("", "", "Event message sent: "+fmt.Sprint(event.Event), "info")
 			return nil
@@ -211,6 +249,9 @@ func formatTemplateField(fieldName string, v reflect.Value) string {
 	if v.Kind() == reflect.Interface {
 		if v.IsNil() {
 			return ""
+		}
+		if fieldName == "Event" {
+			return notificationEventTitle(v.Interface())
 		}
 		return fmt.Sprint(v.Interface())
 	}
