@@ -152,9 +152,13 @@ jobs:
           if grep -Eq 'disable-web-ssh|DisableWebSsh|disable_web_ssh|AGENT_DISABLE_WEB_SSH|show-warning|ShowWarning|AGENT_SHOW_WARNING' \
               components/komarix-agent/cmd/root.go \
               components/komarix-agent/cmd/flags/flag.go \
-              components/komarix-agent/readme.md \
-              components/komarix-web/src/components/admin/NodeTable/NodeFunction.tsx; then
-            echo "Obsolete remote-control option remains."
+              components/komarix-agent/readme.md; then
+            echo "Obsolete Agent remote-control option remains."
+            exit 1
+          fi
+          if grep -R -nE 'disable-web-ssh|disableWebSsh|/terminal\?uuid=|terminal\.title' \
+              components/komarix-web/src --include='*.ts' --include='*.tsx'; then
+            echo "Obsolete remote-control frontend UI remains."
             exit 1
           fi
           if grep -Eq 'MethodAgentFile|agent\.file|FileOperation|FileResult|handleFileOperation' \
@@ -166,10 +170,6 @@ jobs:
           if grep -Eq 'MethodAgentTaskResult|MethodAgentExec|MethodAgentTerminal|ExecParams|TerminalRequestParams|agent\.exec|agent\.terminal|agent\.taskResult' \
               protocol/v2/jsonrpc.go; then
             echo "Panel remote-command protocol residue remains."
-            exit 1
-          fi
-          if grep -Eq '/terminal\?uuid|<Terminal' components/komarix-web/src/components/admin/NodeTable/NodeFunction.tsx; then
-            echo "Obsolete terminal action remains."
             exit 1
           fi
           if grep -q '"@xterm/' components/komarix-web/package.json; then
