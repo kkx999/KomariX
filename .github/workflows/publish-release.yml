@@ -77,7 +77,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          bash -n install-komarix.sh components/komarix-agent/install.sh agent/install.sh
+          bash -n install-komarix.sh setup-reverse-proxy.sh setup-https.sh components/komarix-agent/install.sh agent/install.sh
           cmp components/komarix-agent/install.sh agent/install.sh
           cmp components/komarix-agent/install.ps1 agent/install.ps1
           pwsh -NoProfile -Command '
