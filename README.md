@@ -11,7 +11,7 @@
 [![版本](https://img.shields.io/github/v/release/kkx999/KomariX?label=版本&cacheSeconds=300)](https://github.com/kkx999/KomariX/releases/latest)
 [![许可证](https://img.shields.io/github/license/kkx999/KomariX?label=许可证)](./LICENSE)
 
-[**资源投稿**](https://komarix.666101.xyz/) · 为 KomariX 提交第三方主题或插件，审核通过后发布至官方市场。
+[**安装部署教程**](./docs/INSTALL.md) · [**资源投稿**](https://komarix.666101.xyz/)
 
 </div>
 
@@ -49,29 +49,11 @@ Web、Agent、默认 PurCarte 主题以及主题/插件市场均由 KomariX 独�
 - 多架构 Linux / Windows 构建
 - 自托管部署，监控数据由自己掌控
 
-## 快速安装
+## 安装与部署
 
-推荐使用 Debian / Ubuntu 等支持 systemd 的 Linux 系统，并使用 root 用户执行：
+完整安装、Nginx 反向代理、SSL 证书申请、HTTPS、备份恢复和卸载说明统一放在独立文档中：
 
-```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/kkx999/KomariX/main/install-komarix.sh)
-```
-
-安装脚本会自动识别系统架构，并提供稳定版与快照版选择。正式版本下载会校验 `SHA256SUMS`；升级会先下载并校验新二进制，若新版本启动失败则自动恢复升级前版本。
-
-默认面板端口：
-
-```text
-25774
-```
-
-安装完成后，在浏览器中访问：
-
-```text
-http://服务器IP:25774
-```
-
-首次打开后按照页面提示完成初始化即可。
+[**查看 KomariX 安装与部署教程 →**](./docs/INSTALL.md)
 
 ## 支持架构
 
