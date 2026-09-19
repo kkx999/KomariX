@@ -535,7 +535,14 @@
     "username": "用户名"
   },
   "logs": {
-    "title": "日志"
+    "title": "日志",
+    "cleanup": "清理过期日志",
+    "clear_all": "清空日志",
+    "clear_confirm": "将删除当前所有后台审计日志。此操作不会解除或影响正在生效的登录封禁状态。",
+    "cleanup_success": "日志清理完成，删除 {{count}} 条记录",
+    "clear_success": "日志已清空，删除 {{count}} 条记录",
+    "cleanup_failed": "日志清理失败",
+    "page_size": "每页"
   },
   "market": {
     "add_source": "添加源",
@@ -1334,6 +1341,19 @@
       "transparent_background": "透明背景",
       "transparent_hint": "仅在容器背景也透明时启用透明效果。",
       "transparent_theme_hint": "主题背景仍然不透明，请改用 rgba(...) 或 hsla(...)。"
+    },
+    "logs": {
+      "title": "日志管理",
+      "retention_title": "日志保留时间",
+      "retention_description": "自动删除超过保留时间的后台审计与安全日志。设为永久时仅受最大条数限制。",
+      "days_7": "7 天",
+      "days_30": "30 天",
+      "days_90": "90 天",
+      "days_180": "180 天",
+      "forever": "永久保留",
+      "max_rows_title": "日志最大条数",
+      "max_rows_description": "超过上限时自动删除最旧记录，防止异常请求长期占用数据库空间。",
+      "unlimited": "不限制"
     }
   },
   "status_settings": "状态显示设置",
