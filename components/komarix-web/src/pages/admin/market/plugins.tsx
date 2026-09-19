@@ -672,6 +672,16 @@ export default function PluginMarketPage() {
               }
               placeholder="https://raw.githubusercontent.com/owner/repo/main/v1.json"
             />
+            {sourceForm.url.trim().toLowerCase().startsWith("http://") && (
+              <Callout.Root color="amber" size="1">
+                <Callout.Icon>
+                  <AlertTriangle size={16} />
+                </Callout.Icon>
+                <Callout.Text>
+                  {t("market.http_source_warning", "HTTP source is unencrypted. Use it only for a trusted LAN or test market.")}
+                </Callout.Text>
+              </Callout.Root>
+            )}
             <Flex justify="between" align="center">
               <Flex align="center" gap="2">
                 <Switch
