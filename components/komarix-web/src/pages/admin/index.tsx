@@ -31,7 +31,6 @@ import {
   Plus,
   Radar,
   Settings,
-  Terminal,
   Trash2Icon,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -175,7 +174,6 @@ const EmptyNodesGuide = () => {
 };
 
 type AutoDiscoveryInstallOptions = {
-  disableWebSsh: boolean;
   disableAutoUpdate: boolean;
   ignoreUnsafeCert: boolean;
   memoryIncludeCache: boolean;
@@ -207,7 +205,6 @@ const AutoDiscoverySection = ({
   const [showOptions, setShowOptions] = React.useState(false);
   const [installOptions, setInstallOptions] =
     React.useState<AutoDiscoveryInstallOptions>({
-      disableWebSsh: false,
       disableAutoUpdate: false,
       ignoreUnsafeCert: false,
       memoryIncludeCache: false,
@@ -245,9 +242,6 @@ const AutoDiscoverySection = ({
       return `http://${settings.script_domain.replace(/\/+$/, "")}`;
     })();
     const args: string[] = ["-e", host, "--auto-discovery", adKey];
-    if (installOptions.disableWebSsh) {
-      args.push("--disable-web-ssh");
-    }
     if (installOptions.disableAutoUpdate) {
       args.push("--disable-auto-update");
     }
@@ -474,30 +468,8 @@ const AutoDiscoverySection = ({
 
       {showOptions && (
         <Flex direction="column" gap="2">
-          <div className="grid grid-cols-2 gap-2">
-            <Flex gap="2" align="center">
-              <Checkbox
-                checked={installOptions.disableWebSsh}
-                onCheckedChange={(checked) =>
-                  setInstallOptions((prev) => ({
-                    ...prev,
-                    disableWebSsh: Boolean(checked),
-                  }))
-                }
-              />
-              <label
-                className="text-sm font-normal cursor-pointer"
-                onClick={() =>
-                  setInstallOptions((prev) => ({
-                    ...prev,
-                    disableWebSsh: !prev.disableWebSsh,
-                  }))
-                }
-              >
-                {t("admin.nodeTable.disableWebSsh")}
-              </label>
-            </Flex>
-            <Flex gap="2" align="center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 items-start">
+            <Flex gap="2" align="center" className="min-h-6">
               <Checkbox
                 checked={installOptions.disableAutoUpdate}
                 onCheckedChange={(checked) =>
@@ -519,7 +491,7 @@ const AutoDiscoverySection = ({
                 {t("admin.nodeTable.disableAutoUpdate", "禁用自动更新")}
               </label>
             </Flex>
-            <Flex gap="2" align="center">
+            <Flex gap="2" align="center" className="min-h-6">
               <Checkbox
                 checked={installOptions.ignoreUnsafeCert}
                 onCheckedChange={(checked) =>
@@ -541,7 +513,7 @@ const AutoDiscoverySection = ({
                 {t("admin.nodeTable.ignoreUnsafeCert", "忽略不安全证书")}
               </label>
             </Flex>
-            <Flex gap="2" align="center">
+            <Flex gap="2" align="center" className="min-h-6">
               <Checkbox
                 checked={installOptions.memoryIncludeCache}
                 onCheckedChange={(checked) =>
@@ -566,7 +538,7 @@ const AutoDiscoverySection = ({
                 {t("admin.nodeTable.memoryModeAvailable_tip")}
               </Tips>
             </Flex>
-            <Flex gap="2" align="center">
+            <Flex gap="2" align="center" className="min-h-6">
               <Checkbox
                 checked={installOptions.getIpAddrFromNic}
                 onCheckedChange={(checked) =>
@@ -588,7 +560,7 @@ const AutoDiscoverySection = ({
                 {t("admin.nodeTable.getIpAddrFromNic", "从网卡获取 IP 地址")}
               </label>
             </Flex>
-            <Flex gap="2" align="center">
+            <Flex gap="2" align="center" className="min-h-6">
               <Checkbox
                 checked={installOptions.enableGpu}
                 onCheckedChange={(checked) =>
@@ -1334,15 +1306,6 @@ const ActionButtons = ({ node, settings }: { node: NodeDetail, settings: any }) 
   return (
     <div className="flex items-center gap-4">
       <GenerateCommandButton node={node} settings={settings} />
-      <IconButton
-        title={t("terminal.title")}
-        variant="ghost"
-        onClick={() => {
-          window.open(`/terminal?uuid=${node.uuid}`, "_blank");
-        }}
-      >
-        <Terminal size="18" />
-      </IconButton>
       <EditButton node={node} />
       <BillingButton node={node} />
       <DeleteButton node={node} />
@@ -1398,7 +1361,6 @@ function DeleteButton({ node }: { node: NodeDetail }) {
   );
 }
 type InstallOptions = {
-  disableWebSsh: boolean;
   disableAutoUpdate: boolean;
   ignoreUnsafeCert: boolean;
   memoryIncludeCache: boolean;
@@ -1417,7 +1379,6 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
   const [selectedPlatform, setSelectedPlatform] =
     React.useState<Platform>("linux");
   const [installOptions, setInstallOptions] = React.useState<InstallOptions>({
-    disableWebSsh: false,
     disableAutoUpdate: false,
     ignoreUnsafeCert: false,
     memoryIncludeCache: false,
@@ -1457,9 +1418,6 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
     const token = node.token || "";
     let args = ["-e", host, "-t", token];
     // 根据安装选项生成参数
-    if (installOptions.disableWebSsh) {
-      args.push("--disable-web-ssh");
-    }
     if (installOptions.disableAutoUpdate) {
       args.push("--disable-auto-update");
     }
@@ -1623,30 +1581,8 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
             <label className="text-base font-bold">
               {t("admin.nodeTable.installOptions", "安装选项")}
             </label>
-            <div className="grid grid-cols-2 gap-2">
-              <Flex gap="2" align="center">
-                <Checkbox
-                  checked={installOptions.disableWebSsh}
-                  onCheckedChange={(checked) => {
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      disableWebSsh: Boolean(checked),
-                    }));
-                  }}
-                />
-                <label
-                  className="text-sm font-normal"
-                  onClick={() => {
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      disableWebSsh: !prev.disableWebSsh,
-                    }));
-                  }}
-                >
-                  {t("admin.nodeTable.disableWebSsh")}
-                </label>
-              </Flex>
-              <Flex gap="2" align="center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 items-start">
+              <Flex gap="2" align="center" className="min-h-6">
                 <Checkbox
                   checked={installOptions.disableAutoUpdate}
                   onCheckedChange={(checked) => {
@@ -1668,7 +1604,7 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
                   {t("admin.nodeTable.disableAutoUpdate", "禁用自动更新")}
                 </label>
               </Flex>
-              <Flex gap="2" align="center">
+              <Flex gap="2" align="center" className="min-h-6">
                 <Checkbox
                   checked={installOptions.ignoreUnsafeCert}
                   onCheckedChange={(checked) => {
@@ -1690,7 +1626,7 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
                   {t("admin.nodeTable.ignoreUnsafeCert", "忽略不安全证书")}
                 </label>
               </Flex>
-              <Flex gap="2" align="center">
+              <Flex gap="2" align="center" className="min-h-6">
                 <Checkbox
                   checked={installOptions.memoryIncludeCache}
                   onCheckedChange={(checked) => {
@@ -1715,7 +1651,7 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
                   {t("admin.nodeTable.memoryModeAvailable_tip")}
                 </Tips>
               </Flex>
-              <Flex gap="2" align="center">
+              <Flex gap="2" align="center" className="min-h-6">
                 <Checkbox
                   checked={installOptions.getIpAddrFromNic}
                   onCheckedChange={(checked) => {
@@ -1737,7 +1673,7 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
                   {t("admin.nodeTable.getIpAddrFromNic", "从网卡获取 IP 地址")}
                 </label>
               </Flex>
-              <Flex gap="2" align="center">
+              <Flex gap="2" align="center" className="min-h-6">
                 <Checkbox
                   checked={installOptions.enableGpu}
                   onCheckedChange={(checked) => {
