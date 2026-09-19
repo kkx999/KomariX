@@ -224,3 +224,27 @@ func TestInstallZipRejectsAmbiguousWrapperDirectories(t *testing.T) {
 		t.Fatal("expected ambiguous wrapper roots to be rejected")
 	}
 }
+
+
+func TestInstallZipFailurePreservesExistingPlugin(t *testing.T) {
+	withTempDataDir(t)
+	oldDir := filepath.Join(DataDir, "demo")
+	if err := os.MkdirAll(oldDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	oldScript := filepath.Join(oldDir, "script.js")
+	if err := os.WriteFile(oldScript, []byte("old-plugin"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	zipPath := writePluginZip(t, map[string]string{
+		"komarix-plugin.json": `{"name":"Demo","short":"demo","version":"2.0.0"}`,
+	})
+	if _, err := InstallZip(zipPath); err == nil {
+		t.Fatal("plugin update without entry file was accepted")
+	}
+	got, err := os.ReadFile(oldScript)
+	if err != nil || string(got) != "old-plugin" {
+		t.Fatalf("existing plugin was damaged after failed update: data=%q err=%v", got, err)
+	}
+}
