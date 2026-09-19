@@ -115,7 +115,7 @@ func CheckAndAutoRenewal(client models.Client) {
 				Clients: []models.Client{client},
 				Time:    time.Now().UTC(),
 				Emoji:   "🔄",
-				Message: fmt.Sprintf("• %s until %s\n", client.Name, timeutil.FormatSystemDate(newExpireTime)),
+				Message: fmt.Sprintf("• %s 续费至 %s\n", client.Name, timeutil.FormatSystemDate(newExpireTime)),
 			})
 		}
 	}
