@@ -279,9 +279,9 @@ const ThemePage = () => {
   // 删除主题
   const deleteTheme = async (themeShort: string) => {
     try {
-      // 如果删除的是当前活跃主题，先切换到默认主题
+      // 如果删除的是当前活跃主题，先切换到默认公开主题 PurCarte
       if (themeShort === currentTheme) {
-        await setActiveTheme("default");
+        await setActiveTheme("PurCarte");
         await refetchSettings();
       }
 
