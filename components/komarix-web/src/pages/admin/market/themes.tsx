@@ -561,6 +561,14 @@ export default function ThemeMarketPage() {
           <Flex direction="column" gap="3">
             <TextField.Root value={sourceForm.name} onChange={(event) => setSourceForm((current) => ({ ...current, name: event.target.value }))} placeholder={t("market.source_name", "Source name")} />
             <TextField.Root value={sourceForm.url} onChange={(event) => setSourceForm((current) => ({ ...current, url: event.target.value }))} placeholder="https://raw.githubusercontent.com/owner/repo/main/v1.json" />
+            {sourceForm.url.trim().toLowerCase().startsWith("http://") && (
+              <Callout.Root color="amber" size="1">
+                <Callout.Icon><AlertTriangle size={16} /></Callout.Icon>
+                <Callout.Text>
+                  {t("market.http_source_warning", "HTTP source is unencrypted. Use it only for a trusted LAN or test market.")}
+                </Callout.Text>
+              </Callout.Root>
+            )}
             <Flex justify="between" align="center">
               <Flex align="center" gap="2"><Switch checked={sourceForm.enabled} onCheckedChange={(enabled) => setSourceForm((current) => ({ ...current, enabled }))} /><Text size="2">{t("market.enabled", "Enabled")}</Text></Flex>
               <Button onClick={saveSource} disabled={savingSource || !sourceForm.name.trim() || !sourceForm.url.trim()}>
