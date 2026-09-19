@@ -549,6 +549,7 @@
     "installed": "インストール済み",
     "installed_version": "インストール済み v{{version}}",
     "manage_sources": "ソースを管理",
+    "http_source_warning": "HTTP ソースは暗号化されません。信頼できる LAN またはテスト用マーケットでのみ使用してください。",
     "no_sources": "ソースが設定されていません",
     "no_themes": "テーマが見つかりません",
     "project_page": "プロジェクトページ",
