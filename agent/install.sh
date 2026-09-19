@@ -514,8 +514,13 @@ log_success "SHA256 verified for $file_name"
 
 old_binary_backup=""
 if [ -f "$komarix_agent_path" ]; then
-    old_binary_backup="${target_dir}/.agent.previous.$"
+    old_binary_backup=$(mktemp "${target_dir}/.agent.previous.XXXXXX") || {
+        log_error "Failed to create rollback backup file. Upgrade cancelled."
+        exit 1
+    }
     if ! cp -p "$komarix_agent_path" "$old_binary_backup"; then
+        rm -f "$old_binary_backup"
+        old_binary_backup=""
         log_error "Failed to back up the existing Agent. Upgrade cancelled."
         exit 1
     fi
