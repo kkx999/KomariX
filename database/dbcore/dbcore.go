@@ -89,6 +89,31 @@ func zipDirectoryExcluding(srcDir, dstZip string, exclude map[string]struct{}) e
 	return zw.Close()
 }
 
+func moveDirectoryContents(srcDir, dstDir string) error {
+	entries, err := os.ReadDir(srcDir)
+	if err != nil {
+		return err
+	}
+	if err := os.MkdirAll(dstDir, 0755); err != nil {
+		return err
+	}
+	for _, entry := range entries {
+		if entry.Name() == "backup" {
+			// Preserve the destination's local backup history.
+			continue
+		}
+		src := filepath.Join(srcDir, entry.Name())
+		dst := filepath.Join(dstDir, entry.Name())
+		if err := os.RemoveAll(dst); err != nil {
+			return err
+		}
+		if err := os.Rename(src, dst); err != nil {
+			return fmt.Errorf("move restored entry %q: %w", entry.Name(), err)
+		}
+	}
+	return nil
+}
+
 // removeAllInDirExcept 删除 dir 下除 exclude 指定绝对路径外的所有文件和文件夹
 func removeAllInDirExcept(dir string, exclude map[string]struct{}) error {
 	absDir, err := filepath.Abs(dir)
@@ -341,49 +366,66 @@ func Close() error {
 func doInitialize() error {
 	var err error
 
-	// 在数据库初始化前执行：如果存在 ./data/backup.zip，则进行恢复逻辑
+	// 在数据库初始化前执行：如果存在 ./data/backup.zip，则进行恢复逻辑。
+	// 恢复先完整解压到同文件系统的临时目录；只有验证成功后才替换在线数据。
 	func() {
 		backupZipPath := filepath.Join(".", "data", "backup.zip")
-		if _, statErr := os.Stat(backupZipPath); statErr == nil {
-			// 4. 将当前数据快照保存到 ./data/backup/，并保留已有归档。
-			backupDir := filepath.Join(".", "data", "backup")
-			if err := os.MkdirAll(backupDir, 0755); err != nil {
-				logger.Errorf("dbcore", "[restore] failed to create backup dir: %v", err)
-			} else {
-				tsName := time.Now().UTC().Format("20060102-150405")
-				bakPath := filepath.Join(backupDir, fmt.Sprintf("pre-restore-%s.zip", tsName))
-				if zipErr := zipDirectoryExcluding("./data", bakPath, map[string]struct{}{backupZipPath: {}, backupDir: {}}); zipErr != nil {
-					logger.Errorf("dbcore", "[restore] failed to zip current data: %v", zipErr)
-				} else {
-					logger.Infof("dbcore", "[restore] current data zipped to %s", bakPath)
-				}
-			}
-
-			// 5. 删除数据文件，但保留归档目录和待恢复的 backup.zip。
-			if delErr := removeAllInDirExcept("./data", map[string]struct{}{backupZipPath: {}, backupDir: {}}); delErr != nil {
-				logger.Errorf("dbcore", "[restore] failed to cleanup data dir: %v", delErr)
-			}
-
-			// 6. 解压 ./data/backup.zip 到 ./data
-			if unzipErr := unzipToDir(backupZipPath, "./data"); unzipErr != nil {
-				logger.Errorf("dbcore", "[restore] failed to unzip backup into data: %v", unzipErr)
-			} else {
-				logger.Infof("dbcore", "[restore] backup.zip extracted to ./data")
-			}
-
-			// 7. 删除 ./data/backup.zip
-			if rmErr := os.Remove(backupZipPath); rmErr != nil {
-				logger.Errorf("dbcore", "[restore] failed to remove backup.zip: %v", rmErr)
-			} else {
-				logger.Infof("dbcore", "[restore] backup.zip removed")
-			}
-			// 8. 删除标记
-			if rmErr := os.Remove("./data/komarix-backup-markup"); rmErr != nil {
-				logger.Errorf("dbcore", "[restore] failed to remove komarix-backup-markup: %v", rmErr)
-			} else {
-				logger.Infof("dbcore", "[restore] komarix-backup-markup removed")
-			}
+		if _, statErr := os.Stat(backupZipPath); statErr != nil {
+			return
 		}
+
+		stageDir, err := os.MkdirTemp(".", ".komarix-restore-stage-*")
+		if err != nil {
+			logger.Errorf("dbcore", "[restore] failed to create staging directory: %v", err)
+			return
+		}
+		defer os.RemoveAll(stageDir)
+
+		if err := unzipToDir(backupZipPath, stageDir); err != nil {
+			logger.Errorf("dbcore", "[restore] backup validation/extraction failed before touching live data: %v", err)
+			return
+		}
+		if _, err := os.Stat(filepath.Join(stageDir, "komarix-backup-markup")); err != nil {
+			logger.Errorf("dbcore", "[restore] staged backup is missing komarix-backup-markup; live data left unchanged")
+			return
+		}
+
+		backupDir := filepath.Join(".", "data", "backup")
+		if err := os.MkdirAll(backupDir, 0755); err != nil {
+			logger.Errorf("dbcore", "[restore] failed to create backup dir: %v", err)
+			return
+		}
+		tsName := time.Now().UTC().Format("20060102-150405")
+		bakPath := filepath.Join(backupDir, fmt.Sprintf("pre-restore-%s.zip", tsName))
+		if err := zipDirectoryExcluding("./data", bakPath, map[string]struct{}{backupZipPath: {}, backupDir: {}}); err != nil {
+			logger.Errorf("dbcore", "[restore] failed to snapshot live data; restore cancelled: %v", err)
+			return
+		}
+		logger.Infof("dbcore", "[restore] current data zipped to %s", bakPath)
+
+		if err := removeAllInDirExcept("./data", map[string]struct{}{backupZipPath: {}, backupDir: {}}); err != nil {
+			logger.Errorf("dbcore", "[restore] failed to prepare live data directory: %v", err)
+			return
+		}
+
+		if err := moveDirectoryContents(stageDir, "./data"); err != nil {
+			logger.Errorf("dbcore", "[restore] failed to publish restored data: %v; rolling back", err)
+			_ = removeAllInDirExcept("./data", map[string]struct{}{backupZipPath: {}, backupDir: {}})
+			if rollbackErr := unzipToDir(bakPath, "./data"); rollbackErr != nil {
+				logger.Errorf("dbcore", "[restore] CRITICAL: rollback from %s failed: %v", bakPath, rollbackErr)
+			} else {
+				logger.Infof("dbcore", "[restore] live data restored from %s after failed restore", bakPath)
+			}
+			return
+		}
+
+		_ = os.Remove(filepath.Join(".", "data", "komarix-backup-markup"))
+		consumedPath := filepath.Join(backupDir, fmt.Sprintf("restored-%s.zip", tsName))
+		if err := os.Rename(backupZipPath, consumedPath); err != nil {
+			logger.Errorf("dbcore", "[restore] restored successfully but failed to archive consumed backup: %v", err)
+			return
+		}
+		logger.Infof("dbcore", "[restore] backup applied successfully and archived to %s", consumedPath)
 	}()
 
 	// 记录“打开数据库之前”komarix.db 是否已存在，用于区分全新安装与旧版升级。
