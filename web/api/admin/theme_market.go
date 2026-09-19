@@ -348,7 +348,7 @@ func InstallThemeFromMarket(c *gin.Context) {
 		api.RespondError(c, http.StatusBadRequest, "Theme manifest does not match the market catalog")
 		return
 	}
-	installed, err := extractAndValidateTheme(tempPath)
+	installed, err := extractAndValidateTheme(tempPath, selected.Short)
 	if err != nil {
 		api.RespondError(c, http.StatusBadRequest, err.Error())
 		return
