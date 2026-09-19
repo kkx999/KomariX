@@ -37,6 +37,40 @@ export default function GeneralSettings() {
         {t("settings.general.auto_discovery")}
       </SettingCardLabel>
       <ApiCard settings={settings} />
+      <SettingCardLabel>{t("settings.logs.title")}</SettingCardLabel>
+      <SettingCardSelect
+        title={t("settings.logs.retention_title")}
+        description={t("settings.logs.retention_description")}
+        defaultValue={String(settings.audit_log_retention_days ?? 30)}
+        options={[
+          { value: "7", label: t("settings.logs.days_7") },
+          { value: "30", label: t("settings.logs.days_30") },
+          { value: "90", label: t("settings.logs.days_90") },
+          { value: "180", label: t("settings.logs.days_180") },
+          { value: "0", label: t("settings.logs.forever") },
+        ]}
+        OnSave={async (value) => {
+          await updateSettingsWithToast(
+            { audit_log_retention_days: Number(value) },
+            t,
+          );
+        }}
+      />
+      <SettingCardSelect
+        title={t("settings.logs.max_rows_title")}
+        description={t("settings.logs.max_rows_description")}
+        defaultValue={String(settings.audit_log_max_rows ?? 100000)}
+        options={[
+          { value: "10000", label: "10,000" },
+          { value: "50000", label: "50,000" },
+          { value: "100000", label: "100,000" },
+          { value: "250000", label: "250,000" },
+          { value: "0", label: t("settings.logs.unlimited") },
+        ]}
+        OnSave={async (value) => {
+          await updateSettingsWithToast({ audit_log_max_rows: Number(value) }, t);
+        }}
+      />
       <label className="text-xl font-bold">{t("settings.geoip.title")}</label>
       <SettingCardSwitch
         title={t("settings.geoip.enable_title")}
