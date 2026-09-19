@@ -99,6 +99,13 @@ func TestPeekThemeFromZipAcceptsLocalizedMetadata(t *testing.T) {
 	if err != nil {
 		t.Fatalf("write manifest: %v", err)
 	}
+	index, err := writer.Create("dist/index.html")
+	if err != nil {
+		t.Fatalf("create dist index: %v", err)
+	}
+	if _, err := index.Write([]byte("<html>localized</html>")); err != nil {
+		t.Fatalf("write dist index: %v", err)
+	}
 	if err := writer.Close(); err != nil {
 		t.Fatalf("close zip writer: %v", err)
 	}
