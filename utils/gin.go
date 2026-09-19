@@ -1,25 +1,43 @@
 package utils
 
-import "github.com/gin-gonic/gin"
+import (
+	"net"
+	"strings"
 
-// https://github.com/labstack/echo/blob/98ca08e7dd64075b858e758d6693bf9799340756/context.go#L275-L294
+	"github.com/gin-gonic/gin"
+)
+
+func trustedForwardingPeer(remoteAddr string) bool {
+	host, _, err := net.SplitHostPort(remoteAddr)
+	if err != nil {
+		host = remoteAddr
+	}
+	ip := net.ParseIP(strings.TrimSpace(host))
+	return ip != nil && (ip.IsLoopback() || ip.IsPrivate())
+}
+
+func forwardedHTTPS(c *gin.Context) bool {
+	if !trustedForwardingPeer(c.Request.RemoteAddr) {
+		return false
+	}
+	for _, header := range []string{"X-Forwarded-Proto", "X-Forwarded-Protocol", "X-Url-Scheme"} {
+		value := c.Request.Header.Get(header)
+		if value == "" {
+			continue
+		}
+		first := strings.TrimSpace(strings.Split(value, ",")[0])
+		return strings.EqualFold(first, "https")
+	}
+	return strings.EqualFold(strings.TrimSpace(c.Request.Header.Get("X-Forwarded-Ssl")), "on")
+}
+
+// GetScheme returns https for direct TLS requests or for forwarding headers
+// received from a trusted local/private reverse proxy. Forwarded headers from
+// arbitrary internet peers are ignored so they cannot downgrade cookie flags
+// or poison OAuth callback schemes.
 func GetScheme(c *gin.Context) string {
-	// Can't use `r.Request.URL.Scheme`
-	// See: https://groups.google.com/forum/#!topic/golang-nuts/pMUkBlQBDF0
-	if c.Request.TLS != nil {
+	if c.Request.TLS != nil || forwardedHTTPS(c) {
 		return "https"
-	}
-	if scheme := c.Request.Header.Get("X-Forwarded-Proto"); scheme != "" {
-		return scheme
-	}
-	if scheme := c.Request.Header.Get("X-Forwarded-Protocol"); scheme != "" {
-		return scheme
-	}
-	if ssl := c.Request.Header.Get("X-Forwarded-Ssl"); ssl == "on" {
-		return "https"
-	}
-	if scheme := c.Request.Header.Get("X-Url-Scheme"); scheme != "" {
-		return scheme
 	}
 	return "http"
 }
