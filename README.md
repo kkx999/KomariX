@@ -8,7 +8,7 @@
 
 实时监控服务器运行状态，在一个面板中查看 CPU、内存、磁盘、网络、负载、延迟与在线状态。
 
-[![版本](https://img.shields.io/github/v/release/kkx999/KomariX?label=版本)](https://github.com/kkx999/KomariX/releases)
+[![版本](https://img.shields.io/github/v/release/kkx999/KomariX?label=版本&cacheSeconds=300)](https://github.com/kkx999/KomariX/releases/latest)
 [![许可证](https://img.shields.io/github/license/kkx999/KomariX?label=许可证)](./LICENSE)
 
 [**资源投稿**](https://komarix.666101.xyz/) · 为 KomariX 提交第三方主题或插件，审核通过后发布至官方市场。
