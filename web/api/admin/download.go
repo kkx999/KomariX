@@ -67,17 +67,21 @@ func walkDirToZip(zipWriter *zip.Writer, contentDir string) error {
 		if err != nil {
 			return err
 		}
-		defer f.Close()
 		w, err := zipWriter.CreateHeader(&zip.FileHeader{
 			Name:     zipPath,
 			Method:   zip.Deflate,
 			Modified: info.ModTime(),
 		})
 		if err != nil {
+			_ = f.Close()
 			return err
 		}
-		_, err = io.Copy(w, f)
-		return err
+		_, copyErr := io.Copy(w, f)
+		closeErr := f.Close()
+		if copyErr != nil {
+			return copyErr
+		}
+		return closeErr
 	})
 }
 
