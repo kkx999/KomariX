@@ -556,6 +556,7 @@
     "installed": "Installed",
     "installed_version": "Installed v{{version}}",
     "manage_sources": "Manage sources",
+    "http_source_warning": "HTTP source is unencrypted. Use it only for a trusted LAN or test market.",
     "no_sources": "No sources configured",
     "no_themes": "No themes found",
     "project_page": "Project page",
