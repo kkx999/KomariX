@@ -1,8 +1,11 @@
 package admin
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/kkx999/KomariX/database/accounts"
+	"github.com/kkx999/KomariX/utils"
 	"github.com/kkx999/KomariX/web/api"
 )
 
@@ -17,7 +20,15 @@ func BindingExternalAccount(c *gin.Context) {
 		api.RespondError(c, 500, "No user found: "+err.Error())
 		return
 	}
-	c.SetCookie("binding_external_account", user.UUID, 3600, "/", "", false, true)
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     "binding_external_account",
+		Value:    user.UUID,
+		Path:     "/",
+		MaxAge:   3600,
+		Secure:   utils.GetScheme(c) == "https",
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+	})
 	c.Redirect(302, "/api/oauth")
 }
 
