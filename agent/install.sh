@@ -206,12 +206,7 @@ uninstall_previous() {
             rm -f "$user_plist"
         fi
     fi
-    
-    # Remove old binary if it exists
-    if [ -f "$komarix_agent_path" ]; then
-        log_info "Removing old binary..."
-        rm -f "$komarix_agent_path"
-    fi
+
 }
 
 install_dependencies() {
@@ -526,18 +521,21 @@ if [ -f "$komarix_agent_path" ]; then
     fi
 fi
 
-# Only tear down the previous service after the new binary is fully downloaded and verified.
-uninstall_previous
+# Publish the verified candidate before touching the current service definition.
+# On Unix, replacing a running executable is atomic: the existing process keeps
+# its old inode until it is stopped. If this rename fails, the old service and
+# binary are still completely untouched.
 if ! mv -f "$candidate_path" "$komarix_agent_path"; then
-    if [ -n "$old_binary_backup" ] && [ -f "$old_binary_backup" ]; then
-        cp -p "$old_binary_backup" "$komarix_agent_path" || true
-    fi
-    log_error "Failed to publish the verified Agent binary."
+    log_error "Failed to publish the verified Agent binary. Existing service was not changed."
     exit 1
 fi
 candidate_path=""
 
 chmod +x "$komarix_agent_path"
+
+# Only now stop/remove the previous service definition; the verified binary is
+# already in place and the old binary is available for rollback.
+uninstall_previous
 if [ "$EUID" -eq 0 ] && [ "$service_user" != "root" ]; then
     chown "$service_user" "$komarix_agent_path"
 fi
