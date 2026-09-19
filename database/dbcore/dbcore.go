@@ -392,12 +392,12 @@ func restoreBackupArchive(dataDir, backupZipPath string) error {
 		cleanupErr := removeAllInDirExcept(dataDir, map[string]struct{}{backupZipPath: {}, backupDir: {}})
 		rollbackErr := unzipToDir(preRestorePath, dataDir)
 		if rollbackErr != nil {
-			return fmt.Errorf("%v; rollback failed: %w", cause, rollbackErr)
+			return fmt.Errorf("%v; rollback failed: %w; manual recovery archive: %s", cause, rollbackErr, preRestorePath)
 		}
 		if cleanupErr != nil {
-			return fmt.Errorf("%v; live cleanup also reported: %v; previous data restored", cause, cleanupErr)
+			return fmt.Errorf("%v; rollback restored the snapshot but cleanup was incomplete (%v); verify live data and keep recovery archive %s", cause, cleanupErr, preRestorePath)
 		}
-		return fmt.Errorf("%v; previous data restored", cause)
+		return fmt.Errorf("%v; previous data restored from %s", cause, preRestorePath)
 	}
 
 	if err := removeAllInDirExcept(dataDir, map[string]struct{}{backupZipPath: {}, backupDir: {}}); err != nil {
