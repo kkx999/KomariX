@@ -35,9 +35,10 @@ const (
 )
 
 type loginFailureState struct {
-	Failures     int
-	LastFailure  time.Time
-	BlockedUntil time.Time
+	Failures       int
+	LastFailure    time.Time
+	BlockedUntil   time.Time
+	LastBlockedLog time.Time
 }
 
 var loginFailureTracker = struct {
@@ -70,6 +71,22 @@ func loginBlocked(ip string) (bool, time.Duration) {
 	return true, time.Until(state.BlockedUntil)
 }
 
+func shouldAuditBlockedAttempt(ip string) bool {
+	now := time.Now().UTC()
+	loginFailureTracker.Lock()
+	defer loginFailureTracker.Unlock()
+	state, ok := loginFailureTracker.entries[ip]
+	if !ok || state.BlockedUntil.IsZero() || !now.Before(state.BlockedUntil) {
+		return false
+	}
+	if !state.LastBlockedLog.IsZero() && now.Sub(state.LastBlockedLog) < time.Minute {
+		return false
+	}
+	state.LastBlockedLog = now
+	loginFailureTracker.entries[ip] = state
+	return true
+}
+
 func recordLoginFailure(ip string) (attempt int, blocked bool) {
 	now := time.Now().UTC()
 	loginFailureTracker.Lock()
@@ -79,12 +96,14 @@ func recordLoginFailure(ip string) (attempt int, blocked bool) {
 	if state.LastFailure.IsZero() || now.Sub(state.LastFailure) > loginFailureWindow || (!state.BlockedUntil.IsZero() && !now.Before(state.BlockedUntil)) {
 		state.Failures = 0
 		state.BlockedUntil = time.Time{}
+		state.LastBlockedLog = time.Time{}
 	}
 	state.Failures++
 	state.LastFailure = now
 	attempt = state.Failures
 	if state.Failures >= loginFailureLimit {
 		state.BlockedUntil = now.Add(loginBlockDuration)
+		state.LastBlockedLog = now
 		blocked = true
 	}
 	loginFailureTracker.entries[ip] = state
@@ -132,6 +151,9 @@ func Login(c *gin.Context) {
 
 	ip := c.ClientIP()
 	if blocked, remaining := loginBlocked(ip); blocked {
+		if shouldAuditBlockedAttempt(ip) {
+			auditlog.Log(ip, "", "blocked login attempt rejected during active brute-force ban", "security")
+		}
 		seconds := int(remaining.Seconds())
 		if seconds < 1 {
 			seconds = 1
