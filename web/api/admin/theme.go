@@ -217,7 +217,7 @@ func SetTheme(c *gin.Context) {
 }
 
 // extractAndValidateTheme 解压并验证主题
-func extractAndValidateTheme(zipPath string) (models.Theme, error) {
+func extractAndValidateTheme(zipPath string, expectedShort ...string) (models.Theme, error) {
 	var themeInfo models.Theme
 
 	// 打开ZIP文件
@@ -262,22 +262,26 @@ func extractAndValidateTheme(zipPath string) (models.Theme, error) {
 	if err := validateThemeManifest(themeInfo); err != nil {
 		return themeInfo, err
 	}
+	if len(expectedShort) > 0 && expectedShort[0] != "" && themeInfo.Short != expectedShort[0] {
+		return themeInfo, fmt.Errorf("主题包 Short ID 为 %s，与目标主题 %s 不一致", themeInfo.Short, expectedShort[0])
+	}
 
-	// 创建主题目录
-	themeDir := filepath.Join("./data/theme", themeInfo.Short)
-
-	// 如果目录已存在，先删除
-	if _, err := os.Stat(themeDir); err == nil {
-		if err := os.RemoveAll(themeDir); err != nil {
-			return themeInfo, fmt.Errorf("删除原有主题失败: %v", err)
+	themeRoot := filepath.Join(".", "data", "theme")
+	if err := os.MkdirAll(themeRoot, 0755); err != nil {
+		return themeInfo, fmt.Errorf("创建主题根目录失败: %v", err)
+	}
+	stageDir, err := os.MkdirTemp(themeRoot, "."+themeInfo.Short+"-install-*")
+	if err != nil {
+		return themeInfo, fmt.Errorf("创建主题 staging 目录失败: %v", err)
+	}
+	stagePublished := false
+	defer func() {
+		if !stagePublished {
+			_ = os.RemoveAll(stageDir)
 		}
-	}
+	}()
 
-	if err := os.MkdirAll(themeDir, 0755); err != nil {
-		return themeInfo, fmt.Errorf("创建主题目录失败: %v", err)
-	}
-
-	// 解压文件到主题目录。兼容唯一一级外层目录，并在安装时自动剥掉该层。
+	// 解压到 staging 目录。兼容唯一一级外层目录，并在安装时自动剥掉该层。
 	for _, f := range r.File {
 		entryName := filepath.ToSlash(f.Name)
 		if archiveRoot != "" {
@@ -289,10 +293,10 @@ func extractAndValidateTheme(zipPath string) (models.Theme, error) {
 				continue
 			}
 		}
-		path := filepath.Join(themeDir, filepath.FromSlash(entryName))
+		path := filepath.Join(stageDir, filepath.FromSlash(entryName))
 
 		// 安全检查，防止路径遍历攻击
-		if path != filepath.Clean(themeDir) && !strings.HasPrefix(path, filepath.Clean(themeDir)+string(os.PathSeparator)) {
+		if path != filepath.Clean(stageDir) && !strings.HasPrefix(path, filepath.Clean(stageDir)+string(os.PathSeparator)) {
 			return themeInfo, fmt.Errorf("主题 ZIP 包含不安全路径: %s", f.Name)
 		}
 
@@ -330,13 +334,38 @@ func extractAndValidateTheme(zipPath string) (models.Theme, error) {
 	}
 
 	if filepath.Base(filepath.ToSlash(themeConfigFile.Name)) == legacyThemeManifestFile {
-		legacyPath := filepath.Join(themeDir, legacyThemeManifestFile)
-		primaryPath := filepath.Join(themeDir, themeManifestFile)
+		legacyPath := filepath.Join(stageDir, legacyThemeManifestFile)
+		primaryPath := filepath.Join(stageDir, themeManifestFile)
 		if err := os.Rename(legacyPath, primaryPath); err != nil {
 			return themeInfo, fmt.Errorf("迁移主题配置文件失败: %v", err)
 		}
 	}
+	if _, err := os.Stat(filepath.Join(stageDir, "dist", "index.html")); err != nil {
+		return themeInfo, fmt.Errorf("主题 ZIP 缺少 dist/index.html")
+	}
 
+	themeDir := filepath.Join(themeRoot, themeInfo.Short)
+	rollbackDir := stageDir + ".rollback"
+	_ = os.RemoveAll(rollbackDir)
+	hadOld := false
+	if _, err := os.Stat(themeDir); err == nil {
+		if err := os.Rename(themeDir, rollbackDir); err != nil {
+			return themeInfo, fmt.Errorf("保留旧主题失败: %v", err)
+		}
+		hadOld = true
+	} else if !os.IsNotExist(err) {
+		return themeInfo, fmt.Errorf("检查旧主题失败: %v", err)
+	}
+	if err := os.Rename(stageDir, themeDir); err != nil {
+		if hadOld {
+			_ = os.Rename(rollbackDir, themeDir)
+		}
+		return themeInfo, fmt.Errorf("发布新主题失败: %v", err)
+	}
+	stagePublished = true
+	if hadOld {
+		_ = os.RemoveAll(rollbackDir)
+	}
 	return themeInfo, nil
 }
 
@@ -693,16 +722,27 @@ func UpdateTheme(c *gin.Context) {
 	// 3. 用户提供的新URL下载
 	// 4. 用户提供的GitHub仓库信息，获取最新release下载
 
-	// 临时文件名
-	tempFile := filepath.Join(os.TempDir(), "downloaded_theme.zip")
-	if err := os.WriteFile(tempFile, themeData, 0644); err != nil {
+	tempHandle, err := os.CreateTemp("", "komarix-theme-update-*.zip")
+	if err != nil {
+		api.RespondError(c, http.StatusInternalServerError, "创建临时文件失败: "+err.Error())
+		return
+	}
+	tempFile := tempHandle.Name()
+	if _, err := tempHandle.Write(themeData); err != nil {
+		_ = tempHandle.Close()
+		_ = os.Remove(tempFile)
 		api.RespondError(c, http.StatusInternalServerError, "保存文件失败: "+err.Error())
+		return
+	}
+	if err := tempHandle.Close(); err != nil {
+		_ = os.Remove(tempFile)
+		api.RespondError(c, http.StatusInternalServerError, "关闭临时文件失败: "+err.Error())
 		return
 	}
 	defer os.Remove(tempFile)
 
-	// 解压ZIP文件并验证
-	updatedThemeInfo, err := extractAndValidateTheme(tempFile)
+	// 解压 ZIP 并验证，且必须与当前要更新的主题 Short ID 一致。
+	updatedThemeInfo, err := extractAndValidateTheme(tempFile, req.Short)
 	if err != nil {
 		api.RespondError(c, http.StatusBadRequest, err.Error())
 		return
