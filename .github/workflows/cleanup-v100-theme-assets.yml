@@ -1,0 +1,87 @@
+name: Cleanup v1.0.0 theme mirror assets
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/cleanup-v1.0.0-theme-assets.trigger"
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete only legacy theme mirror assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          release_id="$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/v1.0.0" --jq '.id')"
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/releases/${release_id}/assets?per_page=100" > /tmp/assets-pages.json
+
+          python3 - <<'PY' > /tmp/targets.tsv
+          import json
+          from pathlib import Path
+
+          raw = Path("/tmp/assets-pages.json").read_text()
+          decoder = json.JSONDecoder()
+          i = 0
+          assets = []
+          while i < len(raw):
+              while i < len(raw) and raw[i].isspace():
+                  i += 1
+              if i >= len(raw):
+                  break
+              page, end = decoder.raw_decode(raw, i)
+              assets.extend(page)
+              i = end
+
+          targets = [a for a in assets if a["name"].startswith("theme-") or a["name"].startswith("preview-")]
+          protected = [a for a in assets if a not in targets]
+
+          if len(targets) != 98:
+              raise SystemExit(f"Safety stop: expected exactly 98 legacy theme assets, found {len(targets)}")
+
+          Path("/tmp/protected-count").write_text(str(len(protected)))
+          for asset in targets:
+              print(f'{asset["id"]}\t{asset["name"]}')
+          PY
+
+          echo "Deleting exactly 98 legacy theme mirror assets..."
+          while IFS=$'\t' read -r asset_id asset_name; do
+            echo "DELETE ${asset_name}"
+            gh api --method DELETE "repos/${GITHUB_REPOSITORY}/releases/assets/${asset_id}"
+          done < /tmp/targets.tsv
+
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/releases/${release_id}/assets?per_page=100" > /tmp/assets-after.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          raw = Path("/tmp/assets-after.json").read_text()
+          decoder = json.JSONDecoder()
+          i = 0
+          assets = []
+          while i < len(raw):
+              while i < len(raw) and raw[i].isspace():
+                  i += 1
+              if i >= len(raw):
+                  break
+              page, end = decoder.raw_decode(raw, i)
+              assets.extend(page)
+              i = end
+
+          remaining = [a["name"] for a in assets if a["name"].startswith("theme-") or a["name"].startswith("preview-")]
+          expected_protected = int(Path("/tmp/protected-count").read_text())
+
+          if remaining:
+              raise SystemExit(f"Cleanup incomplete; remaining legacy assets: {remaining}")
+          if len(assets) != expected_protected:
+              raise SystemExit(f"Safety check failed: expected {expected_protected} protected assets, found {len(assets)}")
+
+          print(f"Cleanup complete. Preserved {len(assets)} non-theme v1.0.0 assets.")
+          PY
