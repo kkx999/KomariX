@@ -41,8 +41,25 @@ jobs:
           go-version-file: go.mod
           cache: false
 
-      - name: Validate installer syntax
-        run: bash -n install-komarix.sh components/komarix-agent/install.sh
+      - name: Validate installer syntax and mirrored copies
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n install-komarix.sh components/komarix-agent/install.sh agent/install.sh
+          cmp components/komarix-agent/install.sh agent/install.sh
+          cmp components/komarix-agent/install.ps1 agent/install.ps1
+          pwsh -NoProfile -Command '
+            $files = @("components/komarix-agent/install.ps1", "agent/install.ps1")
+            foreach ($file in $files) {
+              $tokens = $null
+              $errors = $null
+              [System.Management.Automation.Language.Parser]::ParseFile($file, [ref]$tokens, [ref]$errors) | Out-Null
+              if ($errors.Count -gt 0) {
+                $errors | ForEach-Object { Write-Error $_.Message }
+                exit 1
+              }
+            }
+          '
 
       - name: Verify Panel modules and run tests
         shell: bash
