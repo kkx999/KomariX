@@ -535,7 +535,14 @@
     "username": "Username"
   },
   "logs": {
-    "title": "Logs"
+    "title": "Logs",
+    "cleanup": "Clean expired logs",
+    "clear_all": "Clear logs",
+    "clear_confirm": "Delete all current audit logs. This does not remove or change active login blocks.",
+    "cleanup_success": "Log cleanup completed; {{count}} entries deleted",
+    "clear_success": "Logs cleared; {{count}} entries deleted",
+    "cleanup_failed": "Log cleanup failed",
+    "page_size": "Per page"
   },
   "market": {
     "add_source": "Add source",
@@ -1334,6 +1341,19 @@
       "transparent_background": "Transparent Background",
       "transparent_hint": "Enable transparency only if the container background is also transparent.",
       "transparent_theme_hint": "Theme background is still opaque. Use rgba(...) or hsla(...)."
+    },
+    "logs": {
+      "title": "Log Management",
+      "retention_title": "Log retention",
+      "retention_description": "Automatically remove old audit and security logs. Forever keeps them until the row limit is reached.",
+      "days_7": "7 days",
+      "days_30": "30 days",
+      "days_90": "90 days",
+      "days_180": "180 days",
+      "forever": "Keep forever",
+      "max_rows_title": "Maximum log rows",
+      "max_rows_description": "Delete the oldest records when the limit is exceeded to prevent unbounded database growth.",
+      "unlimited": "Unlimited"
     }
   },
   "status_settings": "Status Settings",
