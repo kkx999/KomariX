@@ -128,3 +128,52 @@ func TestStaticRestrictedDoesNotServeCustomAssetOverride(t *testing.T) {
 		t.Fatal("restricted index still registers a service worker")
 	}
 }
+
+
+func TestStaticMissingThemeAssetReturns404(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	t.Chdir(t.TempDir())
+
+	themeDist := filepath.Join("data", "theme", "custom", "dist")
+	if err := os.MkdirAll(themeDist, 0o755); err != nil {
+		t.Fatalf("create custom theme dist directory: %v", err)
+	}
+	const indexHTML = "<html><body>custom theme index</body></html>"
+	if err := os.WriteFile(filepath.Join(themeDist, "index.html"), []byte(indexHTML), 0o644); err != nil {
+		t.Fatalf("write custom theme index: %v", err)
+	}
+
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("open config db: %v", err)
+	}
+	config.SetDb(db)
+	if err := config.Set(config.ThemeKey, "custom"); err != nil {
+		t.Fatalf("set custom theme: %v", err)
+	}
+
+	router := gin.New()
+	Static(router.Group("/"), func(handlers ...gin.HandlerFunc) {
+		router.NoRoute(handlers...)
+	})
+
+	missingAsset := httptest.NewRequest("GET", "/assets/missing-theme-chunk.js", nil)
+	missingAssetRecorder := httptest.NewRecorder()
+	router.ServeHTTP(missingAssetRecorder, missingAsset)
+	if missingAssetRecorder.Code != 404 {
+		t.Fatalf("missing theme asset status = %d, want 404", missingAssetRecorder.Code)
+	}
+	if strings.Contains(missingAssetRecorder.Body.String(), "custom theme index") {
+		t.Fatal("missing theme asset incorrectly fell back to the SPA index")
+	}
+
+	spaRoute := httptest.NewRequest("GET", "/instance/test-node", nil)
+	spaRouteRecorder := httptest.NewRecorder()
+	router.ServeHTTP(spaRouteRecorder, spaRoute)
+	if spaRouteRecorder.Code != 200 {
+		t.Fatalf("SPA route status = %d, want 200", spaRouteRecorder.Code)
+	}
+	if !strings.Contains(spaRouteRecorder.Body.String(), "custom theme index") {
+		t.Fatal("SPA route did not fall back to the custom theme index")
+	}
+}
