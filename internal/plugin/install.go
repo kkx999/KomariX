@@ -63,6 +63,47 @@ func findPluginManifest(files []*zip.File) (*zip.File, string, error) {
 	return nil, "", nil
 }
 
+// InspectZip validates a plugin archive and returns its manifest without changing installed plugins.
+func InspectZip(zipPath string) (models.Plugin, error) {
+	var info models.Plugin
+	r, err := zip.OpenReader(zipPath)
+	if err != nil {
+		return info, fmt.Errorf("failed to open ZIP file: %v", err)
+	}
+	defer r.Close()
+	if err := validatePluginArchive(r.File); err != nil {
+		return info, err
+	}
+	manifest, _, err := findPluginManifest(r.File)
+	if err != nil {
+		return info, err
+	}
+	if manifest == nil {
+		return info, fmt.Errorf("plugin manifest %s / %s not found, not a valid plugin package", manifestFile, legacyManifestFile)
+	}
+	rc, err := manifest.Open()
+	if err != nil {
+		return info, fmt.Errorf("failed to read plugin manifest: %v", err)
+	}
+	configData, readErr := io.ReadAll(io.LimitReader(rc, maxPluginManifestSize+1))
+	_ = rc.Close()
+	if readErr != nil {
+		return info, fmt.Errorf("failed to read plugin manifest: %v", readErr)
+	}
+	if len(configData) > maxPluginManifestSize {
+		return info, fmt.Errorf("plugin manifest exceeds the %d byte limit", maxPluginManifestSize)
+	}
+	if err := json.Unmarshal(configData, &info); err != nil {
+		return info, fmt.Errorf("invalid plugin manifest: %v", err)
+	}
+	if err := validateManifest(&info); err != nil {
+		return info, err
+	}
+	if err := CheckKomariXVersion(info.KomariX); err != nil {
+		return info, err
+	}
+	return info, nil
+}
 // InstallZip validates a plugin ZIP and extracts it into DataDir/<short>.
 // The archive uses komarix-plugin.json; third-party legacy packages are also accepted. Archive limits
 // mirror the theme package format; path-traversal entries reject the whole
