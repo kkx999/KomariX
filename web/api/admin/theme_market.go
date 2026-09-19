@@ -27,7 +27,7 @@ const (
 	defaultThemeMarketURL = "https://raw.githubusercontent.com/kkx999/KomariX/main/market/theme-v1.json"
 	marketCatalogMaxSize  = 2 << 20
 	marketPackageMaxSize  = 100 << 20
-	marketCacheTTL        = 10 * time.Minute
+	marketCacheTTL        = 20 * time.Second
 )
 
 type ThemeMarketSource struct {
