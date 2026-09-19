@@ -23,7 +23,7 @@ KomariX 是一个面向个人用户和小型服务器集群的自托管监控面
 
 它通过轻量级 Agent 采集服务器运行数据，并在 Web 面板中进行实时展示。你可以用一套面板集中查看多台服务器的在线状态、资源占用、网络流量和历史数据，也可以使用通知、主题和插件等扩展功能。
 
-Web、Agent、默认 PurCarte 主题以及主题/插件市场均由 KomariX 独立维护。KomariX 保持对旧 Komari 数据、主题与插件格式的兼容，并提供从 Komari 迁移到 KomariX 的持续适配；项目聚焦服务器监控，不提供 Web 终端、任意远程命令执行或远程文件管理能力。
+Web、Agent、默认 PurCarte 主题以及主题/插件市场均由 KomariX 独立维护。KomariX 保持对旧 Komari 数据、主题与插件格式的兼容，并提供从 Komari 迁移到 KomariX 的持续适配。为降低远程控制攻击面，KomariX 已移除 Web 终端、任意远程命令执行和远程文件管理能力，专注于服务器监控。
 
 ## 主要功能
 
@@ -41,6 +41,7 @@ Web、Agent、默认 PurCarte 主题以及主题/插件市场均由 KomariX 独�
 - 支持从 Komari 迁移数据并持续处理兼容项
 - 数据备份与恢复（恢复前验证、失败自动回滚）
 - 管理后台登录防爆破与可配置审计日志保留/清理
+- 移除 Web 终端、任意远程命令执行与远程文件管理，降低远程控制攻击面
 - Panel / Agent 正式版下载校验 SHA256，升级失败保留或恢复旧版本
 - 多架构 Linux / Windows 构建
 - 自托管部署，监控数据由自己掌控
@@ -105,6 +106,16 @@ systemctl stop komari-agent 2>/dev/null || true; systemctl disable komari-agent 
 随后执行该节点在 KomariX 后台生成的一键安装命令，即可安装并启动 `komarix-agent`。
 
 > **不要删除 KomariX 后台中的原有节点再重新创建。** 继续使用迁移后的原节点，可以保留节点身份以及已有历史监控数据。上面的清理命令只删除旧 Komari Agent 服务与 `/opt/komari/agent`，不会删除整个 `/opt/komari` 目录。
+
+## Agent 卸载
+
+默认 Linux / systemd 安装可使用：
+
+```bash
+systemctl stop komarix-agent 2>/dev/null || true; systemctl disable komarix-agent 2>/dev/null || true; rm -f /etc/systemd/system/komarix-agent.service; systemctl daemon-reload; systemctl reset-failed komarix-agent 2>/dev/null || true; rm -rf /opt/komarix-agent; echo "KomariX Agent 已卸载"
+```
+
+仅卸载被监控机上的 KomariX Agent，不会删除面板中的节点和历史监控数据。
 
 ## 数据与目录
 
