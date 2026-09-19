@@ -15,6 +15,11 @@ import (
 	"github.com/kkx999/KomariX/web/api"
 )
 
+const (
+	maxRPCRequestBytes          int64 = 4 << 20
+	maxRPCWebSocketMessageBytes int64 = 4 << 20
+)
+
 // OnRpcRequest 是 /api/rpc2 的统一入口：GET 升级为 WebSocket，POST 处理单条/批量 JSON-RPC。
 func OnRpcRequest(c *gin.Context) {
 	// GET -> WebSocket
@@ -95,6 +100,7 @@ func serveWebSocket(c *gin.Context) {
 		return
 	}
 	defer conn.Close()
+	conn.SetReadLimit(maxRPCWebSocketMessageBytes)
 
 	meta := buildContextMeta(c)
 	for {
@@ -119,6 +125,7 @@ func serveWebSocket(c *gin.Context) {
 }
 
 func servePost(c *gin.Context) {
+	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, maxRPCRequestBytes)
 	body, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, rpc.ErrorResponse(nil, rpc.ParseError, "read body error", err.Error()))
