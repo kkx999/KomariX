@@ -462,7 +462,7 @@ cleanup_downloads() {
     [ -n "${candidate_path:-}" ] && rm -f "$candidate_path"
     [ -n "${checksum_path:-}" ] && rm -f "$checksum_path"
 }
-trap cleanup_downloads EXIT INT TERM
+trap cleanup_downloads 0 1 2 15
 
 checksum_direct_url="https://github.com/kkx999/KomariX/releases/download/${version_to_install}/SHA256SUMS"
 checksum_urls="$checksum_direct_url"
@@ -961,7 +961,7 @@ fi
 if [ -n "$old_binary_backup" ]; then
     rm -f "$old_binary_backup"
 fi
-trap - EXIT INT TERM
+trap - 0 1 2 15
 cleanup_downloads
 
 echo ""
