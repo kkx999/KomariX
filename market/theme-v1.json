@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "updated_at": "2026-09-19T13:15:51.668Z",
+  "updated_at": "2026-09-19T13:16:08.060Z",
   "themes": [
     {
       "name": {
@@ -129,21 +129,6 @@
       "upstream_download": "https://github.com/vaspike/junimo/releases/download/v2.0.2/junimo-v2.0.2.zip",
       "upstream_preview": "https://nyx.rivermao.com/img/nomal/a4f393.png",
       "preview_sha256": "92fa50d690b7590b9f64cfaaf022167ac2b2bbdcd82a4ea0af0ef6adb0f7118b",
-      "komarix_branding": true
-    },
-    {
-      "name": "KomariX 1999",
-      "short": "komari-1999",
-      "description": "Neo-Brutalism themed dashboard for KomariX Monitor",
-      "version": "1.0.1",
-      "author": "ricebucket",
-      "url": "https://github.com/r1cebucket/komari-theme-1999",
-      "preview": "https://github.com/kkx999/KomariX/releases/download/v1.0.0/preview-17-komari-1999-1.0.1-dde64d1c2173.png",
-      "download": "https://github.com/kkx999/KomariX/releases/download/v1.0.0/theme-17-komari-1999-1.0.1-fbff61e9ce0a.zip",
-      "sha256": "fbff61e9ce0a164d66fa50f4b8a8784fdb9906290b9ee7444de81f6f57897c79",
-      "upstream_download": "https://github.com/r1cebucket/komari-theme-1999/releases/download/v1.0.1/komari-theme-1999-adbf54b98b49f6162b207cc3aaf8df5909ae61b1.zip",
-      "upstream_preview": "https://github.com/r1cebucket/komari-theme-1999/raw/main/static/cover-image.png",
-      "preview_sha256": "dde64d1c2173640ca0d71997f107fd73ebb8577182609f7406c017f41e8e6715",
       "komarix_branding": true
     },
     {
