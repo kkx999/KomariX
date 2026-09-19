@@ -584,10 +584,11 @@ const AutoDiscoverySection = ({
             </Flex>
           </div>
 
-          <Flex direction="column" gap="2">
-            <Flex gap="2" align="center">
-              <Checkbox
-                checked={enableGhproxy}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 items-start">
+            <Flex direction="column" gap="2">
+              <Flex gap="2" align="center">
+                <Checkbox
+                  checked={enableGhproxy}
                 onCheckedChange={(checked) => {
                   setEnableGhproxy(Boolean(checked));
                   if (!checked) {
@@ -730,10 +731,11 @@ const AutoDiscoverySection = ({
                 }
               />
             )}
-
-            <Flex gap="2" align="center">
-              <Checkbox
-                checked={enableExcludeNics}
+            </Flex>
+            <Flex direction="column" gap="2">
+              <Flex gap="2" align="center">
+                <Checkbox
+                  checked={enableExcludeNics}
                 onCheckedChange={(checked) => {
                   setEnableExcludeNics(Boolean(checked));
                   if (!checked) {
@@ -906,7 +908,8 @@ const AutoDiscoverySection = ({
                 }
               />
             )}
-          </Flex>
+            </Flex>
+          </div>
         </Flex>
       )}
 
@@ -1695,10 +1698,11 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
                 </label>
               </Flex>
             </div>
-            <Flex direction="column" gap="2">
-              <Flex gap="2" align="center">
-                <Checkbox
-                  checked={enableGhproxy}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 items-start">
+              <Flex direction="column" gap="2">
+                <Flex gap="2" align="center">
+                  <Checkbox
+                    checked={enableGhproxy}
                   onCheckedChange={(checked) => {
                     setEnableGhproxy(Boolean(checked));
                     if (!checked) {
@@ -1872,9 +1876,11 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
                   }
                 />
               )}
-              <Flex gap="2" align="center">
-                <Checkbox
-                  checked={enableExcludeNics}
+              </Flex>
+              <Flex direction="column" gap="2">
+                <Flex gap="2" align="center">
+                  <Checkbox
+                    checked={enableExcludeNics}
                   onCheckedChange={(checked) => {
                     setEnableExcludeNics(Boolean(checked));
                     if (!checked) {
@@ -2070,7 +2076,8 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
                   }
                 />
               )}
-            </Flex>
+              </Flex>
+            </div>
           </Flex>
           <Flex direction="column" gap="2">
             <label className="text-base font-bold">
