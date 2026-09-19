@@ -549,6 +549,7 @@
     "installed": "已安裝",
     "installed_version": "已安裝 v{{version}}",
     "manage_sources": "管理來源",
+    "http_source_warning": "HTTP 來源未加密，僅建議用於可信任的內網或測試市場。",
     "no_sources": "尚未設定來源",
     "no_themes": "找不到主題",
     "project_page": "專案首頁",
