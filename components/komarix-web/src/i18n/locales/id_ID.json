@@ -549,6 +549,7 @@
     "installed": "Terinstal",
     "installed_version": "Terinstal v{{version}}",
     "manage_sources": "Kelola sumber",
+    "http_source_warning": "Sumber HTTP tidak terenkripsi. Gunakan hanya untuk LAN tepercaya atau pasar pengujian。",
     "no_sources": "Belum ada sumber yang dikonfigurasi",
     "no_themes": "Tema tidak ditemukan",
     "project_page": "Halaman proyek",
