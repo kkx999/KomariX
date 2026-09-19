@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/kkx999/KomariX/database/dbcore"
@@ -186,7 +187,17 @@ func DeleteTheme(c *gin.Context) {
 
 // SetTheme 设置主题
 func SetTheme(c *gin.Context) {
-	themeName := c.Query("theme")
+	themeName := strings.TrimSpace(c.Query("theme"))
+	if themeName == "" {
+		var req struct {
+			Theme string `json:"theme"`
+		}
+		if err := c.ShouldBindJSON(&req); err != nil {
+			api.RespondError(c, http.StatusBadRequest, "主题名称不能为空")
+			return
+		}
+		themeName = strings.TrimSpace(req.Theme)
+	}
 	if themeName == "" {
 		api.RespondError(c, http.StatusBadRequest, "主题名称不能为空")
 		return
@@ -488,42 +499,42 @@ func getGitHubReleaseDownloadURL(owner, repo string) (string, error) {
 		return "", errors.New("GitHub仓库所有者和仓库名称不能为空")
 	}
 
-	// 构建GitHub API URL
-	// 使用GitHub API获取最新release信息
-	apiURL := fmt.Sprintf("https://api.github.com/repos/%s/%s/releases/latest", owner, repo)
-
-	// 发送HTTP GET请求
-	resp, err := http.Get(apiURL)
+	apiURL := fmt.Sprintf("https://api.github.com/repos/%s/%s/releases/latest", url.PathEscape(owner), url.PathEscape(repo))
+	client := &http.Client{Timeout: 15 * time.Second}
+	req, err := http.NewRequest(http.MethodGet, apiURL, nil)
+	if err != nil {
+		return "", fmt.Errorf("创建 GitHub release 请求失败: %v", err)
+	}
+	req.Header.Set("Accept", "application/vnd.github+json")
+	req.Header.Set("User-Agent", "komarix-theme-updater")
+	resp, err := client.Do(req)
 	if err != nil {
 		return "", fmt.Errorf("获取GitHub release信息失败: %v", err)
 	}
 	defer resp.Body.Close()
-
-	// 检查响应状态码
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("获取GitHub release信息失败，HTTP状态码: %d", resp.StatusCode)
 	}
 
-	// 解析JSON响应
-	// GitHub API返回的JSON包含assets数组，每个asset包含browser_download_url字段
 	var releaseInfo struct {
 		Assets []struct {
+			Name               string `json:"name"`
 			BrowserDownloadURL string `json:"browser_download_url"`
 		} `json:"assets"`
 	}
-
-	if err := json.NewDecoder(resp.Body).Decode(&releaseInfo); err != nil {
+	if err := json.NewDecoder(io.LimitReader(resp.Body, 2<<20)).Decode(&releaseInfo); err != nil {
 		return "", fmt.Errorf("解析GitHub API响应失败: %v", err)
 	}
-
-	// 检查是否有可下载的资源
-	if len(releaseInfo.Assets) == 0 {
-		return "", errors.New("GitHub release中没有可下载的资源")
+	for _, asset := range releaseInfo.Assets {
+		name := strings.ToLower(strings.TrimSpace(asset.Name))
+		if strings.HasSuffix(name, ".zip") &&
+			!strings.Contains(name, "checksum") &&
+			!strings.Contains(name, "sha256") &&
+			asset.BrowserDownloadURL != "" {
+			return asset.BrowserDownloadURL, nil
+		}
 	}
-
-	// 返回第一个资源的下载链接
-	// 相当于shell命令: curl -s https://api.github.com/repos/owner/repo/releases/latest | jq -r ".assets[0].browser_download_url"
-	return releaseInfo.Assets[0].BrowserDownloadURL, nil
+	return "", errors.New("GitHub release 中没有可识别的主题 ZIP 资源")
 }
 
 // isGitHubRepoURL 检查URL是否是GitHub仓库地址
@@ -850,10 +861,21 @@ func ImportTheme(c *gin.Context) {
 		return
 	}
 
-	// 保存到临时文件
-	tempFile := filepath.Join(os.TempDir(), "import_theme.zip")
-	if err := os.WriteFile(tempFile, themeData, 0644); err != nil {
+	tempHandle, err := os.CreateTemp("", "komarix-theme-import-*.zip")
+	if err != nil {
+		api.RespondError(c, http.StatusInternalServerError, "创建临时文件失败: "+err.Error())
+		return
+	}
+	tempFile := tempHandle.Name()
+	if _, err := tempHandle.Write(themeData); err != nil {
+		_ = tempHandle.Close()
+		_ = os.Remove(tempFile)
 		api.RespondError(c, http.StatusInternalServerError, "保存文件失败: "+err.Error())
+		return
+	}
+	if err := tempHandle.Close(); err != nil {
+		_ = os.Remove(tempFile)
+		api.RespondError(c, http.StatusInternalServerError, "关闭临时文件失败: "+err.Error())
 		return
 	}
 	defer os.Remove(tempFile)
