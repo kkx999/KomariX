@@ -69,7 +69,7 @@ func CheckExpire() {
 		if len(clientLeadToExpire) > 0 {
 			message := ""
 			for _, clientInfo := range clientLeadToExpire {
-				message += fmt.Sprintf("• %s (%dd)\n", clientInfo.Name, clientInfo.DaysLeft)
+				message += fmt.Sprintf("• %s（剩余 %d 天）\n", clientInfo.Name, clientInfo.DaysLeft)
 			}
 			_ = messageSender.SendNotification(models.EventMessage{
 				Event:   messageevent.Expire,
