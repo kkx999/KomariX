@@ -1302,7 +1302,6 @@ const NodeTable = ({
 
 type Platform = "linux" | "windows" | "macos" | "docker";
 const ActionButtons = ({ node, settings }: { node: NodeDetail, settings: any }) => {
-  const { t } = useTranslation();
   return (
     <div className="flex items-center gap-4">
       <GenerateCommandButton node={node} settings={settings} />
