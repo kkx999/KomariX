@@ -146,8 +146,8 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
               <label className="text-base font-bold">
                 {t("admin.nodeTable.installOptions", "安装选项")}
               </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 items-start">
-                <Flex gap="2">
+              <div className="grid grid-cols-1 gap-y-3 sm:grid-cols-2 sm:gap-x-8">
+                <Flex align="center" gap="2" className="min-h-7 sm:justify-self-start">
                   <Checkbox
                     checked={installOptions.disableAutoUpdate}
                     onCheckedChange={(checked) => {
@@ -158,7 +158,7 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
                     }}
                   ></Checkbox>
                   <label
-                    className="text-sm font-normal"
+                    className="cursor-pointer whitespace-nowrap text-sm font-normal"
                     onClick={() => {
                       setInstallOptions((prev) => ({
                         ...prev,
@@ -169,7 +169,7 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
                     {t("admin.nodeTable.disableAutoUpdate", "禁用自动更新")}
                   </label>
                 </Flex>
-                <Flex gap="2">
+                <Flex align="center" gap="2" className="min-h-7 sm:justify-self-end">
                   <Checkbox
                     checked={installOptions.ignoreUnsafeCert}
                     onCheckedChange={(checked) => {
@@ -180,7 +180,7 @@ export function ActionsCell({ row }: { row: Row<z.infer<typeof schema>> }) {
                     }}
                   />
                   <label
-                    className="text-sm font-normal"
+                    className="cursor-pointer whitespace-nowrap text-sm font-normal"
                     onClick={() => {
                       setInstallOptions((prev) => ({
                         ...prev,
