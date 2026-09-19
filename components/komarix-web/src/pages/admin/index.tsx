@@ -173,6 +173,42 @@ const EmptyNodesGuide = () => {
   );
 };
 
+
+function InstallOptionCell({
+  checked,
+  onChange,
+  label,
+  suffix,
+  children,
+  labelClassName = "font-bold",
+}: {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  label: React.ReactNode;
+  suffix?: React.ReactNode;
+  children?: React.ReactNode;
+  labelClassName?: string;
+}) {
+  return (
+    <Flex direction="column" gap="2" className="min-w-0">
+      <Flex gap="2" align="center" className="min-h-6">
+        <Checkbox
+          checked={checked}
+          onCheckedChange={(value) => onChange(Boolean(value))}
+        />
+        <label
+          className={`text-sm cursor-pointer ${labelClassName}`}
+          onClick={() => onChange(!checked)}
+        >
+          {label}
+        </label>
+        {suffix}
+      </Flex>
+      {children}
+    </Flex>
+  );
+}
+
 type AutoDiscoveryInstallOptions = {
   disableAutoUpdate: boolean;
   ignoreUnsafeCert: boolean;
@@ -467,147 +503,77 @@ const AutoDiscoverySection = ({
       </Flex>
 
       {showOptions && (
-        <Flex direction="column" gap="2">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 items-start">
-            <Flex gap="2" align="center" className="min-h-6">
-              <Checkbox
-                checked={installOptions.disableAutoUpdate}
-                onCheckedChange={(checked) =>
-                  setInstallOptions((prev) => ({
-                    ...prev,
-                    disableAutoUpdate: Boolean(checked),
-                  }))
-                }
-              />
-              <label
-                className="text-sm font-normal cursor-pointer"
-                onClick={() =>
-                  setInstallOptions((prev) => ({
-                    ...prev,
-                    disableAutoUpdate: !prev.disableAutoUpdate,
-                  }))
-                }
-              >
-                {t("admin.nodeTable.disableAutoUpdate", "禁用自动更新")}
-              </label>
-            </Flex>
-            <Flex gap="2" align="center" className="min-h-6">
-              <Checkbox
-                checked={installOptions.ignoreUnsafeCert}
-                onCheckedChange={(checked) =>
-                  setInstallOptions((prev) => ({
-                    ...prev,
-                    ignoreUnsafeCert: Boolean(checked),
-                  }))
-                }
-              />
-              <label
-                className="text-sm font-normal cursor-pointer"
-                onClick={() =>
-                  setInstallOptions((prev) => ({
-                    ...prev,
-                    ignoreUnsafeCert: !prev.ignoreUnsafeCert,
-                  }))
-                }
-              >
-                {t("admin.nodeTable.ignoreUnsafeCert", "忽略不安全证书")}
-              </label>
-            </Flex>
-            <Flex gap="2" align="center" className="min-h-6">
-              <Checkbox
-                checked={installOptions.memoryIncludeCache}
-                onCheckedChange={(checked) =>
-                  setInstallOptions((prev) => ({
-                    ...prev,
-                    memoryIncludeCache: Boolean(checked),
-                  }))
-                }
-              />
-              <label
-                className="text-sm font-normal cursor-pointer"
-                onClick={() =>
-                  setInstallOptions((prev) => ({
-                    ...prev,
-                    memoryIncludeCache: !prev.memoryIncludeCache,
-                  }))
-                }
-              >
-                {t("admin.nodeTable.memoryModeAvailable", "监测可用内存")}
-              </label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 items-start">
+          <InstallOptionCell
+            checked={installOptions.disableAutoUpdate}
+            onChange={(checked) =>
+              setInstallOptions((prev) => ({
+                ...prev,
+                disableAutoUpdate: checked,
+              }))
+            }
+            label={t("admin.nodeTable.disableAutoUpdate", "禁用自动更新")}
+            labelClassName="font-normal"
+          />
+          <InstallOptionCell
+            checked={installOptions.ignoreUnsafeCert}
+            onChange={(checked) =>
+              setInstallOptions((prev) => ({
+                ...prev,
+                ignoreUnsafeCert: checked,
+              }))
+            }
+            label={t("admin.nodeTable.ignoreUnsafeCert", "忽略不安全证书")}
+            labelClassName="font-normal"
+          />
+          <InstallOptionCell
+            checked={installOptions.memoryIncludeCache}
+            onChange={(checked) =>
+              setInstallOptions((prev) => ({
+                ...prev,
+                memoryIncludeCache: checked,
+              }))
+            }
+            label={t("admin.nodeTable.memoryModeAvailable", "监测可用内存")}
+            labelClassName="font-normal"
+            suffix={
               <Tips size="14">
                 {t("admin.nodeTable.memoryModeAvailable_tip")}
               </Tips>
-            </Flex>
-            <Flex gap="2" align="center" className="min-h-6">
-              <Checkbox
-                checked={installOptions.getIpAddrFromNic}
-                onCheckedChange={(checked) =>
-                  setInstallOptions((prev) => ({
-                    ...prev,
-                    getIpAddrFromNic: Boolean(checked),
-                  }))
-                }
-              />
-              <label
-                className="text-sm font-normal cursor-pointer"
-                onClick={() =>
-                  setInstallOptions((prev) => ({
-                    ...prev,
-                    getIpAddrFromNic: !prev.getIpAddrFromNic,
-                  }))
-                }
-              >
-                {t("admin.nodeTable.getIpAddrFromNic", "从网卡获取 IP 地址")}
-              </label>
-            </Flex>
-            <Flex gap="2" align="center" className="min-h-6">
-              <Checkbox
-                checked={installOptions.enableGpu}
-                onCheckedChange={(checked) =>
-                  setInstallOptions((prev) => ({
-                    ...prev,
-                    enableGpu: Boolean(checked),
-                  }))
-                }
-              />
-              <label
-                className="text-sm font-normal cursor-pointer"
-                onClick={() =>
-                  setInstallOptions((prev) => ({
-                    ...prev,
-                    enableGpu: !prev.enableGpu,
-                  }))
-                }
-              >
-                {t("admin.nodeTable.enableGpuMonitoring", "启用详细 GPU 监控")}
-              </label>
-            </Flex>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 items-start">
-            <Flex direction="column" gap="2">
-              <Flex gap="2" align="center">
-                <Checkbox
-                  checked={enableGhproxy}
-                onCheckedChange={(checked) => {
-                  setEnableGhproxy(Boolean(checked));
-                  if (!checked) {
-                    setInstallOptions((prev) => ({ ...prev, ghproxy: "" }));
-                  }
-                }}
-              />
-              <label
-                className="text-sm font-bold cursor-pointer"
-                onClick={() => {
-                  setEnableGhproxy(!enableGhproxy);
-                  if (enableGhproxy) {
-                    setInstallOptions((prev) => ({ ...prev, ghproxy: "" }));
-                  }
-                }}
-              >
-                {t("admin.nodeTable.ghproxy", "GitHub 代理")}
-              </label>
-            </Flex>
+            }
+          />
+          <InstallOptionCell
+            checked={installOptions.getIpAddrFromNic}
+            onChange={(checked) =>
+              setInstallOptions((prev) => ({
+                ...prev,
+                getIpAddrFromNic: checked,
+              }))
+            }
+            label={t("admin.nodeTable.getIpAddrFromNic", "从网卡获取 IP 地址")}
+            labelClassName="font-normal"
+          />
+          <InstallOptionCell
+            checked={installOptions.enableGpu}
+            onChange={(checked) =>
+              setInstallOptions((prev) => ({
+                ...prev,
+                enableGpu: checked,
+              }))
+            }
+            label={t("admin.nodeTable.enableGpuMonitoring", "启用详细 GPU 监控")}
+            labelClassName="font-normal"
+          />
+          <InstallOptionCell
+            checked={enableGhproxy}
+            onChange={(checked) => {
+              setEnableGhproxy(checked);
+              if (!checked) {
+                setInstallOptions((prev) => ({ ...prev, ghproxy: "" }));
+              }
+            }}
+            label={t("admin.nodeTable.ghproxy", "GitHub 代理")}
+          >
             {enableGhproxy && (
               <TextField.Root
                 placeholder="https://ghfast.top/"
@@ -620,29 +586,17 @@ const AutoDiscoverySection = ({
                 }
               />
             )}
-
-            <Flex gap="2" align="center">
-              <Checkbox
-                checked={enableCustomDir}
-                onCheckedChange={(checked) => {
-                  setEnableCustomDir(Boolean(checked));
-                  if (!checked) {
-                    setInstallOptions((prev) => ({ ...prev, dir: "" }));
-                  }
-                }}
-              />
-              <label
-                className="text-sm font-bold cursor-pointer"
-                onClick={() => {
-                  setEnableCustomDir(!enableCustomDir);
-                  if (enableCustomDir) {
-                    setInstallOptions((prev) => ({ ...prev, dir: "" }));
-                  }
-                }}
-              >
-                {t("admin.nodeTable.install_dir", "安装目录")}
-              </label>
-            </Flex>
+          </InstallOptionCell>
+          <InstallOptionCell
+            checked={enableCustomDir}
+            onChange={(checked) => {
+              setEnableCustomDir(checked);
+              if (!checked) {
+                setInstallOptions((prev) => ({ ...prev, dir: "" }));
+              }
+            }}
+            label={t("admin.nodeTable.install_dir", "安装目录")}
+          >
             {enableCustomDir && (
               <TextField.Root
                 placeholder={t(
@@ -658,29 +612,17 @@ const AutoDiscoverySection = ({
                 }
               />
             )}
-
-            <Flex gap="2" align="center">
-              <Checkbox
-                checked={enableCustomServiceName}
-                onCheckedChange={(checked) => {
-                  setEnableCustomServiceName(Boolean(checked));
-                  if (!checked) {
-                    setInstallOptions((prev) => ({ ...prev, serviceName: "" }));
-                  }
-                }}
-              />
-              <label
-                className="text-sm font-bold cursor-pointer"
-                onClick={() => {
-                  setEnableCustomServiceName(!enableCustomServiceName);
-                  if (enableCustomServiceName) {
-                    setInstallOptions((prev) => ({ ...prev, serviceName: "" }));
-                  }
-                }}
-              >
-                {t("admin.nodeTable.serviceName", "服务名称")}
-              </label>
-            </Flex>
+          </InstallOptionCell>
+          <InstallOptionCell
+            checked={enableCustomServiceName}
+            onChange={(checked) => {
+              setEnableCustomServiceName(checked);
+              if (!checked) {
+                setInstallOptions((prev) => ({ ...prev, serviceName: "" }));
+              }
+            }}
+            label={t("admin.nodeTable.serviceName", "服务名称")}
+          >
             {enableCustomServiceName && (
               <TextField.Root
                 placeholder={t(
@@ -696,29 +638,17 @@ const AutoDiscoverySection = ({
                 }
               />
             )}
-
-            <Flex gap="2" align="center">
-              <Checkbox
-                checked={enableIncludeNics}
-                onCheckedChange={(checked) => {
-                  setEnableIncludeNics(Boolean(checked));
-                  if (!checked) {
-                    setInstallOptions((prev) => ({ ...prev, includeNics: "" }));
-                  }
-                }}
-              />
-              <label
-                className="text-sm font-bold cursor-pointer"
-                onClick={() => {
-                  setEnableIncludeNics(!enableIncludeNics);
-                  if (enableIncludeNics) {
-                    setInstallOptions((prev) => ({ ...prev, includeNics: "" }));
-                  }
-                }}
-              >
-                {t("admin.nodeTable.includeNics", "只监测特定网卡")}
-              </label>
-            </Flex>
+          </InstallOptionCell>
+          <InstallOptionCell
+            checked={enableIncludeNics}
+            onChange={(checked) => {
+              setEnableIncludeNics(checked);
+              if (!checked) {
+                setInstallOptions((prev) => ({ ...prev, includeNics: "" }));
+              }
+            }}
+            label={t("admin.nodeTable.includeNics", "只监测特定网卡")}
+          >
             {enableIncludeNics && (
               <TextField.Root
                 placeholder="eth0,eth1"
@@ -731,30 +661,17 @@ const AutoDiscoverySection = ({
                 }
               />
             )}
-            </Flex>
-            <Flex direction="column" gap="2">
-              <Flex gap="2" align="center">
-                <Checkbox
-                  checked={enableExcludeNics}
-                onCheckedChange={(checked) => {
-                  setEnableExcludeNics(Boolean(checked));
-                  if (!checked) {
-                    setInstallOptions((prev) => ({ ...prev, excludeNics: "" }));
-                  }
-                }}
-              />
-              <label
-                className="text-sm font-bold cursor-pointer"
-                onClick={() => {
-                  setEnableExcludeNics(!enableExcludeNics);
-                  if (enableExcludeNics) {
-                    setInstallOptions((prev) => ({ ...prev, excludeNics: "" }));
-                  }
-                }}
-              >
-                {t("admin.nodeTable.excludeNics", "排除特定网卡")}
-              </label>
-            </Flex>
+          </InstallOptionCell>
+          <InstallOptionCell
+            checked={enableExcludeNics}
+            onChange={(checked) => {
+              setEnableExcludeNics(checked);
+              if (!checked) {
+                setInstallOptions((prev) => ({ ...prev, excludeNics: "" }));
+              }
+            }}
+            label={t("admin.nodeTable.excludeNics", "排除特定网卡")}
+          >
             {enableExcludeNics && (
               <TextField.Root
                 placeholder="lo"
@@ -767,35 +684,20 @@ const AutoDiscoverySection = ({
                 }
               />
             )}
-
-            <Flex gap="2" align="center">
-              <Checkbox
-                checked={enableIncludeMountpoints}
-                onCheckedChange={(checked) => {
-                  setEnableIncludeMountpoints(Boolean(checked));
-                  if (!checked) {
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      includeMountpoints: "",
-                    }));
-                  }
-                }}
-              />
-              <label
-                className="text-sm font-bold cursor-pointer"
-                onClick={() => {
-                  setEnableIncludeMountpoints(!enableIncludeMountpoints);
-                  if (enableIncludeMountpoints) {
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      includeMountpoints: "",
-                    }));
-                  }
-                }}
-              >
-                {t("admin.nodeTable.includeMountpoints", "只监测特定挂载点")}
-              </label>
-            </Flex>
+          </InstallOptionCell>
+          <InstallOptionCell
+            checked={enableIncludeMountpoints}
+            onChange={(checked) => {
+              setEnableIncludeMountpoints(checked);
+              if (!checked) {
+                setInstallOptions((prev) => ({
+                  ...prev,
+                  includeMountpoints: "",
+                }));
+              }
+            }}
+            label={t("admin.nodeTable.includeMountpoints", "只监测特定挂载点")}
+          >
             {enableIncludeMountpoints && (
               <TextField.Root
                 placeholder="/;/home;/var"
@@ -808,41 +710,22 @@ const AutoDiscoverySection = ({
                 }
               />
             )}
-
-            <Flex gap="2" align="center">
-              <Checkbox
-                checked={enableInterval}
-                onCheckedChange={(checked) => {
-                  const en = Boolean(checked);
-                  setEnableInterval(en);
-                  setInstallOptions((prev) => ({
-                    ...prev,
-                    interval: en
-                      ? prev.interval?.trim()
-                        ? prev.interval
-                        : "1"
-                      : "",
-                  }));
-                }}
-              />
-              <label
-                className="text-sm font-bold cursor-pointer"
-                onClick={() => {
-                  const willEnable = !enableInterval;
-                  setEnableInterval(willEnable);
-                  setInstallOptions((prev) => ({
-                    ...prev,
-                    interval: willEnable
-                      ? prev.interval?.trim()
-                        ? prev.interval
-                        : "1"
-                      : "",
-                  }));
-                }}
-              >
-                {t("admin.nodeTable.interval", "采集间隔(秒)")}
-              </label>
-            </Flex>
+          </InstallOptionCell>
+          <InstallOptionCell
+            checked={enableInterval}
+            onChange={(checked) => {
+              setEnableInterval(checked);
+              setInstallOptions((prev) => ({
+                ...prev,
+                interval: checked
+                  ? prev.interval?.trim()
+                    ? prev.interval
+                    : "1"
+                  : "",
+              }));
+            }}
+            label={t("admin.nodeTable.interval", "采集间隔(秒)")}
+          >
             {enableInterval && (
               <TextField.Root
                 placeholder="1"
@@ -858,41 +741,22 @@ const AutoDiscoverySection = ({
                 }
               />
             )}
-
-            <Flex gap="2" align="center">
-              <Checkbox
-                checked={enableMonthRotate}
-                onCheckedChange={(checked) => {
-                  const en = Boolean(checked);
-                  setEnableMonthRotate(en);
-                  setInstallOptions((prev) => ({
-                    ...prev,
-                    monthRotate: en
-                      ? prev.monthRotate?.trim()
-                        ? prev.monthRotate
-                        : "1"
-                      : "",
-                  }));
-                }}
-              />
-              <label
-                className="text-sm font-bold cursor-pointer"
-                onClick={() => {
-                  const willEnable = !enableMonthRotate;
-                  setEnableMonthRotate(willEnable);
-                  setInstallOptions((prev) => ({
-                    ...prev,
-                    monthRotate: willEnable
-                      ? prev.monthRotate?.trim()
-                        ? prev.monthRotate
-                        : "1"
-                      : "",
-                  }));
-                }}
-              >
-                {t("admin.nodeTable.monthRotate", "网络统计月重置")}
-              </label>
-            </Flex>
+          </InstallOptionCell>
+          <InstallOptionCell
+            checked={enableMonthRotate}
+            onChange={(checked) => {
+              setEnableMonthRotate(checked);
+              setInstallOptions((prev) => ({
+                ...prev,
+                monthRotate: checked
+                  ? prev.monthRotate?.trim()
+                    ? prev.monthRotate
+                    : "1"
+                  : "",
+              }));
+            }}
+            label={t("admin.nodeTable.monthRotate", "网络统计月重置")}
+          >
             {enableMonthRotate && (
               <TextField.Root
                 placeholder="1"
@@ -908,9 +772,8 @@ const AutoDiscoverySection = ({
                 }
               />
             )}
-            </Flex>
-          </div>
-        </Flex>
+          </InstallOptionCell>
+        </div>
       )}
 
       <Flex direction="column" gap="2">
@@ -1584,501 +1447,278 @@ function GenerateCommandButton({ node, settings }: { node: NodeDetail, settings:
               {t("admin.nodeTable.installOptions", "安装选项")}
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 items-start">
-              <Flex gap="2" align="center" className="min-h-6">
-                <Checkbox
-                  checked={installOptions.disableAutoUpdate}
-                  onCheckedChange={(checked) => {
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      disableAutoUpdate: Boolean(checked),
-                    }));
-                  }}
-                ></Checkbox>
-                <label
-                  className="text-sm font-normal"
-                  onClick={() => {
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      disableAutoUpdate: !prev.disableAutoUpdate,
-                    }));
-                  }}
-                >
-                  {t("admin.nodeTable.disableAutoUpdate", "禁用自动更新")}
-                </label>
-              </Flex>
-              <Flex gap="2" align="center" className="min-h-6">
-                <Checkbox
-                  checked={installOptions.ignoreUnsafeCert}
-                  onCheckedChange={(checked) => {
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      ignoreUnsafeCert: Boolean(checked),
-                    }));
-                  }}
-                />
-                <label
-                  className="text-sm font-normal"
-                  onClick={() => {
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      ignoreUnsafeCert: !prev.ignoreUnsafeCert,
-                    }));
-                  }}
-                >
-                  {t("admin.nodeTable.ignoreUnsafeCert", "忽略不安全证书")}
-                </label>
-              </Flex>
-              <Flex gap="2" align="center" className="min-h-6">
-                <Checkbox
-                  checked={installOptions.memoryIncludeCache}
-                  onCheckedChange={(checked) => {
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      memoryIncludeCache: Boolean(checked),
-                    }));
-                  }}
-                />
-                <label
-                  className="text-sm font-normal"
-                  onClick={() => {
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      memoryIncludeCache: !prev.memoryIncludeCache,
-                    }));
-                  }}
-                >
-                  {t("admin.nodeTable.memoryModeAvailable", "监测可用内存")}
-                </label>
-                <Tips size="14">
-                  {t("admin.nodeTable.memoryModeAvailable_tip")}
-                </Tips>
-              </Flex>
-              <Flex gap="2" align="center" className="min-h-6">
-                <Checkbox
-                  checked={installOptions.getIpAddrFromNic}
-                  onCheckedChange={(checked) => {
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      getIpAddrFromNic: Boolean(checked),
-                    }));
-                  }}
-                />
-                <label
-                  className="text-sm font-normal"
-                  onClick={() => {
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      getIpAddrFromNic: !prev.getIpAddrFromNic,
-                    }));
-                  }}
-                >
-                  {t("admin.nodeTable.getIpAddrFromNic", "从网卡获取 IP 地址")}
-                </label>
-              </Flex>
-              <Flex gap="2" align="center" className="min-h-6">
-                <Checkbox
-                  checked={installOptions.enableGpu}
-                  onCheckedChange={(checked) => {
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      enableGpu: Boolean(checked),
-                    }));
-                  }}
-                />
-                <label
-                  className="text-sm font-normal"
-                  onClick={() => {
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      enableGpu: !prev.enableGpu,
-                    }));
-                  }}
-                >
-                  {t("admin.nodeTable.enableGpuMonitoring", "启用详细 GPU 监控")}
-                </label>
-              </Flex>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 items-start">
-              <Flex direction="column" gap="2">
-                <Flex gap="2" align="center">
-                  <Checkbox
-                    checked={enableGhproxy}
-                  onCheckedChange={(checked) => {
-                    setEnableGhproxy(Boolean(checked));
-                    if (!checked) {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        ghproxy: "",
-                      }));
-                    }
-                  }}
-                />
-                <label
-                  className="text-sm font-bold cursor-pointer"
-                  onClick={() => {
-                    setEnableGhproxy(!enableGhproxy);
-                    if (enableGhproxy) {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        ghproxy: "",
-                      }));
-                    }
-                  }}
-                >
-                  {t("admin.nodeTable.ghproxy", "GitHub 代理")}
-                </label>
-              </Flex>
-              {enableGhproxy && (
-                <TextField.Root
-                  // placeholder={t(
-                  //   "admin.nodeTable.ghproxy_placeholder",
-                  //   "GitHub 代理，为空则不使用代理"
-                  // )}
-                  placeholder="https://ghfast.top/"
-                  value={installOptions.ghproxy}
-                  onChange={(e) =>
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      ghproxy: e.target.value,
-                    }))
+              <InstallOptionCell
+                checked={installOptions.disableAutoUpdate}
+                onChange={(checked) =>
+                  setInstallOptions((prev) => ({
+                    ...prev,
+                    disableAutoUpdate: checked,
+                  }))
+                }
+                label={t("admin.nodeTable.disableAutoUpdate", "禁用自动更新")}
+                labelClassName="font-normal"
+              />
+              <InstallOptionCell
+                checked={installOptions.ignoreUnsafeCert}
+                onChange={(checked) =>
+                  setInstallOptions((prev) => ({
+                    ...prev,
+                    ignoreUnsafeCert: checked,
+                  }))
+                }
+                label={t("admin.nodeTable.ignoreUnsafeCert", "忽略不安全证书")}
+                labelClassName="font-normal"
+              />
+              <InstallOptionCell
+                checked={installOptions.memoryIncludeCache}
+                onChange={(checked) =>
+                  setInstallOptions((prev) => ({
+                    ...prev,
+                    memoryIncludeCache: checked,
+                  }))
+                }
+                label={t("admin.nodeTable.memoryModeAvailable", "监测可用内存")}
+                labelClassName="font-normal"
+                suffix={
+                  <Tips size="14">
+                    {t("admin.nodeTable.memoryModeAvailable_tip")}
+                  </Tips>
+                }
+              />
+              <InstallOptionCell
+                checked={installOptions.getIpAddrFromNic}
+                onChange={(checked) =>
+                  setInstallOptions((prev) => ({
+                    ...prev,
+                    getIpAddrFromNic: checked,
+                  }))
+                }
+                label={t("admin.nodeTable.getIpAddrFromNic", "从网卡获取 IP 地址")}
+                labelClassName="font-normal"
+              />
+              <InstallOptionCell
+                checked={installOptions.enableGpu}
+                onChange={(checked) =>
+                  setInstallOptions((prev) => ({
+                    ...prev,
+                    enableGpu: checked,
+                  }))
+                }
+                label={t("admin.nodeTable.enableGpuMonitoring", "启用详细 GPU 监控")}
+                labelClassName="font-normal"
+              />
+              <InstallOptionCell
+                checked={enableGhproxy}
+                onChange={(checked) => {
+                  setEnableGhproxy(checked);
+                  if (!checked) {
+                    setInstallOptions((prev) => ({ ...prev, ghproxy: "" }));
                   }
-                />
-              )}
-
-              <Flex gap="2" align="center">
-                <Checkbox
-                  checked={enableCustomDir}
-                  onCheckedChange={(checked) => {
-                    setEnableCustomDir(Boolean(checked));
-                    if (!checked) {
+                }}
+                label={t("admin.nodeTable.ghproxy", "GitHub 代理")}
+              >
+                {enableGhproxy && (
+                  <TextField.Root
+                    placeholder="https://ghfast.top/"
+                    value={installOptions.ghproxy}
+                    onChange={(e) =>
                       setInstallOptions((prev) => ({
                         ...prev,
-                        dir: "",
-                      }));
+                        ghproxy: e.target.value,
+                      }))
                     }
-                  }}
-                />
-                <label
-                  className="text-sm font-bold cursor-pointer"
-                  onClick={() => {
-                    setEnableCustomDir(!enableCustomDir);
-                    if (enableCustomDir) {
+                  />
+                )}
+              </InstallOptionCell>
+              <InstallOptionCell
+                checked={enableCustomDir}
+                onChange={(checked) => {
+                  setEnableCustomDir(checked);
+                  if (!checked) {
+                    setInstallOptions((prev) => ({ ...prev, dir: "" }));
+                  }
+                }}
+                label={t("admin.nodeTable.install_dir", "安装目录")}
+              >
+                {enableCustomDir && (
+                  <TextField.Root
+                    placeholder={t(
+                      "admin.nodeTable.install_dir_placeholder",
+                      "安装目录，为空则使用默认目录(/opt/komarix-agent)"
+                    )}
+                    value={installOptions.dir}
+                    onChange={(e) =>
                       setInstallOptions((prev) => ({
                         ...prev,
-                        dir: "",
-                      }));
+                        dir: e.target.value,
+                      }))
                     }
-                  }}
-                >
-                  {t("admin.nodeTable.install_dir", "安装目录")}
-                </label>
-              </Flex>
-              {enableCustomDir && (
-                <TextField.Root
-                  placeholder={t(
-                    "admin.nodeTable.install_dir_placeholder",
-                    "安装目录，为空则使用默认目录(/opt/komarix-agent)"
-                  )}
-                  value={installOptions.dir}
-                  onChange={(e) =>
+                  />
+                )}
+              </InstallOptionCell>
+              <InstallOptionCell
+                checked={enableCustomServiceName}
+                onChange={(checked) => {
+                  setEnableCustomServiceName(checked);
+                  if (!checked) {
+                    setInstallOptions((prev) => ({ ...prev, serviceName: "" }));
+                  }
+                }}
+                label={t("admin.nodeTable.serviceName", "服务名称")}
+              >
+                {enableCustomServiceName && (
+                  <TextField.Root
+                    placeholder={t(
+                      "admin.nodeTable.serviceName_placeholder",
+                      "服务名称，为空则使用默认名称(komarix-agent)"
+                    )}
+                    value={installOptions.serviceName}
+                    onChange={(e) =>
+                      setInstallOptions((prev) => ({
+                        ...prev,
+                        serviceName: e.target.value,
+                      }))
+                    }
+                  />
+                )}
+              </InstallOptionCell>
+              <InstallOptionCell
+                checked={enableIncludeNics}
+                onChange={(checked) => {
+                  setEnableIncludeNics(checked);
+                  if (!checked) {
+                    setInstallOptions((prev) => ({ ...prev, includeNics: "" }));
+                  }
+                }}
+                label={t("admin.nodeTable.includeNics", "只监测特定网卡")}
+              >
+                {enableIncludeNics && (
+                  <TextField.Root
+                    placeholder="eth0,eth1"
+                    value={installOptions.includeNics}
+                    onChange={(e) =>
+                      setInstallOptions((prev) => ({
+                        ...prev,
+                        includeNics: e.target.value,
+                      }))
+                    }
+                  />
+                )}
+              </InstallOptionCell>
+              <InstallOptionCell
+                checked={enableExcludeNics}
+                onChange={(checked) => {
+                  setEnableExcludeNics(checked);
+                  if (!checked) {
+                    setInstallOptions((prev) => ({ ...prev, excludeNics: "" }));
+                  }
+                }}
+                label={t("admin.nodeTable.excludeNics", "排除特定网卡")}
+              >
+                {enableExcludeNics && (
+                  <TextField.Root
+                    placeholder="lo"
+                    value={installOptions.excludeNics}
+                    onChange={(e) =>
+                      setInstallOptions((prev) => ({
+                        ...prev,
+                        excludeNics: e.target.value,
+                      }))
+                    }
+                  />
+                )}
+              </InstallOptionCell>
+              <InstallOptionCell
+                checked={enableIncludeMountpoints}
+                onChange={(checked) => {
+                  setEnableIncludeMountpoints(checked);
+                  if (!checked) {
                     setInstallOptions((prev) => ({
                       ...prev,
-                      dir: e.target.value,
-                    }))
+                      includeMountpoints: "",
+                    }));
                   }
-                />
-              )}
-
-              <Flex gap="2" align="center">
-                <Checkbox
-                  checked={enableCustomServiceName}
-                  onCheckedChange={(checked) => {
-                    setEnableCustomServiceName(Boolean(checked));
-                    if (!checked) {
+                }}
+                label={t("admin.nodeTable.includeMountpoints", "只监测特定挂载点")}
+              >
+                {enableIncludeMountpoints && (
+                  <TextField.Root
+                    placeholder="/;/home;/var"
+                    value={installOptions.includeMountpoints}
+                    onChange={(e) =>
                       setInstallOptions((prev) => ({
                         ...prev,
-                        serviceName: "",
-                      }));
+                        includeMountpoints: e.target.value,
+                      }))
                     }
-                  }}
-                />
-                <label
-                  className="text-sm font-bold cursor-pointer"
-                  onClick={() => {
-                    setEnableCustomServiceName(!enableCustomServiceName);
-                    if (enableCustomServiceName) {
+                  />
+                )}
+              </InstallOptionCell>
+              <InstallOptionCell
+                checked={enableInterval}
+                onChange={(checked) => {
+                  setEnableInterval(checked);
+                  setInstallOptions((prev) => ({
+                    ...prev,
+                    interval: checked
+                      ? prev.interval?.trim()
+                        ? prev.interval
+                        : "1"
+                      : "",
+                  }));
+                }}
+                label={t("admin.nodeTable.interval", "采集间隔(秒)")}
+              >
+                {enableInterval && (
+                  <TextField.Root
+                    placeholder="1"
+                    type="number"
+                    min="1"
+                    step="0.1"
+                    value={installOptions.interval}
+                    onChange={(e) =>
                       setInstallOptions((prev) => ({
                         ...prev,
-                        serviceName: "",
-                      }));
+                        interval: e.target.value,
+                      }))
                     }
-                  }}
-                >
-                  {t("admin.nodeTable.serviceName", "服务名称")}
-                </label>
-              </Flex>
-              {enableCustomServiceName && (
-                <TextField.Root
-                  placeholder={t(
-                    "admin.nodeTable.serviceName_placeholder",
-                    "服务名称，为空则使用默认名称(komarix-agent)"
-                  )}
-                  value={installOptions.serviceName}
-                  onChange={(e) =>
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      serviceName: e.target.value,
-                    }))
-                  }
-                />
-              )}
-              <Flex gap="2" align="center">
-                <Checkbox
-                  checked={enableIncludeNics}
-                  onCheckedChange={(checked) => {
-                    setEnableIncludeNics(Boolean(checked));
-                    if (!checked) {
+                  />
+                )}
+              </InstallOptionCell>
+              <InstallOptionCell
+                checked={enableMonthRotate}
+                onChange={(checked) => {
+                  setEnableMonthRotate(checked);
+                  setInstallOptions((prev) => ({
+                    ...prev,
+                    monthRotate: checked
+                      ? prev.monthRotate?.trim()
+                        ? prev.monthRotate
+                        : "1"
+                      : "",
+                  }));
+                }}
+                label={t("admin.nodeTable.monthRotate", "网络统计月重置")}
+              >
+                {enableMonthRotate && (
+                  <TextField.Root
+                    placeholder="1"
+                    type="number"
+                    min="1"
+                    max="31"
+                    value={installOptions.monthRotate}
+                    onChange={(e) =>
                       setInstallOptions((prev) => ({
                         ...prev,
-                        includeNics: "",
-                      }));
+                        monthRotate: e.target.value,
+                      }))
                     }
-                  }}
-                />
-                <label
-                  className="text-sm font-bold cursor-pointer"
-                  onClick={() => {
-                    setEnableIncludeNics(!enableIncludeNics);
-                    if (enableIncludeNics) {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        includeNics: "",
-                      }));
-                    }
-                  }}
-                >
-                  {t("admin.nodeTable.includeNics", "只监测特定网卡")}
-                </label>
-              </Flex>
-              {enableIncludeNics && (
-                <TextField.Root
-                  // placeholder={t(
-                  //   "admin.nodeTable.includeNics_placeholder",
-                  //   "多个网卡使用逗号隔开"
-                  // )}
-                  placeholder="eth0,eth1"
-                  value={installOptions.includeNics}
-                  onChange={(e) =>
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      includeNics: e.target.value,
-                    }))
-                  }
-                />
-              )}
-              </Flex>
-              <Flex direction="column" gap="2">
-                <Flex gap="2" align="center">
-                  <Checkbox
-                    checked={enableExcludeNics}
-                  onCheckedChange={(checked) => {
-                    setEnableExcludeNics(Boolean(checked));
-                    if (!checked) {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        excludeNics: "",
-                      }));
-                    }
-                  }}
-                />
-                <label
-                  className="text-sm font-bold cursor-pointer"
-                  onClick={() => {
-                    setEnableExcludeNics(!enableExcludeNics);
-                    if (enableExcludeNics) {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        excludeNics: "",
-                      }));
-                    }
-                  }}
-                >
-                  {t("admin.nodeTable.excludeNics", "排除特定网卡")}
-                </label>
-              </Flex>
-              {enableExcludeNics && (
-                <TextField.Root
-                  // placeholder={t(
-                  //   "admin.nodeTable.excludeNics_placeholder",
-                  //   "多个网卡使用逗号隔开"
-                  // )}
-                  placeholder="lo"
-                  value={installOptions.excludeNics}
-                  onChange={(e) =>
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      excludeNics: e.target.value,
-                    }))
-                  }
-                />
-              )}
-              <Flex gap="2" align="center">
-                <Checkbox
-                  checked={enableIncludeMountpoints}
-                  onCheckedChange={(checked) => {
-                    setEnableIncludeMountpoints(Boolean(checked));
-                    if (!checked) {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        includeMountpoints: "",
-                      }));
-                    }
-                  }}
-                />
-                <label
-                  className="text-sm font-bold cursor-pointer"
-                  onClick={() => {
-                    setEnableIncludeMountpoints(!enableIncludeMountpoints);
-                    if (enableIncludeMountpoints) {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        includeMountpoints: "",
-                      }));
-                    }
-                  }}
-                >
-                  {t("admin.nodeTable.includeMountpoints", "只监测特定挂载点")}
-                </label>
-              </Flex>
-              {enableIncludeMountpoints && (
-                <TextField.Root
-                  placeholder="/;/home;/var"
-                  value={installOptions.includeMountpoints}
-                  onChange={(e) =>
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      includeMountpoints: e.target.value,
-                    }))
-                  }
-                />
-              )}
-              <Flex gap="2" align="center">
-                <Checkbox
-                  checked={enableInterval}
-                  onCheckedChange={(checked) => {
-                    const enabled = Boolean(checked);
-                    setEnableInterval(enabled);
-                    if (!enabled) {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        interval: "",
-                      }));
-                    } else {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        interval: prev.interval?.trim() ? prev.interval : "1",
-                      }));
-                    }
-                  }}
-                />
-                <label
-                  className="text-sm font-bold cursor-pointer"
-                  onClick={() => {
-                    const willEnable = !enableInterval;
-                    setEnableInterval(willEnable);
-                    if (!willEnable) {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        interval: "",
-                      }));
-                    } else {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        interval: prev.interval?.trim() ? prev.interval : "1",
-                      }));
-                    }
-                  }}
-                >
-                  {t("admin.nodeTable.interval", "采集间隔(秒)")}
-                </label>
-              </Flex>
-              {enableInterval && (
-                <TextField.Root
-                  placeholder="1"
-                  type="number"
-                  min="1"
-                  step="0.1"
-                  value={installOptions.interval}
-                  onChange={(e) =>
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      interval: e.target.value,
-                    }))
-                  }
-                />
-              )}
-              <Flex gap="2" align="center">
-                <Checkbox
-                  checked={enableMonthRotate}
-                  onCheckedChange={(checked) => {
-                    const enabled = Boolean(checked);
-                    setEnableMonthRotate(enabled);
-                    if (!enabled) {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        monthRotate: "",
-                      }));
-                    } else {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        monthRotate: prev.monthRotate?.trim()
-                          ? prev.monthRotate
-                          : "1",
-                      }));
-                    }
-                  }}
-                />
-                <label
-                  className="text-sm font-bold cursor-pointer"
-                  onClick={() => {
-                    const willEnable = !enableMonthRotate;
-                    setEnableMonthRotate(willEnable);
-                    if (!willEnable) {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        monthRotate: "",
-                      }));
-                    } else {
-                      setInstallOptions((prev) => ({
-                        ...prev,
-                        monthRotate: prev.monthRotate?.trim()
-                          ? prev.monthRotate
-                          : "1",
-                      }));
-                    }
-                  }}
-                >
-                  {t("admin.nodeTable.monthRotate", "网络统计月重置")}
-                </label>
-              </Flex>
-              {enableMonthRotate && (
-                <TextField.Root
-                  placeholder="1"
-                  type="number"
-                  min="1"
-                  max="31"
-                  value={installOptions.monthRotate}
-                  onChange={(e) =>
-                    setInstallOptions((prev) => ({
-                      ...prev,
-                      monthRotate: e.target.value,
-                    }))
-                  }
-                />
-              )}
-              </Flex>
+                  />
+                )}
+              </InstallOptionCell>
             </div>
           </Flex>
+
           <Flex direction="column" gap="2">
             <label className="text-base font-bold">
               {t("admin.nodeTable.generatedCommand", "生成的指令")}
