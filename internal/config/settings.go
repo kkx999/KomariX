@@ -17,6 +17,8 @@ type Settings struct {
 	ScriptDomain           string `json:"script_domain" default:""`                            // 自定义脚本域名
 	SendIpAddrToGuest      bool   `json:"send_ip_addr_to_guest" default:"false"`               // 是否向访客页面发送 IP 地址，默认 false
 	VisitorAuditEnabled    bool   `json:"visitor_audit_enabled" default:"false"`               // 是否允许公开访客事件写入审计日志，默认 false
+	AuditLogRetentionDays  int    `json:"audit_log_retention_days" default:"30"`                  // 审计日志保留天数，0 表示永久
+	AuditLogMaxRows        int    `json:"audit_log_max_rows" default:"100000"`                    // 审计日志最大条数，0 表示不限制
 	EulaAccepted           bool   `json:"eula_accepted" default:"false"`
 	BaseScriptsURLKey      string `json:"base_scripts_url" default:""`
 	// GeoIP 配置
@@ -55,6 +57,8 @@ const (
 	ScriptDomainKey           = "script_domain"
 	SendIpAddrToGuestKey      = "send_ip_addr_to_guest"
 	VisitorAuditEnabledKey    = "visitor_audit_enabled"
+	AuditLogRetentionDaysKey  = "audit_log_retention_days"
+	AuditLogMaxRowsKey        = "audit_log_max_rows"
 	EulaAcceptedKey           = "eula_accepted"
 	BaseScriptsURLKey         = "base_scripts_url"
 	GeoIpEnabledKey           = "geo_ip_enabled"
