@@ -25,6 +25,7 @@ func GetClients(c *gin.Context) {
 		return
 	}
 	defer conn.Close()
+	conn.SetReadLimit(64 << 10)
 
 	// 初始化用户信息
 	var (
