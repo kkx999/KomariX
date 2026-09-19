@@ -179,7 +179,9 @@ func registerAdminRoutes(r *gin.Engine) {
 		session.POST("/remove/all", jsonRpc.Bind("admin:deleteAllSessions"))
 	}
 
-	g.GET("/logs", jsonRpc.Bind("admin:getLogs", jsonRpc.WithQuery("limit", "page")))
+	g.GET("/logs", jsonRpc.Bind("admin:getLogs", jsonRpc.WithQuery("limit", "page", "msg_type")))
+	g.POST("/logs/cleanup", jsonRpc.Bind("admin:cleanupLogs"))
+	g.POST("/logs/clear", jsonRpc.Bind("admin:clearLogs"))
 
 	// clipboard
 	clipboardGroup := g.Group("/clipboard")
