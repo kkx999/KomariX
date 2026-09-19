@@ -94,7 +94,7 @@ func CheckTraffic() {
 		if curStep > lastStep { // 只在进入新步进时提醒一次
 			trafficCache.SetDefault(key, curStep)
 
-			msg := fmt.Sprintf("used %d%% (%s / %s), type=%s", curStep, humanBytes(used), humanBytes(c.TrafficLimit), strings.ToLower(c.TrafficLimitType))
+			msg := fmt.Sprintf("已使用 %d%%（%s / %s），统计方式：%s", curStep, humanBytes(used), humanBytes(c.TrafficLimit), trafficTypeName(strings.ToLower(c.TrafficLimitType)))
 			// 发送通知（内部会检查 NotificationEnabled）
 			_ = messageSender.SendNotification(models.EventMessage{
 				Event:   messageevent.Traffic,
@@ -104,6 +104,23 @@ func CheckTraffic() {
 				Message: msg,
 			})
 		}
+	}
+}
+
+func trafficTypeName(t string) string {
+	switch t {
+	case "up":
+		return "上行"
+	case "down":
+		return "下行"
+	case "sum":
+		return "上行 + 下行"
+	case "min":
+		return "上行/下行较小值"
+	case "max":
+		return "上行/下行较大值"
+	default:
+		return t
 	}
 }
 
