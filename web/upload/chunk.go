@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/kkx999/KomariX/web/backup"
@@ -111,6 +112,9 @@ func (s *Store) SaveChunk(uploadID string, index int64, source io.Reader) error 
 	if err := os.Rename(temporaryPath, chunkPath); err != nil {
 		return fmt.Errorf("publish chunk: %w", err)
 	}
+	now := time.Now()
+	metadataPath := filepath.Join(session.Directory, "upload.json")
+	_ = os.Chtimes(metadataPath, now, now)
 	return nil
 }
 
@@ -177,6 +181,42 @@ func (s *Store) Cancel(uploadID string) error {
 	}
 	return nil
 }
+
+func (s *Store) CleanupExpired(maxAge time.Duration) (int, error) {
+	if maxAge <= 0 {
+		return 0, nil
+	}
+	entries, err := os.ReadDir(s.Root)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return 0, nil
+		}
+		return 0, fmt.Errorf("read upload root: %w", err)
+	}
+	cutoff := time.Now().Add(-maxAge)
+	removed := 0
+	for _, entry := range entries {
+		if !entry.IsDir() || !validUploadID(entry.Name()) {
+			continue
+		}
+		metadataPath := filepath.Join(s.Root, entry.Name(), "upload.json")
+		info, err := os.Stat(metadataPath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				info, err = entry.Info()
+			}
+		}
+		if err != nil || !info.ModTime().Before(cutoff) {
+			continue
+		}
+		if err := os.RemoveAll(filepath.Join(s.Root, entry.Name())); err != nil {
+			return removed, fmt.Errorf("remove expired upload %s: %w", entry.Name(), err)
+		}
+		removed++
+	}
+	return removed, nil
+}
+
 
 func (s *Store) load(uploadID string) (Session, error) {
 	if !validUploadID(uploadID) {
